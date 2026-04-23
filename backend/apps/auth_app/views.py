@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.auth_app.serializers import RegisterSerializer, LoginSerializer
+from apps.auth_app.serializers import RegisterSerializer, LoginSerializer, ConfirmRegisterSerializer
 from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.utils.cookies import set_auth_cookies, delete_auth_cookies
 
@@ -17,7 +17,25 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, refresh = AuthService.register(serializer.validated_data)
+        reg_id = AuthService.register(serializer.validated_data)
+        response = Response({
+            "reg_id": f"{reg_id}",
+            "message": f"Verification code sent to your email"
+        }, status=status.HTTP_202_ACCEPTED)
+        return response
+
+
+
+
+class ConfirmRegisterView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=ConfirmRegisterSerializer)
+    def post(self, request):
+        serializer = ConfirmRegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user, resfresh = AuthService.confirm_register(data=serializer.validated_data)
+
         response = Response({
             "message": "User created successfully",
             "data": {
@@ -27,7 +45,9 @@ class RegisterView(APIView):
             }
         }, status=status.HTTP_201_CREATED)
 
-        return set_auth_cookies(response, refresh)
+        return set_auth_cookies(response, resfresh)
+
+
 
 class LoginView(APIView):
     permission_classes = (AllowAny,)
@@ -47,7 +67,7 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = (AllowAny,)
 
-    extend_schema(request=LoginSerializer)
+    @extend_schema(request=LoginSerializer)
     def post(self, request):
         response = Response({
             "message": "Logout successful"

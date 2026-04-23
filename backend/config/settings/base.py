@@ -94,6 +94,19 @@ SPECTACULAR_SETTINGS = {
 
 AUTH_USER_MODEL = 'auth_app.User'
 
+SENDGRID_API_KEY = config('SENDGRID_API_KEY')
+EMAIL_FROM = config('EMAIL_FROM')
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
 # Celery
 CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379/0')

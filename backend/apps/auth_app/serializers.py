@@ -80,8 +80,14 @@ class RegisterSerializer(serializers.Serializer):
 
         return data
 
+class ConfirmRegisterSerializer(serializers.Serializer):
+    reg_id = serializers.CharField(required=True)
+    code = serializers.CharField(min_length=6, max_length=6, required=True)
 
-
+    def validate_code(self, code):
+        if not code.isdigit():
+            raise serializers.ValidationError('Code should be an integer')
+        return code
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
