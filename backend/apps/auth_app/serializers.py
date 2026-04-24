@@ -14,7 +14,7 @@ class RegisterSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
     password_confirm = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
     avatar = serializers.ImageField(validators=[FileExtensionValidator(allowed_extensions=['png', 'jpg', 'jpeg', 'webp'])],
-    required=False)
+    required=False, allow_null=True)
 
     def validate_first_name(self, first_name):
         first_name = first_name.strip()
@@ -64,12 +64,6 @@ class RegisterSerializer(serializers.Serializer):
         password = data.get('password')
         password_confirm = data.get('password_confirm')
 
-        if not password:
-            raise serializers.ValidationError('Password cannot be empty')
-
-        if not password_confirm:
-            raise serializers.ValidationError({'password_confirm': 'Password confirmation should not be empty'})
-
         if password != password_confirm:
             raise serializers.ValidationError('Passwords do not match')
 
@@ -92,3 +86,34 @@ class ConfirmRegisterSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(min_length=8, write_only=True, style={'input_type': 'password'})
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+class ConfirmResetPasswordSerializer(serializers.Serializer):
+    reset_id = serializers.CharField(required=True)
+    code = serializers.CharField(min_length=6, max_length=6, required=True)
+
+    def validate_code(self, code):
+        if not code.isdigit():
+            raise serializers.ValidationError('Code should be an integer')
+        return code
+
+class ChangePasswordSerializer(serializers.Serializer):
+    reset_verify_id = serializers.CharField(required=True)
+    password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
+    password_confirm = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
+
+    def validate(self, data):
+        password = data.get('password')
+        password_confirm = data.get('password_confirm')
+
+        if password != password_confirm:
+            raise serializers.ValidationError('Passwords do not match')
+
+        try:
+            validate_password(password)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError({'password': list(e.messages)})
+
+        return data

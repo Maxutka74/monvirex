@@ -4,7 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.auth_app.serializers import RegisterSerializer, LoginSerializer, ConfirmRegisterSerializer
+from apps.auth_app.serializers import RegisterSerializer, LoginSerializer, ConfirmRegisterSerializer, \
+    ResetPasswordSerializer, ConfirmResetPasswordSerializer, ChangePasswordSerializer
 from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.utils.cookies import set_auth_cookies, delete_auth_cookies
 
@@ -18,13 +19,17 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         reg_id = AuthService.register(serializer.validated_data)
+
+        if reg_id is None:
+            return Response({
+                "message": "You can request a code once every two minutes"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         response = Response({
-            "reg_id": f"{reg_id}",
-            "message": f"Verification code sent to your email"
+            "message": f"Verification code sent to your email",
+            "reg_id": reg_id
         }, status=status.HTTP_202_ACCEPTED)
         return response
-
-
 
 
 class ConfirmRegisterView(APIView):
@@ -64,10 +69,61 @@ class LoginView(APIView):
 
         return set_auth_cookies(response, refresh)
 
+class ResetPasswordView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=ResetPasswordSerializer)
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reset_id = AuthService.reset_password(serializer.validated_data)
+
+        if reset_id is None:
+            return Response({
+                "message": "You can request a code once every two minutes"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        response = Response({
+            "message": "Reset password code sent to your email",
+            "reset_id": reset_id
+        }, status=status.HTTP_202_ACCEPTED)
+
+        return response
+
+class ConfirmResetPasswordView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=ConfirmResetPasswordSerializer)
+    def post(self, request):
+        serializer = ConfirmResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reset_verify_id = AuthService.confirm_reset_password(serializer.validated_data)
+
+        response = Response({
+            'message': 'Reset code confirmed',
+            'reset_verify_id': reset_verify_id
+        })
+
+        return response
+
+class ChangePasswordView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=ChangePasswordSerializer)
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        AuthService.change_password(serializer.validated_data)
+
+        response = Response({
+            "message": "Password changed successfully",
+        }, status=status.HTTP_200_OK)
+
+        return response
+
 class LogoutView(APIView):
     permission_classes = (AllowAny,)
 
-    @extend_schema(request=LoginSerializer)
     def post(self, request):
         response = Response({
             "message": "Logout successful"
