@@ -120,3 +120,13 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class GoogleLoginSerializer(serializers.Serializer):
     token = serializers.CharField(required=True)
+
+class TelegramLoginSerializer(serializers.Serializer):
+    telegram_id = serializers.IntegerField(required=True)
+    first_name = serializers.CharField(required=True, max_length=50)
+    last_name = serializers.CharField(required=False, max_length=50)
+    username = serializers.CharField(required=False, max_length=50)
+    photo_url = serializers.URLField(required=False)
+    auth_date = serializers.IntegerField(required=True)
+    hash=serializers.CharField(required=True, max_length=200)
+

@@ -1,4 +1,7 @@
+import hashlib
+import hmac
 import logging
+import time
 
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -7,7 +10,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.auth_app.models import User
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,49 @@ class GoogleAuthService:
 
         if not user:
             user = User.objects.create(email=email, first_name=first_name, last_name=last_name)
+            user.set_unusable_password()
+            user.save()
+
+        refresh = RefreshToken.for_user(user)
+
+        return user,refresh
+
+
+class TelegramAuthService:
+
+    @staticmethod
+    def telegram_auth(data):
+        telegram_id = data['telegram_id']
+        first_name = data['first_name']
+        last_name = data.get('last_name', '')
+        auth_date = data['auth_date']
+        hash_value = data.pop('hash')
+
+        if not hash_value:
+            raise ValidationError('Invalid credentials')
+
+        clean_data = {k: v for k,v in data.items() if v is not None}
+
+        sort_data = sorted(clean_data.items())
+
+        check_hash = '\n'.join((f'{k}={v}' for k,v in sort_data))
+
+        secret = hashlib.sha256(settings.TELEGRAM_BOT_TOKEN.encode()).digest()
+
+        signature = hmac.new(secret, check_hash.encode(), digestmod=hashlib.sha256).hexdigest()
+
+        if hash_value != signature:
+            raise ValidationError('Invalid hash')
+
+        current_ts = time.time()
+        if current_ts - auth_date > 86400:
+            raise ValidationError('Invalid credentials')
+
+
+        user = User.objects.filter(telegram_id=telegram_id).first()
+
+        if not user:
+            user = User.objects.create(telegram_id=telegram_id, first_name=first_name, last_name=last_name)
             user.set_unusable_password()
             user.save()
 
