@@ -96,6 +96,7 @@ AUTH_USER_MODEL = 'auth_app.User'
 
 SENDGRID_API_KEY = config('SENDGRID_API_KEY')
 EMAIL_FROM = config('EMAIL_FROM')
+GOOGLE_CLIENT_ID=config('GOOGLE_CLIENT_ID')
 
 CACHES = {
     "default": {

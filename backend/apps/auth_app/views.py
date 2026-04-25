@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.auth_app.serializers import RegisterSerializer, LoginSerializer, ConfirmRegisterSerializer, \
-    ResetPasswordSerializer, ConfirmResetPasswordSerializer, ChangePasswordSerializer
+    ResetPasswordSerializer, ConfirmResetPasswordSerializer, ChangePasswordSerializer, GoogleLoginSerializer
 from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.utils.cookies import set_auth_cookies, delete_auth_cookies
+from apps.auth_app.services.oauth_service import GoogleAuthService
 
 
 # Create your views here.
@@ -68,6 +69,22 @@ class LoginView(APIView):
         }, status=status.HTTP_200_OK)
 
         return set_auth_cookies(response, refresh)
+
+class GoogleLoginView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=GoogleLoginSerializer)
+    def post(self, request):
+        serializer = GoogleLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user, refresh = GoogleAuthService.google_auth(serializer.validated_data)
+
+        response = Response({
+            'message': 'User authenticated successfully',
+        }, status=status.HTTP_200_OK)
+
+        return set_auth_cookies(response,refresh)
+
 
 class ResetPasswordView(APIView):
     permission_classes = (AllowAny,)

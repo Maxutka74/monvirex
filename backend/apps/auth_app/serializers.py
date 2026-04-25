@@ -117,3 +117,6 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({'password': list(e.messages)})
 
         return data
+
+class GoogleLoginSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
