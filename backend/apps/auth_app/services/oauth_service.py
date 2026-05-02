@@ -27,7 +27,7 @@ class GoogleAuthService:
             )
         except Exception as e:
             logger.error(f"Google Auth Error: {e}")
-            raise ValidationError('Invalid credentials')
+            raise ValidationError({'detail': 'Invalid credentials'})
 
         email = id_info.get('email')
         first_name = id_info.get('given_name', '')
@@ -53,12 +53,9 @@ class TelegramAuthService:
         first_name = data['first_name']
         last_name = data.get('last_name', '')
         auth_date = data['auth_date']
-        hash_value = data.pop('hash')
+        hash_value = data.get('hash')
 
-        if not hash_value:
-            raise ValidationError('Invalid credentials')
-
-        clean_data = {k: v for k,v in data.items() if v is not None}
+        clean_data = {k: v for k,v in data.items() if k != 'hash' and v is not None}
 
         sort_data = sorted(clean_data.items())
 

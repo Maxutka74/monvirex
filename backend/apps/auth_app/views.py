@@ -41,7 +41,7 @@ class ConfirmRegisterView(APIView):
     def post(self, request):
         serializer = ConfirmRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, resfresh = AuthService.confirm_register(data=serializer.validated_data)
+        user, refresh = AuthService.confirm_register(data=serializer.validated_data)
 
         response = Response({
             "message": "User created successfully",
@@ -52,7 +52,7 @@ class ConfirmRegisterView(APIView):
             }
         }, status=status.HTTP_201_CREATED)
 
-        return set_auth_cookies(response, resfresh)
+        return set_auth_cookies(response, refresh)
 
 
 
@@ -93,13 +93,13 @@ class TelegramLoginView(APIView):
     def post(self, request):
         serializer = TelegramLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user, resfresh = TelegramAuthService.telegram_auth(serializer.validated_data)
+        user, refresh = TelegramAuthService.telegram_auth(serializer.validated_data)
 
         response = Response({
             'message': 'User authenticated successfully',
         }, status=status.HTTP_200_OK)
 
-        return set_auth_cookies(response,resfresh)
+        return set_auth_cookies(response,refresh)
 
 
 class ResetPasswordView(APIView):
@@ -135,7 +135,7 @@ class ConfirmResetPasswordView(APIView):
         response = Response({
             'message': 'Reset code confirmed',
             'reset_verify_id': reset_verify_id
-        })
+        }, status=status.HTTP_200_OK)
 
         return response
 

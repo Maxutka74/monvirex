@@ -1,7 +1,5 @@
-from PIL import Image
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.validators import FileExtensionValidator
 from rest_framework import serializers
 
 from apps.auth_app.models import User
@@ -13,8 +11,6 @@ class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
     password_confirm = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
-    avatar = serializers.ImageField(validators=[FileExtensionValidator(allowed_extensions=['png', 'jpg', 'jpeg', 'webp'])],
-    required=False, allow_null=True)
 
     def validate_first_name(self, first_name):
         first_name = first_name.strip()
@@ -42,22 +38,6 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError('Email already exists')
 
         return email
-
-    def validate_avatar(self, file):
-        img = Image.open(file)
-        max_size = 5 * 1024 * 1024
-
-        if file.size > max_size:
-            raise serializers.ValidationError('File size is too big')
-
-        if img.width < 100 or img.height < 100:
-            raise serializers.ValidationError('File format is too small')
-
-        if img.width > 2048 or img.height > 2048:
-            raise serializers.ValidationError('File format is too big')
-
-        return file
-
 
 
     def validate(self, data):

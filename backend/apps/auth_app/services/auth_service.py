@@ -47,14 +47,14 @@ class AuthService:
         if not data_cache:
             raise ValidationError('Code has expired')
 
-        user = data_cache['user_data']
+        user_data = data_cache['user_data']
         code_check = data_cache['code']
         code = data['code']
 
         if code != code_check:
             raise ValidationError('Code is not valid')
 
-        user = User.objects.create(**user)
+        user = User.objects.create(**user_data)
         logger.info(f'User created: {user.email}')
 
         refresh = RefreshToken.for_user(user=user)
@@ -94,7 +94,7 @@ class AuthService:
             cache.set(f'reset_lock:{email}', True, timeout=120)
         except User.DoesNotExist:
             logger.error(f"User not found: {email}")
-            raise ValidationError('User with this email does not exist')
+            raise ValidationError('Invalid request')
 
         send_email.apply_async(args=[email, 'Monvirex - Скидання пароля', {'code': code}, 'auth_app/reset_password_email.html'], countdown=5)
 
