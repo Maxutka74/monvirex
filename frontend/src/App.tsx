@@ -1,9 +1,14 @@
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import AuthPage from "./pages/auth/AuthPage.tsx";
+
 function App() {
 
     return (
-        <>
-            <h1 className='text-amber-500'>Hello</h1>
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<AuthPage />} />
+            </Routes>
+        </BrowserRouter>
     )
 }
 

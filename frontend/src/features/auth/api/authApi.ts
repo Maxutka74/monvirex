@@ -17,7 +17,8 @@ export type VerifyData = {
 
 export type LoginData = {
     email: string,
-    password: string
+    password: string,
+    remember_me: boolean
 }
 
 export type VerifyResetData = {
@@ -29,6 +30,16 @@ export type ChangeData = {
     reset_verify_id: string,
     password: string,
     password_confirm: string
+}
+
+export type TelegramLoginData = {
+    id: number,
+    first_name: string,
+    last_name?: string,
+    username?: string,
+    photo_url?: string,
+    auth_date: number,
+    hash: string
 }
 
 
@@ -73,6 +84,18 @@ const changePassword = async (data: ChangeData): Promise<void> => {
 
 }
 
+const googleLogin = async (token: string): Promise<ApiResponse<User>> => {
+    const response = await api.post('/auth/google-login/', { token })
+
+    return response.data
+}
+
+const telegramLogin = async (data: TelegramLoginData): Promise<ApiResponse<User>> => {
+    const response = await api.post('/auth/telegram-login/',  data)
+
+    return response.data
+}
+
 export default {
     register,
     verifyEmail,
@@ -81,4 +104,6 @@ export default {
     resetPassword,
     verifyResetPassword,
     changePassword,
+    googleLogin,
+    telegramLogin,
 }

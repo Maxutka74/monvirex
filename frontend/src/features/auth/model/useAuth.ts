@@ -3,7 +3,7 @@ import {useMutation} from "@tanstack/react-query";
 import authApi, {
     type ChangeData,
     type LoginData,
-    type RegisterData,
+    type RegisterData, type TelegramLoginData,
     type VerifyData,
     type VerifyResetData
 } from "../api/authApi.ts";
@@ -105,6 +105,43 @@ const useChangePassword = () => {
     )
 }
 
+const useGoogleLogin = () => {
+    const setUser = useUserStore(state => state.setUser)
+
+    return useMutation(
+        {
+            mutationFn: (token: string) => authApi.googleLogin(token),
+            onSuccess: (response) => {
+                if (response.data) {
+                    setUser(response.data)
+                }
+            },
+            onError: (error) => {
+                console.error(error)
+            }
+        }
+    )
+}
+
+const useTelegramLogin = () => {
+    const setUser = useUserStore(state => state.setUser)
+
+    return useMutation(
+        {
+            mutationFn: (data: TelegramLoginData) => authApi.telegramLogin(data),
+            onSuccess: (response) => {
+                if (response.data) {
+                    setUser(response.data)
+                }
+            },
+            onError: (error) => {
+                console.error(error)
+            }
+        }
+    )
+
+}
+
 export default {
     useRegister,
     useVerifyEmail,
@@ -113,4 +150,6 @@ export default {
     useResetPassword,
     useVerifyResetPassword,
     useChangePassword,
+    useGoogleLogin,
+    useTelegramLogin,
 }
