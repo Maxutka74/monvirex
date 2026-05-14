@@ -7,6 +7,7 @@ import authApi, {
     type VerifyData,
     type VerifyResetData
 } from "../api/authApi.ts";
+import {useNavigate} from "react-router-dom";
 
 
 const useRegister = () => {
@@ -27,9 +28,7 @@ const useVerifyEmail = () => {
         {
             mutationFn: (data: VerifyData)=> authApi.verifyEmail(data),
             onSuccess: (response) => {
-                if (response.data) {
-                    setUser(response.data)
-                }
+                setUser(response)
             },
             onError: (error) => {
                 console.error(error)
@@ -45,9 +44,7 @@ const useLogin = () => {
         {
             mutationFn: (data: LoginData) => authApi.login(data),
             onSuccess: (response) => {
-                if (response.data) {
-                    setUser(response.data)
-                }
+                setUser(response)
             },
             onError: (error) => {
                 console.error(error)
@@ -73,9 +70,19 @@ const useLogout = () => {
 }
 
 const useResetPassword = () => {
+    const navigate = useNavigate();
+
     return useMutation(
         {
             mutationFn: (email: string) => authApi.resetPassword(email),
+            onSuccess: (response) => {
+                localStorage.setItem('reset_token', JSON.stringify({
+                    'reset_id': response.reset_id,
+                    'email': response.email,
+                    'expires_at': response.expires_at
+                }))
+                navigate('/verify-reset-password')
+            },
             onError: (error) => {
                 console.error(error)
             }
@@ -84,9 +91,18 @@ const useResetPassword = () => {
 }
 
 const useVerifyResetPassword =  () => {
+    const navigate = useNavigate();
+
     return useMutation(
         {
             mutationFn: (data: VerifyResetData) => authApi.verifyResetPassword(data),
+            onSuccess: (response) => {
+                localStorage.setItem("reset_verify_token", JSON.stringify({
+                    'reset_verify_id': response.reset_verify_id
+                }))
+                localStorage.removeItem('reset_token')
+                navigate('/change-password')
+            },
             onError: (error) => {
                 console.error(error)
             }
@@ -112,9 +128,7 @@ const useGoogleLogin = () => {
         {
             mutationFn: (token: string) => authApi.googleLogin(token),
             onSuccess: (response) => {
-                if (response.data) {
-                    setUser(response.data)
-                }
+                setUser(response)
             },
             onError: (error) => {
                 console.error(error)
@@ -130,9 +144,7 @@ const useTelegramLogin = () => {
         {
             mutationFn: (data: TelegramLoginData) => authApi.telegramLogin(data),
             onSuccess: (response) => {
-                if (response.data) {
-                    setUser(response.data)
-                }
+                setUser(response)
             },
             onError: (error) => {
                 console.error(error)

@@ -1,5 +1,4 @@
 import api from '../../../shared/api/instance.ts'
-import type {ApiResponse} from "../../../shared/types";
 import type {User} from "../../../entities/user/types/user.ts";
 
 export type RegisterData = {
@@ -43,20 +42,20 @@ export type TelegramLoginData = {
 }
 
 
-const register = async (data: RegisterData): Promise<ApiResponse<{reg_id: string}>> => {
+const register = async (data: RegisterData): Promise<{reg_id: string}> => {
     const response = await api.post('/auth/register/', data)
 
     return response.data
 }
 
 
-const verifyEmail = async (data: VerifyData): Promise<ApiResponse<User>> => {
+const verifyEmail = async (data: VerifyData): Promise<User> => {
     const response = await api.post('/auth/verify-email/', data)
 
     return response.data
 }
 
-const login = async (data: LoginData): Promise<ApiResponse<User>> => {
+const login = async (data: LoginData): Promise<User> => {
     const response = await api.post('/auth/login/', data)
 
     return response.data
@@ -67,13 +66,13 @@ const logout = async (): Promise<void> => {
 
 }
 
-const resetPassword = async (email: string): Promise<ApiResponse<{reset_id: string}>> => {
+const resetPassword = async (email: string): Promise<{reset_id: string, email: string, expires_at: number}> => {
     const response = await api.post('/auth/reset-password/', { email })
 
     return response.data
 }
 
-const verifyResetPassword = async (data: VerifyResetData): Promise<ApiResponse<{reset_verify_id: string }>> => {
+const verifyResetPassword = async (data: VerifyResetData): Promise<{reset_verify_id: string }> => {
     const response = await api.post('/auth/verify-reset-password/', data)
 
     return response.data
@@ -84,13 +83,13 @@ const changePassword = async (data: ChangeData): Promise<void> => {
 
 }
 
-const googleLogin = async (token: string): Promise<ApiResponse<User>> => {
+const googleLogin = async (token: string): Promise<User> => {
     const response = await api.post('/auth/google-login/', { token })
 
     return response.data
 }
 
-const telegramLogin = async (data: TelegramLoginData): Promise<ApiResponse<User>> => {
+const telegramLogin = async (data: TelegramLoginData): Promise<User> => {
     const response = await api.post('/auth/telegram-login/',  data)
 
     return response.data
