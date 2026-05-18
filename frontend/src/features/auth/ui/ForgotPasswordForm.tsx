@@ -4,6 +4,7 @@ import {useState} from "react";
 import authHooks from  '../model/useAuth.ts'
 import {GoArrowLeft} from "react-icons/go";
 import {Link, useNavigate} from "react-router-dom";
+import type {AxiosError} from "axios";
 
 const ForgotPasswordForm = () => {
     const [ email , setEmail ] = useState<string>('');
@@ -11,10 +12,13 @@ const ForgotPasswordForm = () => {
 
     const navigate = useNavigate();
 
-    const { mutate: resetPassword, isError, reset } = authHooks.useResetPassword()
+    const { mutate: resetPassword, isError, error, reset } = authHooks.useResetPassword()
+    const backendError = (error as AxiosError< {detail: string} >)?.response?.data.detail
 
     function sendResetPasswordForm(event: React.FormEvent){
         event.preventDefault()
+
+        setIncorrectEmail(false)
 
         const normalizedEmail = email.trim().toLowerCase()
 
@@ -23,7 +27,7 @@ const ForgotPasswordForm = () => {
             return;
         }
 
-        const check_email = JSON.parse(localStorage.getItem('reset_token') || '{}')
+        const check_email = JSON.parse(sessionStorage.getItem('reset_token') || '{}')
         if (check_email.email === normalizedEmail && check_email.expires_at > Date.now()) {
             navigate('/verify-reset-password')
             return;
@@ -41,7 +45,7 @@ const ForgotPasswordForm = () => {
                         <p className="text-[14px] font-medium">
                             {incorrectEmail
                                 ? 'Please enter a valid email address'
-                                : 'Something went wrong'}
+                                : backendError || 'Something went wrong'}
                         </p>
                     </div>
                 }
@@ -53,7 +57,7 @@ const ForgotPasswordForm = () => {
                         type="text"
                         id='email'
                         value={email}
-                        onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); reset()}}
+                        onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
                         placeholder='Your email'
                         className='w-[380px] outline-none'
                         autoComplete='email'

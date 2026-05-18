@@ -4,10 +4,11 @@ import {Link} from "react-router-dom";
 
 import authHooks from '../model/useAuth.ts'
 import {BiErrorCircle} from "react-icons/bi";
+import type {AxiosError} from "axios";
 
 
-const VerifyResetForm = () => {
-    const resetData = JSON.parse(localStorage.getItem("reset_token") || '{}');
+const VerifyPasswordForm = () => {
+    const resetData = JSON.parse(sessionStorage.getItem("reset_token") || '{}');
 
     const [ code, setCode ] = useState(['', '', '', '', '', ''])
     const [ timer, setTimer ] = useState<number>(0)
@@ -15,8 +16,9 @@ const VerifyResetForm = () => {
     const inputs = useRef<(HTMLInputElement | null)[]>([])
     const remainingTime = resetData.expires_at - Date.now()
 
-    const { mutate: resetPassword } = authHooks.useResetPassword()
-    const { mutate: verifyResetPassword, isError, reset } = authHooks.useVerifyResetPassword()
+    const { mutate: resendPassword } = authHooks.useResendPassword()
+    const { mutate: verifyResetPassword, isError, error, reset } = authHooks.useVerifyResetPassword()
+    const backendError = (error as AxiosError< {detail: string} >)?.response?.data.detail
 
     function handleChange(num: string, index: number) {
         reset()
@@ -46,8 +48,8 @@ const VerifyResetForm = () => {
     }
 
     function blockResendCode() {
-        if (resetData.email) {
-            resetPassword(resetData.email, {
+        if (resetData.reset_id) {
+            resendPassword(resetData.reset_id, {
                 onSuccess: () => setTimer(120)
             })
         }
@@ -86,7 +88,7 @@ const VerifyResetForm = () => {
                 {isError &&
                     <div className="w-[435px] h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
                         <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41]"/>
-                        <p className="text-[14px] font-medium">Invalid or expired verification code</p>
+                        <p className="text-[14px] font-medium">{backendError}</p>
                     </div>
                 }
 
@@ -113,7 +115,7 @@ const VerifyResetForm = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center gap-6 mb-6">
                         <button className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium ${code.every(item=> item !== '')? 'text-white bg-[#429EFF] cursor-pointer': 'bg-[#ECEFF3] cursor-not-allowed'} `} disabled={!(code.every(item => item !== ''))}>Confirm</button>
-                        <Link onClick={() => localStorage.removeItem('reset_token')} to="/reset-password" className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"><GoArrowLeft />Back</Link>
+                        <Link onClick={() => sessionStorage.removeItem('reset_token')} to="/reset-password" className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"><GoArrowLeft />Back</Link>
                     </div>
                 </div>
 
@@ -122,4 +124,4 @@ const VerifyResetForm = () => {
     )
 }
 
-export default VerifyResetForm
+export default VerifyPasswordForm

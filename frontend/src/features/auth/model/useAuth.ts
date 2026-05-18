@@ -3,7 +3,8 @@ import {useMutation} from "@tanstack/react-query";
 import authApi, {
     type ChangeData,
     type LoginData,
-    type RegisterData, type TelegramLoginData,
+    type RegisterData,
+    type TelegramLoginData,
     type VerifyData,
     type VerifyResetData
 } from "../api/authApi.ts";
@@ -11,11 +12,34 @@ import {useNavigate} from "react-router-dom";
 
 
 const useRegister = () => {
+    const navigate = useNavigate();
+
     return useMutation(
         {
             mutationFn: (data: RegisterData) => authApi.register(data),
-            onError: (error) => {
-                console.error(error)
+            onSuccess: (response) => {
+                sessionStorage.setItem("verify_token", JSON.stringify({
+                    'reg_id': response.reg_id,
+                    'email': response.email,
+                    'expires_at': response.expires_at
+                }))
+                navigate("/verify-email")
+            }
+        }
+    )
+}
+
+const useResendRegister = () => {
+
+    return useMutation(
+        {
+            mutationFn: (reg_id: string)=> authApi.resendRegister(reg_id),
+            onSuccess: (response) => {
+                sessionStorage.setItem("verify_token", JSON.stringify({
+                    'reg_id': response.reg_id,
+                    'email': response.email,
+                    'expires_at': response.expires_at
+                }))
             }
         }
     )
@@ -29,9 +53,7 @@ const useVerifyEmail = () => {
             mutationFn: (data: VerifyData)=> authApi.verifyEmail(data),
             onSuccess: (response) => {
                 setUser(response)
-            },
-            onError: (error) => {
-                console.error(error)
+                sessionStorage.removeItem("verify_token")
             }
         }
     )
@@ -45,9 +67,6 @@ const useLogin = () => {
             mutationFn: (data: LoginData) => authApi.login(data),
             onSuccess: (response) => {
                 setUser(response)
-            },
-            onError: (error) => {
-                console.error(error)
             }
         }
     )
@@ -61,9 +80,6 @@ const useLogout = () => {
             mutationFn: () => authApi.logout(),
             onSuccess: () => {
                 clearUser()
-            },
-            onError: (error) => {
-                console.error(error)
             }
         }
     )
@@ -76,15 +92,28 @@ const useResetPassword = () => {
         {
             mutationFn: (email: string) => authApi.resetPassword(email),
             onSuccess: (response) => {
-                localStorage.setItem('reset_token', JSON.stringify({
+                sessionStorage.setItem('reset_token', JSON.stringify({
                     'reset_id': response.reset_id,
                     'email': response.email,
                     'expires_at': response.expires_at
                 }))
                 navigate('/verify-reset-password')
-            },
-            onError: (error) => {
-                console.error(error)
+            }
+        }
+    )
+}
+
+const useResendPassword = () => {
+
+    return useMutation(
+        {
+            mutationFn: (reset_id: string) => authApi.resendPassword(reset_id),
+            onSuccess: (response) => {
+                sessionStorage.setItem('reset_token', JSON.stringify({
+                    'reset_id': response.reset_id,
+                    'email': response.email,
+                    'expires_at': response.expires_at
+                }))
             }
         }
     )
@@ -97,14 +126,11 @@ const useVerifyResetPassword =  () => {
         {
             mutationFn: (data: VerifyResetData) => authApi.verifyResetPassword(data),
             onSuccess: (response) => {
-                localStorage.setItem("reset_verify_token", JSON.stringify({
+                sessionStorage.setItem("reset_verify_token", JSON.stringify({
                     'reset_verify_id': response.reset_verify_id
                 }))
-                localStorage.removeItem('reset_token')
+                sessionStorage.removeItem('reset_token')
                 navigate('/change-password')
-            },
-            onError: (error) => {
-                console.error(error)
             }
         }
     )
@@ -114,8 +140,8 @@ const useChangePassword = () => {
     return useMutation(
         {
             mutationFn: (data: ChangeData) => authApi.changePassword(data),
-            onError: (error) => {
-                console.error(error)
+            onSuccess: () => {
+              sessionStorage.removeItem('reset_verify_token')
             }
         }
     )
@@ -129,9 +155,6 @@ const useGoogleLogin = () => {
             mutationFn: (token: string) => authApi.googleLogin(token),
             onSuccess: (response) => {
                 setUser(response)
-            },
-            onError: (error) => {
-                console.error(error)
             }
         }
     )
@@ -145,9 +168,6 @@ const useTelegramLogin = () => {
             mutationFn: (data: TelegramLoginData) => authApi.telegramLogin(data),
             onSuccess: (response) => {
                 setUser(response)
-            },
-            onError: (error) => {
-                console.error(error)
             }
         }
     )
@@ -156,10 +176,12 @@ const useTelegramLogin = () => {
 
 export default {
     useRegister,
+    useResendRegister,
     useVerifyEmail,
     useLogin,
     useLogout,
     useResetPassword,
+    useResendPassword,
     useVerifyResetPassword,
     useChangePassword,
     useGoogleLogin,

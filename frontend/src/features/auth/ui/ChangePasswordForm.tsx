@@ -7,6 +7,7 @@ import {BiErrorCircle} from "react-icons/bi";
 import {GoArrowLeft} from "react-icons/go";
 import {Link} from "react-router-dom";
 import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
+import type {AxiosError} from "axios";
 
 const ChangePasswordForm = () => {
     const [ password, setPassword ] = useState<string>('')
@@ -16,19 +17,25 @@ const ChangePasswordForm = () => {
     const [ visiblePassword, setVisiblePassword ] = useState<boolean>(false)
     const [ visibleConfirmPassword, setVisibleConfirmPassword ] = useState<boolean>(false)
 
-    const [ showModal , setShowModal ] = useState<boolean>(false)
-
-    const { mutate: changePassword, isSuccess, isError, reset } = authHooks.useChangePassword()
+    const { mutate: changePassword, isSuccess, isError, error, reset } = authHooks.useChangePassword()
+    const backendError = (error as AxiosError< {detail: string} >)?.response?.data.detail
 
     function sendChangePasswordForm(event: React.FormEvent) {
         event.preventDefault()
+
+        setIncorrectPassword(false)
+
+        if (password !== passwordConfirm) {
+            setIncorrectPassword(true)
+            return
+        }
+
         if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)){
             setIncorrectPassword(true)
             return;
         }
 
-        setShowModal(false)
-        const resetVerifyData = JSON.parse(localStorage.getItem("reset_verify_token") || '{}')
+        const resetVerifyData = JSON.parse(sessionStorage.getItem("reset_verify_token") || '{}')
         changePassword({
                 'reset_verify_id': resetVerifyData.reset_verify_id,
                 'password': password,
@@ -41,9 +48,14 @@ const ChangePasswordForm = () => {
         <>
             <form onSubmit={(event) => sendChangePasswordForm(event)} className='flex flex-col items-start justify-center'>
                 {(incorrectPassword || isError) &&
-                    <div className="w-[435px] h-[50px] flex justify-start items-center  text-wrap gap-2 rounded-[6px] bg-[#FFF0F3] p-1 mb-[24px]">
+                    <div className={`w-[435px] ${incorrectPassword ? 'h-[50px]' : 'h-[38px]'} flex justify-start items-center text-wrap gap-2 rounded-[6px] bg-[#FFF0F3] p-1 mb-[24px]`}>
                         <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41] shrink-0"/>
-                        <p className="text-[14px] font-medium ml-2">Your password must be at least 8 characters long and include a capital letter and a number</p>
+                        <p className="text-[14px] font-medium">
+                            {incorrectPassword
+                                ? "Your password must be at least 8 characters long and include a capital letter and a number"
+                                : backendError || "Something went wrong"
+                            }
+                        </p>
                     </div>
                 }
 
@@ -54,7 +66,7 @@ const ChangePasswordForm = () => {
                         type={visiblePassword ? 'text' : 'password'}
                         id='password'
                         value={password}
-                        onChange={(e) => {setPassword(e.target.value); setIncorrectPassword(false); reset()}}
+                        onChange={(e) => {setPassword(e.target.value); setIncorrectPassword(false); if (isError) reset()}}
                         placeholder='Input new password'
                         className='w-[380px] outline-none'
                         autoComplete="new-password"
@@ -71,7 +83,7 @@ const ChangePasswordForm = () => {
                         type={visibleConfirmPassword ? 'text' : 'password'}
                         id='confirm_password'
                         value={passwordConfirm}
-                        onChange={(e) => {setConfirmPassword(e.target.value); setIncorrectPassword(false); reset()}}
+                        onChange={(e) => {setConfirmPassword(e.target.value); setIncorrectPassword(false); if (isError) reset()}}
                         placeholder='Input to confirm password'
                         className='w-[380px] outline-none'
                         autoComplete="new-password"
@@ -86,7 +98,7 @@ const ChangePasswordForm = () => {
                     <Link to="/verify-reset-password" onClick={() => localStorage.removeItem('reset_verify_token')} className="w-[85px] h-[40px] flex items-center justify-center gap-3"><GoArrowLeft />Back</Link>
                 </div>
             </form>
-            {(isSuccess && showModal === false) && <SuccessModal title={'Password updated successfully'} message={'Your password has been successfully updated, please log in first'} link={'/'} buttonName={'Login Now'} onClose={() => {setShowModal(!showModal)}}/>}
+            {isSuccess && <SuccessModal title={'Password updated successfully'} message={'Your password has been successfully updated, please log in first'} link={'/'} buttonName={'Login Now'} />}
         </>
     )
 }

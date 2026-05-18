@@ -42,12 +42,17 @@ export type TelegramLoginData = {
 }
 
 
-const register = async (data: RegisterData): Promise<{reg_id: string}> => {
+const register = async (data: RegisterData): Promise<{reg_id: string, email: string, expires_at: number}> => {
     const response = await api.post('/auth/register/', data)
 
     return response.data
 }
 
+const resendRegister = async (reg_id: string): Promise<{reg_id: string, email: string, expires_at: number}> => {
+    const response = await api.post('/auth/resend-register-code/', { reg_id })
+
+    return response.data
+}
 
 const verifyEmail = async (data: VerifyData): Promise<User> => {
     const response = await api.post('/auth/verify-email/', data)
@@ -68,6 +73,12 @@ const logout = async (): Promise<void> => {
 
 const resetPassword = async (email: string): Promise<{reset_id: string, email: string, expires_at: number}> => {
     const response = await api.post('/auth/reset-password/', { email })
+
+    return response.data
+}
+
+const resendPassword = async (reset_id: string): Promise<{reset_id: string, email: string, expires_at: number}> => {
+    const response = await api.post('/auth/resend-password-code/', { reset_id })
 
     return response.data
 }
@@ -97,10 +108,12 @@ const telegramLogin = async (data: TelegramLoginData): Promise<User> => {
 
 export default {
     register,
+    resendRegister,
     verifyEmail,
     login,
     logout,
     resetPassword,
+    resendPassword,
     verifyResetPassword,
     changePassword,
     googleLogin,

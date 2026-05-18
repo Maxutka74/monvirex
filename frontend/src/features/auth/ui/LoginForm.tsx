@@ -11,6 +11,7 @@ import {FcGoogle} from "react-icons/fc";
 import { FaTelegram } from "react-icons/fa";
 import {GoogleLogin} from "@react-oauth/google";
 import { LoginButton } from '@telegram-auth/react'
+import type {AxiosError} from "axios";
 
 const LoginForm = () => {
     const [ email, setEmail ] = useState<string>('')
@@ -21,10 +22,8 @@ const LoginForm = () => {
     const [ visiblePassword, setVisiblePassword ] = useState<boolean>(false)
     const [ rememberMe, setRememberMe ] = useState<boolean>(false)
 
-    const [ showModal , setShowModal ] = useState<boolean>(false)
-
-
-    const {mutate: login, isSuccess, isError, reset} = authHooks.useLogin()
+    const {mutate: login, isSuccess, isError, error, reset} = authHooks.useLogin()
+    const backendError = (error as AxiosError< {detail: string} >)?.response?.data.detail
 
     const {mutate: google_login} = authHooks.useGoogleLogin()
 
@@ -32,6 +31,8 @@ const LoginForm = () => {
 
     function sendLoginForm(event: React.FormEvent) {
         event.preventDefault()
+        setIncorrectEmail(false)
+
         const normalizedEmail = email.trim().toLowerCase()
 
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)){
@@ -39,7 +40,6 @@ const LoginForm = () => {
             return;
         }
 
-        setShowModal(false)
         login( {email: normalizedEmail, password, remember_me: rememberMe} )
 
     }
@@ -54,7 +54,7 @@ const LoginForm = () => {
                     <p className="text-[14px] font-medium">
                         {incorrectEmail
                             ? 'Please enter a valid email address'
-                            : 'Your email or password is incorrect'}
+                            : backendError || 'Something went wrong'}
                     </p>
                 </div>
             }
@@ -66,7 +66,7 @@ const LoginForm = () => {
                     type="text"
                     id='email'
                     value={email}
-                    onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); reset()}}
+                    onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
                     placeholder='Input your email'
                     className='w-[380px] outline-none'
                     autoComplete="email"
@@ -79,7 +79,7 @@ const LoginForm = () => {
                     type={visiblePassword? 'text' : 'password'}
                     id='password'
                     value={password}
-                    onChange={(e) => {setPassword(e.target.value); setIncorrectEmail(false); reset()}}
+                    onChange={(e) => {setPassword(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
                     placeholder='Input your password'
                     className='w-[380px] outline-none'
                     autoComplete="current-password"
@@ -148,7 +148,7 @@ const LoginForm = () => {
                     </div>
                 </div>
         </form>
-        {isSuccess && showModal === false && <SuccessModal title={'Login Successful'} message={'Let\'s get started and take your customer support dashboard to the next level!'} link={'#'} buttonName={'Get Started'} onClose={() => {setShowModal(!showModal)}}/>}
+        {isSuccess && <SuccessModal title={'Login Successful'} message={'Let\'s get started and take your customer support dashboard to the next level!'} link={'#'} buttonName={'Get Started'} />}
         </>
     )
 }
