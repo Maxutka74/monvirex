@@ -11,7 +11,7 @@ type SuccessModalProps = {
 const SuccessModal = ({ title, message, link, buttonName }: SuccessModalProps) => {
     return (
         <div className="fixed inset-0 bg-black/50 grid place-items-center min-h-screen z-10">
-            <div className="w-[500px] h-[360px] flex flex-col items-center rounded-[20px] bg-[#FFFFFF]">
+            <div className="w-[500px] h-[340px] flex flex-col items-center rounded-[20px] bg-[#FFFFFF]">
                 <img src={SuccessIcon} alt="Success icon" className='w-[100px] h-[100px] mt-6' loading="lazy" />
                 <h3 className="text-[32px] font-medium mt-5">{title}</h3>
                 <p className="w-[374px] text-[16px] text-center text-[#6F6F6F] font-medium mt-5">{message}</p>

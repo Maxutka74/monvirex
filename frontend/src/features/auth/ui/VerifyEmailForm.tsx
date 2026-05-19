@@ -5,8 +5,11 @@ import {Link} from "react-router-dom";
 import {GoArrowLeft} from "react-icons/go";
 import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
 import type {AxiosError} from "axios";
+import {useTranslation} from "react-i18next";
 
 const VerifyEmailForm = () => {
+    const { t } = useTranslation();
+
     const resetData = JSON.parse(sessionStorage.getItem("verify_token") || '{}');
 
     const [ code, setCode ] = useState(['', '', '', '', '', ''])
@@ -91,7 +94,7 @@ const VerifyEmailForm = () => {
                     </div>
                 }
 
-                <p className="text-[18px] font-medium mb-4">Enter your OTP</p>
+                <p className="text-[18px] font-medium mb-4">{t('auth.enter_otp')}</p>
                 <div className="flex flex-row items-center justify-center gap-3">
                     {code.map((num, index) => (
                         <input
@@ -109,16 +112,16 @@ const VerifyEmailForm = () => {
                 </div>
                 <div className="mt-6 mb-6">
                     <div className="flex flex-row items-center justify-start gap-2 mb-4">
-                        <p className="font-medium text-[#666D80] text-[14px] ">Didn’t receive the email?</p>
-                        {timer > 0? <div> <span>{Math.floor(timer / 60)}</span><span>:</span><span>{(timer % 60).toString().padStart(2, '0')}</span> </div>: <button type='button' onClick={() => blockResendCode()} className="cursor-pointer">Click to resend code</button>}
+                        <p className="font-medium text-[#666D80] text-[14px] ">{t('auth.didnt_receive')}</p>
+                        {timer > 0? <div> <span>{Math.floor(timer / 60)}</span><span>:</span><span>{(timer % 60).toString().padStart(2, '0')}</span> </div>: <button type='button' onClick={() => blockResendCode()} className="cursor-pointer">{t('auth.resend_code')}</button>}
                     </div>
                     <div className="flex flex-col items-center justify-center gap-6 mb-6">
-                        <button className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium ${code.every(item=> item !== '')? 'text-white bg-[#429EFF] cursor-pointer': 'bg-[#ECEFF3] cursor-not-allowed'} `} disabled={!(code.every(item => item !== ''))}>Create Account</button>
-                        <Link onClick={() => sessionStorage.removeItem('verify_token')} to="/" className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"><GoArrowLeft />Back</Link>
+                        <button className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium ${code.every(item=> item !== '')? 'text-white bg-[#429EFF] cursor-pointer': 'bg-[#ECEFF3] cursor-not-allowed'} `} disabled={!(code.every(item => item !== ''))}>{t('auth.create_account_button')}</button>
+                        <Link onClick={() => sessionStorage.removeItem('verify_token')} to="/" className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"><GoArrowLeft />{t('auth.back')}</Link>
                     </div>
                 </div>
             </form>
-            {isSuccess && <SuccessModal title={'Congratulations, You\'re In'} message={'Let\'s get started and take your customer support dashboard to the next level!'} link={'#'} buttonName={'Get Started'} />}
+            {isSuccess && <SuccessModal title={t('auth.modals.register_success_title')} message={t('auth.modals.register_success_message')} link={'#'} buttonName={t('auth.modals.get_started')} />}
         </>
     )
 }

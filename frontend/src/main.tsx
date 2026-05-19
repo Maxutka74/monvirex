@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '../src/shared/utils/i18n.ts'
 import './index.css'
 import App from './App.tsx'
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";

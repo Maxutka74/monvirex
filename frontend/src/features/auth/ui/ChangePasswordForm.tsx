@@ -8,8 +8,11 @@ import {GoArrowLeft} from "react-icons/go";
 import {Link} from "react-router-dom";
 import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
 import type {AxiosError} from "axios";
+import {useTranslation} from "react-i18next";
 
 const ChangePasswordForm = () => {
+    const { t } = useTranslation();
+
     const [ password, setPassword ] = useState<string>('')
     const [ passwordConfirm, setConfirmPassword ] = useState<string>('')
     const [ incorrectPassword, setIncorrectPassword ] = useState<boolean>(false)
@@ -52,14 +55,14 @@ const ChangePasswordForm = () => {
                         <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41] shrink-0"/>
                         <p className="text-[14px] font-medium">
                             {incorrectPassword
-                                ? "Your password must be at least 8 characters long and include a capital letter and a number"
-                                : backendError || "Something went wrong"
+                                ? t('auth.errors.password_error')
+                                : backendError || t('auth.errors.something_went_wrong')
                             }
                         </p>
                     </div>
                 }
 
-                <label htmlFor="password" className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">Password</label>
+                <label htmlFor="password" className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">{t('auth.password')}</label>
                 <div className={`w-[435px] h-12 flex items-center bg-gray-100 border ${(incorrectPassword || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]':password.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]':   'border-gray-400'} rounded-full px-4 py-2 mb-6`}>
                     <FiLock size={24} className="text-gray-400 mr-2" />
                     <input
@@ -67,7 +70,7 @@ const ChangePasswordForm = () => {
                         id='password'
                         value={password}
                         onChange={(e) => {setPassword(e.target.value); setIncorrectPassword(false); if (isError) reset()}}
-                        placeholder='Input new password'
+                        placeholder={t('auth.placeholders.password')}
                         className='w-[380px] outline-none'
                         autoComplete="new-password"
                     />
@@ -76,7 +79,7 @@ const ChangePasswordForm = () => {
                         <FiEyeOff size={24} className="text-gray-400 ml-2" onClick={() => setVisiblePassword(!visiblePassword)}/>
                     }
                 </div>
-                <label htmlFor='confirm_password' className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">Confirm Password</label>
+                <label htmlFor='confirm_password' className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">{t('auth.confirm_password')}</label>
                 <div className={`w-[435px] h-12 flex items-center bg-gray-100 border ${(incorrectPassword || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]':passwordConfirm.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]':   'border-gray-400'} rounded-full px-4 py-2 mb-6`}>
                     <FiLock size={24} className="text-gray-400 mr-2" />
                     <input
@@ -84,7 +87,7 @@ const ChangePasswordForm = () => {
                         id='confirm_password'
                         value={passwordConfirm}
                         onChange={(e) => {setConfirmPassword(e.target.value); setIncorrectPassword(false); if (isError) reset()}}
-                        placeholder='Input to confirm password'
+                        placeholder={t('auth.placeholders.confirm_password')}
                         className='w-[380px] outline-none'
                         autoComplete="new-password"
                     />
@@ -94,11 +97,11 @@ const ChangePasswordForm = () => {
                     }
                 </div>
                 <div className="flex flex-col items-center justify-center gap-6 mb-6">
-                    <button className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium  ${!(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm) ? 'bg-[#429EFF] cursor-pointer': 'bg-[#ECEFF3] cursor-not-allowed'}`} disabled={(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm)}>Confirm</button>
-                    <Link to="/verify-reset-password" onClick={() => localStorage.removeItem('reset_verify_token')} className="w-[85px] h-[40px] flex items-center justify-center gap-3"><GoArrowLeft />Back</Link>
+                    <button className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium  ${!(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm) ? 'bg-[#429EFF] cursor-pointer': 'bg-[#ECEFF3] cursor-not-allowed'}`} disabled={(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm)}>{t('auth.confirm')}</button>
+                    <Link to="/verify-reset-password" onClick={() => localStorage.removeItem('reset_verify_token')} className="w-[85px] h-[40px] flex items-center justify-center gap-3"><GoArrowLeft />{t('auth.back')}</Link>
                 </div>
             </form>
-            {isSuccess && <SuccessModal title={'Password updated successfully'} message={'Your password has been successfully updated, please log in first'} link={'/'} buttonName={'Login Now'} />}
+            {isSuccess && <SuccessModal title={t('auth.modals.password_success_title')} message={t('auth.modals.password_success_message')} link={'/'} buttonName={t('auth.modals.login_now')} />}
         </>
     )
 }
