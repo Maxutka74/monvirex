@@ -50,10 +50,14 @@ const LoginForm = () => {
 
     return (
         <>
-        <form onSubmit={(event) => sendLoginForm(event)} className='flex flex-col items-start justify-center'>
+        <form onSubmit={(event) => sendLoginForm(event)}
+              className='flex flex-col items-start justify-center'
+        >
             {(incorrectEmail || isError) &&
                 <div className="w-[435px] h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
-                    <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41]"/>
+                    <BiErrorCircle size={16}
+                                   className="ml-[10px] text-[#DF1C41]"
+                    />
                     <p className="text-[14px] font-medium">
                         {incorrectEmail
                             ? t('auth.errors.invalid_email')
@@ -62,9 +66,18 @@ const LoginForm = () => {
                 </div>
             }
 
-            <label htmlFor="email" className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">{t('auth.email')}</label>
-            <div className={`w-[435px] h-12 flex items-center bg-gray-100 border ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]': email.trim().length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]':   'border-gray-400'} rounded-full px-4 py-2 mb-6`}>
-                <FiMail size={24} className="text-gray-400 mr-2" />
+            <label htmlFor="email"
+                className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
+                {t('auth.email')}
+            </label>
+            <div className={`w-[435px] h-12 flex items-center bg-gray-100 border 
+            ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
+                : email.trim().length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
+                    :   'border-gray-400'} rounded-full px-4 py-2 mb-6`}
+            >
+                <FiMail size={24}
+                        className="text-gray-400 mr-2"
+                />
                 <input
                     type="text"
                     id='email'
@@ -75,9 +88,18 @@ const LoginForm = () => {
                     autoComplete="email"
                 />
             </div>
-            <label htmlFor="password" className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">{t('auth.password')}</label>
-            <div className={`w-[435px] h-12 flex items-center bg-gray-100 border ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]':password.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]':   'border-gray-400'} rounded-full px-4 py-2 mb-6`}>
-                <FiLock size={24} className="text-gray-400 mr-2" />
+            <label htmlFor="password"
+                   className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
+                {t('auth.password')}
+            </label>
+            <div className={`w-[435px] h-12 flex items-center bg-gray-100 border 
+            ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
+                :password.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
+                    :'border-gray-400'} rounded-full px-4 py-2 mb-6`}
+            >
+                <FiLock size={24}
+                        className="text-gray-400 mr-2"
+                />
                 <input
                     type={visiblePassword? 'text' : 'password'}
                     id='password'
@@ -88,31 +110,49 @@ const LoginForm = () => {
                     autoComplete="current-password"
                 />
                 {visiblePassword?
-                    <FiEye size={24} className="text-gray-400 ml-2" onClick={() => setVisiblePassword(!visiblePassword)}/>:
-                    <FiEyeOff size={24} className="text-gray-400 ml-2" onClick={() => setVisiblePassword(!visiblePassword)}/>
+                    <FiEye size={24}
+                           className="text-gray-400 ml-2"
+                           onClick={() => setVisiblePassword(!visiblePassword)}
+                    />:
+                    <FiEyeOff size={24}
+                              className="text-gray-400 ml-2"
+                              onClick={() => setVisiblePassword(!visiblePassword)}
+                    />
                 }
             </div>
             <div className='flex flex-col justify-center gap-4 mb-6'>
-                <button className={`w-[435px] h-[54px] rounded-[50px] text-[#818898] text-[16px] font-medium ${email.trim().length > 0 && password.length > 0? 'text-white bg-[#429EFF] cursor-pointer': 'bg-[#ECEFF3] cursor-not-allowed'}`}
-                        disabled={!(email.trim().length > 0 && password.length > 0)}>
+                <button className={`w-[435px] h-[54px] rounded-[50px] text-[#818898] text-[16px] font-medium 
+                ${email.trim().length > 0 && password.length > 0? 'text-white bg-[#429EFF] cursor-pointer'
+                    : 'bg-[#ECEFF3] cursor-not-allowed'}`}
+                disabled={!(email.trim().length > 0 && password.length > 0)}
+                >
                     {t('auth.login')}
                 </button>
                 <div className='flex flex-row items-center justify-between'>
                     <div className='flex items-center justify-center gap-2'>
                         <div onClick={() => setRememberMe(!rememberMe)}>
                             {rememberMe === false?
-                                <MdOutlineCheckBoxOutlineBlank size={25} className="text-[#DFE1E7]"/>:
+                                <MdOutlineCheckBoxOutlineBlank size={25}
+                                                               className="text-[#DFE1E7]"
+                                />:
                                 <GoCheckbox size={25}/>
                             }
                         </div>
-                        <span className="text-[14px] text-[#666D80] font-medium">{t('auth.remember_me')}</span>
+                        <span className="text-[14px] text-[#666D80] font-medium">
+                            {t('auth.remember_me')}
+                        </span>
                     </div>
-                    <Link to={'/reset-password'} className="text-[14px] text-[#6F6F6F] font-medium">{t('auth.forgot_password')}</Link>
+                    <Link to={'/reset-password'}
+                          className="text-[14px] text-[#6F6F6F] font-medium">
+                        {t('auth.forgot_password')}
+                    </Link>
                 </div>
             </div>
                 <div className="flex flex-row items-center justify-between gap-4 mb-6">
                     <hr className="w-[190px] text-[#C1C7D0]" />
-                    <span className="text-[12px] text-[#818898] font-medium ">{t('auth.or_sign_in')}</span>
+                    <span className="text-[12px] text-[#818898] font-medium ">
+                        {t('auth.or_sign_in')}
+                    </span>
                     <hr className="w-[190px] text-[#C1C7D0]" />
                 </div>
                 <div className="flex flex-row items-center justify-center gap-3">
@@ -124,8 +164,7 @@ const LoginForm = () => {
                             </span>
                         </div>
 
-                        <div
-                            className="absolute inset-0 opacity-0 overflow-hidden">
+                        <div className="absolute inset-0 opacity-0 overflow-hidden">
                             <GoogleLogin
                                 onSuccess={(credentialResponse) => {
                                     if (credentialResponse.credential) {
@@ -138,7 +177,9 @@ const LoginForm = () => {
                     </div>
                     <div className="relative w-[212px] h-[48px] cursor-pointer">
                         <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
-                            <FaTelegram  size={24} className="text-[#229ED9]"/>
+                            <FaTelegram  size={24}
+                                         className="text-[#229ED9]"
+                            />
                             <span className="text-[14px]">
                                 {t('auth.sign_in_telegram')}
                             </span>

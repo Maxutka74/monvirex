@@ -1,5 +1,14 @@
 {
   "auth": {
+    "hero_title": "Smart Crypto Analytics",
+    "hero_title_blue": "Trading & Exchange",
+    "hero_description": "Track the market, analyze live charts and trade crypto securely on one platform.",
+    "analytics_title": "Real-time Analytics",
+    "analytics_description": "Live crypto charts and market insights updated instantly.",
+    "exchange_title": "Trade & Exchange",
+    "exchange_description": "Buy, sell and exchange digital assets with ease.",
+    "security_title": "Secure & Reliable",
+    "security_description": "Advanced protection for your crypto assets and account.",
     "welcome": "Welcome",
     "login_subtitle": "Please login to entry MONVIREX",
     "create_account": "Create Account",
