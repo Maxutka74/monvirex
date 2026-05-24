@@ -1,7 +1,9 @@
 from django.conf import settings
 
 
-def set_auth_cookies(response, refresh):
+def set_auth_cookies(response, refresh, remember_me = False):
+    refresh_max_age = 30 * 24 * 3600 if remember_me else 7 * 24 * 3600
+
     response.set_cookie(
         key='access_token',
         value=str(refresh.access_token),
@@ -17,7 +19,7 @@ def set_auth_cookies(response, refresh):
         httponly=True,
         secure=settings.COOKIE_SECURE,
         samesite='Lax',
-        max_age=7 * 24 * 3600
+        max_age=refresh_max_age
     )
 
     return response

@@ -1,3 +1,4 @@
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
@@ -6,7 +7,7 @@ from rest_framework.views import APIView
 
 from apps.auth_app.serializers import RegisterSerializer, LoginSerializer, ConfirmRegisterSerializer, \
     ResetPasswordSerializer, ConfirmResetPasswordSerializer, ChangePasswordSerializer, GoogleLoginSerializer, \
-    TelegramLoginSerializer
+    TelegramLoginSerializer, ResendRegisterSerializer, ResendPasswordSerializer
 from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.utils.cookies import set_auth_cookies, delete_auth_cookies
 from apps.auth_app.services.oauth_service import GoogleAuthService, TelegramAuthService
@@ -20,16 +21,32 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        reg_id = AuthService.register(serializer.validated_data)
-
-        if reg_id is None:
-            return Response({
-                "message": "You can request a code once every two minutes"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        reset_data = AuthService.register(serializer.validated_data)
 
         response = Response({
             "message": f"Verification code sent to your email",
-            "reg_id": reg_id
+            "reg_id": reset_data['reg_id'],
+            "email": reset_data['email'],
+            "expires_at": reset_data['expires_at']
+
+        }, status=status.HTTP_202_ACCEPTED)
+        return response
+
+class ResendRegisterCodeView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=ResendRegisterSerializer)
+    def post(self, request):
+        serializer = ResendRegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reset_data = AuthService.resend_register_code(serializer.validated_data)
+
+        response = Response({
+            "message": f"Verification code sent to your email",
+            "reg_id": reset_data['reg_id'],
+            "email": reset_data['email'],
+            "expires_at": reset_data['expires_at']
+
         }, status=status.HTTP_202_ACCEPTED)
         return response
 
@@ -65,11 +82,13 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         user, refresh = AuthService.login(serializer.validated_data)
 
+        remembre_me = serializer.validated_data['remember_me']
+
         response = Response({
             "message": "Login successful"
         }, status=status.HTTP_200_OK)
 
-        return set_auth_cookies(response, refresh)
+        return set_auth_cookies(response, refresh, remembre_me)
 
 class GoogleLoginView(APIView):
     permission_classes = (AllowAny,)
@@ -84,7 +103,7 @@ class GoogleLoginView(APIView):
             'message': 'User authenticated successfully',
         }, status=status.HTTP_200_OK)
 
-        return set_auth_cookies(response,refresh)
+        return set_auth_cookies(response,refresh, remember_me=True)
 
 class TelegramLoginView(APIView):
     permission_classes = (AllowAny,)
@@ -99,7 +118,7 @@ class TelegramLoginView(APIView):
             'message': 'User authenticated successfully',
         }, status=status.HTTP_200_OK)
 
-        return set_auth_cookies(response,refresh)
+        return set_auth_cookies(response,refresh, remember_me=True)
 
 
 class ResetPasswordView(APIView):
@@ -109,19 +128,36 @@ class ResetPasswordView(APIView):
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        reset_id = AuthService.reset_password(serializer.validated_data)
-
-        if reset_id is None:
-            return Response({
-                "message": "You can request a code once every two minutes"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        reset_data = AuthService.reset_password(serializer.validated_data)
 
         response = Response({
             "message": "Reset password code sent to your email",
-            "reset_id": reset_id
+            "reset_id": reset_data['reset_id'],
+            'email': reset_data['email'],
+            'expires_at': reset_data['expires_at']
         }, status=status.HTTP_202_ACCEPTED)
 
         return response
+
+class ResendPasswordCodeView(APIView):
+    permission_classes = (AllowAny,)
+
+    @extend_schema(request=ResendPasswordSerializer)
+    def post(self, request):
+        serializer = ResendPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reset_data = AuthService.resend_password_code(serializer.validated_data)
+
+        response = Response({
+            "message": "Reset password code sent to your email",
+            "reset_id": reset_data['reset_id'],
+            'email': reset_data['email'],
+            'expires_at': reset_data['expires_at']
+        }, status=status.HTTP_202_ACCEPTED)
+
+        return response
+
+
 
 class ConfirmResetPasswordView(APIView):
     permission_classes = (AllowAny,)
@@ -158,8 +194,6 @@ class LogoutView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        response = Response({
-            "message": "Logout successful"
-        }, status=status.HTTP_204_NO_CONTENT)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
 
         return delete_auth_cookies(response)

@@ -31,9 +31,6 @@ class RegisterSerializer(serializers.Serializer):
     def validate_email(self, email):
         email = email.strip().lower()
 
-        if not email:
-            raise serializers.ValidationError('Email cannot be empty')
-
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError('Email already exists')
 
@@ -54,33 +51,40 @@ class RegisterSerializer(serializers.Serializer):
 
         return data
 
+class ResendRegisterSerializer(serializers.Serializer):
+    reg_id = serializers.CharField(required=True, min_length=36, max_length=36)
+
 class ConfirmRegisterSerializer(serializers.Serializer):
-    reg_id = serializers.CharField(required=True)
+    reg_id = serializers.CharField(required=True, min_length=36, max_length=36)
     code = serializers.CharField(min_length=6, max_length=6, required=True)
 
     def validate_code(self, code):
         if not code.isdigit():
-            raise serializers.ValidationError('Code should be an integer')
+            raise serializers.ValidationError('Code must contain only digits')
         return code
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(min_length=8, write_only=True, style={'input_type': 'password'})
+    remember_me = serializers.BooleanField(required=False, default=False)
 
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
+class ResendPasswordSerializer(serializers.Serializer):
+    reset_id = serializers.CharField(required=True, min_length=36, max_length=36)
+
 class ConfirmResetPasswordSerializer(serializers.Serializer):
-    reset_id = serializers.CharField(required=True)
+    reset_id = serializers.CharField(required=True, min_length=36, max_length=36)
     code = serializers.CharField(min_length=6, max_length=6, required=True)
 
     def validate_code(self, code):
         if not code.isdigit():
-            raise serializers.ValidationError('Code should be an integer')
+            raise serializers.ValidationError('Code must contain only digits')
         return code
 
 class ChangePasswordSerializer(serializers.Serializer):
-    reset_verify_id = serializers.CharField(required=True)
+    reset_verify_id = serializers.CharField(required=True, min_length=36, max_length=36)
     password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
     password_confirm = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
 
@@ -102,11 +106,11 @@ class GoogleLoginSerializer(serializers.Serializer):
     token = serializers.CharField(required=True)
 
 class TelegramLoginSerializer(serializers.Serializer):
-    telegram_id = serializers.IntegerField(required=True)
-    first_name = serializers.CharField(required=True, max_length=50)
-    last_name = serializers.CharField(required=False, max_length=50)
-    username = serializers.CharField(required=False, max_length=50)
-    photo_url = serializers.URLField(required=False)
+    id = serializers.IntegerField(required=True)
+    first_name = serializers.CharField(required=True, max_length=50, allow_blank=True)
+    last_name = serializers.CharField(required=False, max_length=50, allow_blank=True)
+    username = serializers.CharField(required=False, max_length=50, allow_blank=True)
+    photo_url = serializers.URLField(required=False, allow_blank=True)
     auth_date = serializers.IntegerField(required=True)
-    hash=serializers.CharField(required=True, max_length=200)
+    hash = serializers.CharField(required=True, max_length=200)
 

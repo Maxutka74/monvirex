@@ -42,15 +42,15 @@ class GoogleAuthService:
 
         refresh = RefreshToken.for_user(user)
 
-        return user,refresh
+        return user, refresh
 
 
 class TelegramAuthService:
 
     @staticmethod
     def telegram_auth(data):
-        telegram_id = data['telegram_id']
-        first_name = data['first_name']
+        telegram_id = data['id']
+        first_name = data.get('first_name', '')
         last_name = data.get('last_name', '')
         auth_date = data['auth_date']
         hash_value = data.get('hash')
@@ -65,13 +65,14 @@ class TelegramAuthService:
 
         signature = hmac.new(secret, check_hash.encode(), digestmod=hashlib.sha256).hexdigest()
 
-        if hash_value != signature:
-            raise ValidationError('Invalid hash')
+        if not hmac.compare_digest(hash_value, signature):
+            raise ValidationError({'detail': 'Invalid credentials'})
 
         current_ts = time.time()
         if current_ts - auth_date > 86400:
-            raise ValidationError('Invalid credentials')
+            raise ValidationError({'detail': 'Invalid credentials'})
 
+        first_name = first_name.strip() or 'Telegram User'
 
         user = User.objects.filter(telegram_id=telegram_id).first()
 
@@ -82,4 +83,4 @@ class TelegramAuthService:
 
         refresh = RefreshToken.for_user(user)
 
-        return user,refresh
+        return user, refresh
