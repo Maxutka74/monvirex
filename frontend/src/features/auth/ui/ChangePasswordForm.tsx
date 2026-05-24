@@ -53,7 +53,7 @@ const ChangePasswordForm = () => {
                   className='flex flex-col items-start justify-center'>
                 {(incorrectPassword || isError) &&
                     <div
-                        className={`w-[435px] ${incorrectPassword ? 'h-[50px]' : 'h-[38px]'} flex justify-start items-center text-wrap gap-2 rounded-[6px] bg-[#FFF0F3] p-1 mb-[24px]`}>
+                        className={`w-full ${incorrectPassword ? 'h-[50px]' : 'h-[38px]'} flex justify-start items-center text-wrap gap-2 rounded-[6px] bg-[#FFF0F3] p-1 mb-[24px]`}>
                         <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41] shrink-0"/>
                         <p className="text-[14px] font-medium">
                             {incorrectPassword
@@ -69,7 +69,7 @@ const ChangePasswordForm = () => {
                     {t('auth.password')}
                 </label>
                 <div
-                    className={`w-[435px] h-12 flex items-center bg-gray-100 border 
+                    className={`w-full h-12 flex items-center bg-gray-100 border 
                     ${(incorrectPassword || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
                         : password.length > 0 ? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]' 
                         : 'border-gray-400'} rounded-full px-4 py-2 mb-6`}
@@ -87,7 +87,7 @@ const ChangePasswordForm = () => {
                             if (isError) reset()
                         }}
                         placeholder={t('auth.placeholders.password')}
-                        className='w-[380px] outline-none'
+                        className='w-full outline-none'
                         autoComplete="new-password"
                     />
                     {visiblePassword ?
@@ -107,7 +107,7 @@ const ChangePasswordForm = () => {
                     {t('auth.confirm_password')}
                 </label>
                 <div
-                    className={`w-[435px] h-12 flex items-center bg-gray-100 border
+                    className={`w-full h-12 flex items-center bg-gray-100 border
                      ${(incorrectPassword || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
                         : passwordConfirm.length > 0 ? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]' 
                         : 'border-gray-400'} rounded-full px-4 py-2 mb-6`}
@@ -125,7 +125,7 @@ const ChangePasswordForm = () => {
                             if (isError) reset()
                         }}
                         placeholder={t('auth.placeholders.confirm_password')}
-                        className='w-[380px] outline-none'
+                        className='w-full outline-none'
                         autoComplete="new-password"
                     />
                     {visibleConfirmPassword ?
@@ -140,9 +140,9 @@ const ChangePasswordForm = () => {
                         />
                     }
                 </div>
-                <div className="flex flex-col items-center justify-center gap-6 mb-6">
+                <div className="w-full flex flex-col items-center justify-center gap-6 mb-6">
                     <button
-                        className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium
+                        className={`w-full h-[44px] rounded-[50px] text-white text-[16px] font-medium
                           ${!(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm) ? 'bg-[#429EFF] cursor-pointer' 
                             : 'bg-[#ECEFF3] cursor-not-allowed'}`}
                         disabled={(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm)}>

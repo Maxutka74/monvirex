@@ -88,7 +88,7 @@ const VerifyEmailForm = () => {
         <>
             <form onSubmit={(event) => sendVerifyEmailForm(event)}>
                 {isError &&
-                    <div className="w-[435px] h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
+                    <div className="w-full h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
                         <BiErrorCircle size={16}
                                        className="ml-[10px] text-[#DF1C41]"
                         />
@@ -112,7 +112,7 @@ const VerifyEmailForm = () => {
                             onKeyDown={(e) => handleKeyDown(e, index)}
                             maxLength={1}
                             inputMode='numeric'
-                            className={`w-[62px] h-[48px] rounded-[50px] text-center placeholder-[16px] placeholder-[#0D0D12] border 
+                            className={`w-full h-[48px] rounded-[50px] text-center placeholder-[16px] placeholder-[#0D0D12] border 
                             ${isError? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
                                 : code[index]? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
                                     : 'border-[#DFE1E7]'} outline-none`}
@@ -134,7 +134,7 @@ const VerifyEmailForm = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center gap-6 mb-6">
                         <button
-                            className={`w-[435px] h-[44px] rounded-[50px] text-white text-[16px] font-medium 
+                            className={`w-full h-[44px] rounded-[50px] text-white text-[16px] font-medium 
                             ${code.every(item=> item !== '')? 'text-white bg-[#429EFF] cursor-pointer'
                                 : 'bg-[#ECEFF3] cursor-not-allowed'} `}
                             disabled={!(code.every(item => item !== ''))}>

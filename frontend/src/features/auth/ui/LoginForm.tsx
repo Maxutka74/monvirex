@@ -54,7 +54,7 @@ const LoginForm = () => {
               className='flex flex-col items-start justify-center'
         >
             {(incorrectEmail || isError) &&
-                <div className="w-[435px] h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
+                <div className="w-full h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
                     <BiErrorCircle size={16}
                                    className="ml-[10px] text-[#DF1C41]"
                     />
@@ -70,7 +70,7 @@ const LoginForm = () => {
                 className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
                 {t('auth.email')}
             </label>
-            <div className={`w-[435px] h-12 flex items-center bg-gray-100 border 
+            <div className={`w-full h-12 flex items-center bg-gray-100 border 
             ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
                 : email.trim().length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
                     :   'border-gray-400'} rounded-full px-4 py-2 mb-6`}
@@ -84,7 +84,7 @@ const LoginForm = () => {
                     value={email}
                     onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
                     placeholder={t('auth.placeholders.email')}
-                    className='w-[380px] outline-none'
+                    className='w-full outline-none'
                     autoComplete="email"
                 />
             </div>
@@ -92,7 +92,7 @@ const LoginForm = () => {
                    className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
                 {t('auth.password')}
             </label>
-            <div className={`w-[435px] h-12 flex items-center bg-gray-100 border 
+            <div className={`w-full h-12 flex items-center bg-gray-100 border 
             ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
                 :password.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
                     :'border-gray-400'} rounded-full px-4 py-2 mb-6`}
@@ -106,7 +106,7 @@ const LoginForm = () => {
                     value={password}
                     onChange={(e) => {setPassword(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
                     placeholder={t('auth.placeholders.password')}
-                    className='w-[380px] outline-none'
+                    className='w-full outline-none'
                     autoComplete="current-password"
                 />
                 {visiblePassword?
@@ -120,8 +120,8 @@ const LoginForm = () => {
                     />
                 }
             </div>
-            <div className='flex flex-col justify-center gap-4 mb-6'>
-                <button className={`w-[435px] h-[54px] rounded-[50px] text-[#818898] text-[16px] font-medium 
+            <div className='w-full flex flex-col justify-center gap-4 mb-6'>
+                <button className={`w-full h-[54px] rounded-[50px] text-[#818898] text-[16px] font-medium 
                 ${email.trim().length > 0 && password.length > 0? 'text-white bg-[#429EFF] cursor-pointer'
                     : 'bg-[#ECEFF3] cursor-not-allowed'}`}
                 disabled={!(email.trim().length > 0 && password.length > 0)}
@@ -148,15 +148,15 @@ const LoginForm = () => {
                     </Link>
                 </div>
             </div>
-                <div className="flex flex-row items-center justify-between gap-4 mb-6">
-                    <hr className="w-[190px] text-[#C1C7D0]" />
+                <div className="w-full flex flex-row items-center justify-between gap-4 mb-6">
+                    <hr className="w-full h-[2px] text-[#C1C7D0]" />
                     <span className="text-[12px] text-[#818898] font-medium ">
                         {t('auth.or_sign_in')}
                     </span>
-                    <hr className="w-[190px] text-[#C1C7D0]" />
+                    <hr className="w-full h-[2px] text-[#C1C7D0]" />
                 </div>
-                <div className="flex flex-row items-center justify-center gap-3">
-                    <div className="relative w-[212px] h-[48px] cursor-pointer">
+                <div className="w-full flex flex-col xl:flex-row items-center justify-center gap-3">
+                    <div className="relative w-full xl:w-[212px] h-[48px] cursor-pointer">
                         <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
                             <FcGoogle size={24} />
                             <span className="text-[14px]">
@@ -175,7 +175,7 @@ const LoginForm = () => {
                         </div>
 
                     </div>
-                    <div className="relative w-[212px] h-[48px] cursor-pointer">
+                    <div className="relative w-full xl:w-[212px] h-[48px] cursor-pointer">
                         <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
                             <FaTelegram  size={24}
                                          className="text-[#229ED9]"

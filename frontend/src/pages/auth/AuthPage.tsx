@@ -3,17 +3,21 @@ import LoginForm from "../../features/auth/ui/LoginForm.tsx";
 import RegisterForm from "../../features/auth/ui/RegisterForm.tsx";
 import {useTranslation} from "react-i18next";
 import AuthHero from "../../shared/ui/AuthHero.tsx";
+import MobileLogo from "../../shared/ui/MobileLogo.tsx";
 
 const AuthPage = () => {
     const [ activeTab, setActiveTab ] = useState<'login' | 'register'>('login');
     const { t } = useTranslation();
 
     return (
-        <div className="h-screen overflow-hidden flex items-center font-['DM_Sans']">
+        <div className="min-h-[100dvh] flex items-center font-['DM_Sans']">
             <AuthHero />
-            <div className="w-[42%] flex justify-center">
-                <div className='w-[500px] flex flex-col justify-center items-center gap-[24px]' >
-                    <div className='flex flex-col justify-center items-center gap-[12px]'>
+            <div className="w-full xl:w-[42%] flex justify-center items-center overflow-y-auto">
+                <div className='w-full max-w-[350px] xl:max-w-[440px] flex flex-col justify-center gap-[24px]' >
+                    <div className="flex xl:hidden justify-center">
+                        <MobileLogo />
+                    </div>
+                    <div className='flex flex-col justify-center items-center gap-[12px] -mt-12 xl:mt-0'>
                         <h1
                             className='font-medium text-[40px] text-black'>
                             {activeTab === 'login'? t('auth.welcome'): t('auth.create_account')}
@@ -22,15 +26,15 @@ const AuthPage = () => {
                             className='font-medium text-[16px] text-[#666D80]'>
                             {activeTab === 'register'? t('auth.create_subtitle'): t('auth.login_subtitle')}
                         </p>
-                        <div className='w-[440px] h-[55px] flex items-center justify-between p-1 rounded-[50px] bg-[#ECEFF3]'>
+                        <div className='w-full h-[55px] flex items-center justify-between p-1 rounded-[50px] bg-[#ECEFF3]'>
                             <button
                                 type='button'
-                                className={activeTab === 'login'? 'w-[208px] h-[44px] text-white bg-black rounded-[50px]':'w-[208px] h-[44px]'}
+                                className={activeTab === 'login'? 'w-1/2 h-[44px] text-white bg-black rounded-[50px]':'w-1/2 h-[44px]'}
                                 onClick={() => setActiveTab('login')}>
                                 {t('auth.login')}
                             </button>
                             <button type='button'
-                                    className={activeTab === 'register'? 'w-[208px] h-[44px] text-white bg-black rounded-[50px]':'w-[208px] h-[44px]'}
+                                    className={activeTab === 'register'? 'w-1/2 h-[44px] text-white bg-black rounded-[50px]':'w-1/2 h-[44px]'}
                                     onClick={() => setActiveTab('register')}>
                                 {t('auth.sign_up')}
                             </button>

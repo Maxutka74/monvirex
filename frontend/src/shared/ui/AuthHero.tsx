@@ -10,7 +10,7 @@ const AuthHero = () => {
 
     return (
         <div
-            className="w-[58%] h-screen flex flex-col justify-center pl-24 pr-16 overflow-hidden"
+            className="hidden xl:flex w-[58%] h-screen flex-col justify-center pl-24 pr-16 overflow-hidden"
             style={{
                 backgroundImage: `url(${background})`,
                 backgroundSize: 'cover',
