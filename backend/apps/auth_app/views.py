@@ -12,7 +12,6 @@ from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.utils.cookies import set_auth_cookies, delete_auth_cookies
 from apps.auth_app.services.oauth_service import GoogleAuthService, TelegramAuthService
 
-
 # Create your views here.
 class RegisterView(APIView):
     permission_classes = (AllowAny,)
@@ -197,3 +196,18 @@ class LogoutView(APIView):
         response = Response(status=status.HTTP_204_NO_CONTENT)
 
         return delete_auth_cookies(response)
+
+class RefreshTokenView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get('refresh_token')
+        if not refresh_token:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        refresh_token_new = AuthService.refresh_token(refresh_token)
+
+        response = Response({
+            'message': 'Reset token successfully'
+        }, status=status.HTTP_200_OK)
+
+        return set_auth_cookies(response, refresh_token_new)

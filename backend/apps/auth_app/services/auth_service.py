@@ -3,6 +3,7 @@ from time import time
 
 from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.cache import cache
 
@@ -229,4 +230,19 @@ class AuthService:
 
         cache.delete(f"reset_verify:{data['reset_verify_id']}")
         cache.delete(f'reset_lock:{email}')
+
+    @staticmethod
+    def refresh_token(data):
+        try:
+            token = RefreshToken(data)
+            user_id = token['user_id']
+            User.objects.get(id=user_id)
+            
+            return token
+
+        except TokenError:
+            raise ValidationError({'detail': 'Invalid refresh token'})
+
+        except User.DoesNotExist:
+            raise ValidationError({'detail': 'User does not exist'})
 
