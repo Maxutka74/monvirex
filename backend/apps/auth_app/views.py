@@ -1,6 +1,7 @@
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -204,7 +205,11 @@ class RefreshTokenView(APIView):
         refresh_token = request.COOKIES.get('refresh_token')
         if not refresh_token:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        refresh_token_new = AuthService.refresh_token(refresh_token)
+
+        try:
+            refresh_token_new = AuthService.refresh_token(refresh_token)
+        except ValidationError:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         response = Response({
             'message': 'Reset token successfully'

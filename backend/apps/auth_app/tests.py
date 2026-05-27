@@ -30,16 +30,19 @@ class AuthServiceTest(TestCase):
         cache.clear()
 
     def _register_and_confirm_user(self):
-        reg_id = AuthService.register(self.register_data)
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
         code = cache.get(f'reg:{reg_id}')['code']
         return AuthService.confirm_register({'reg_id': reg_id, 'code': code})
 
     def _register_and_get_reset_id(self):
-        return AuthService.reset_password({'email': self.register_data['email']})
+        result =  AuthService.reset_password({'email': self.register_data['email']})
+        return result['reset_id']
 
 
     def test_register_success(self):
-        reg_id = AuthService.register(self.register_data)
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
 
         self.assertIsNotNone(reg_id)
         self.assertIsNotNone(cache.get(f'reg:{reg_id}'))
@@ -51,11 +54,27 @@ class AuthServiceTest(TestCase):
         self.assertIsNotNone(first_result_reg_id)
 
         second_result_reg_id = AuthService.register(self.register_data)
-        self.assertIsNone(second_result_reg_id)
+        self.assertEqual(second_result_reg_id['reg_id'], first_result_reg_id['reg_id'])
 
+    def test_resend_register_code(self):
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
+
+        first_result_reg_id = AuthService.resend_register_code({'reg_id': reg_id})
+        self.assertIsNotNone(first_result_reg_id)
+
+        second_result_reg_id = AuthService.resend_register_code({'reg_id': reg_id})
+        self.assertEqual(second_result_reg_id['reg_id'], first_result_reg_id['reg_id'])
+
+    def test_resend_register_code_expired(self):
+        with self.assertRaises(ValidationError) as e:
+            AuthService.resend_register_code({'reg_id': '43t3g3ge-sdcd43t34-rf3342r4767-r784635'})
+
+        self.assertIn('Code has expired', str(e.exception.detail))
 
     def test_confirm_register_success(self):
-        reg_id = AuthService.register(self.register_data)
+        result = AuthService.register(self.register_data)
+        reg_id = result['reg_id']
         data_cache = cache.get(f'reg:{reg_id}')
         code = data_cache['code']
 
@@ -67,7 +86,8 @@ class AuthServiceTest(TestCase):
 
 
     def test_confirm_register_wrong_code(self):
-        reg_id = AuthService.register(self.register_data)
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
 
         with self.assertRaises(ValidationError) as e:
             AuthService.confirm_register({'reg_id': reg_id, 'code': '000000'})
@@ -76,7 +96,8 @@ class AuthServiceTest(TestCase):
 
 
     def test_confirm_register_expired(self):
-        reg_id = AuthService.register(self.register_data)
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
         code = cache.get(f'reg:{reg_id}')['code']
 
         with self.assertRaises(ValidationError) as e:
@@ -106,7 +127,7 @@ class AuthServiceTest(TestCase):
             'password': "Test123456!"
         })
 
-        self.assertIn('Email or Password is incorrect', str(e.exception.detail))
+        self.assertIn('Invalid credentials', str(e.exception.detail))
 
 
     def test_login_wrong_email(self):
@@ -118,19 +139,20 @@ class AuthServiceTest(TestCase):
             'password': "Test1234!"
         })
 
-        self.assertIn('Email or Password is incorrect', str(e.exception.detail))
+        self.assertIn('Invalid credentials', str(e.exception.detail))
 
 
     def test_reset_password_success(self):
         self._register_and_confirm_user()
         self.mock_send_email.reset_mock()
 
-        reset_id = AuthService.reset_password({
+        response = AuthService.reset_password({
             'email': "test@gmail.com",
         })
+        reset_id = response['reset_id']
+
         cached = cache.get(f'reset:{reset_id}')
 
-        self.assertIsNotNone(reset_id)
         self.assertIsNotNone(cached)
         self.mock_send_email.assert_called_once()
 
@@ -143,6 +165,26 @@ class AuthServiceTest(TestCase):
         })
 
         self.assertIn('Invalid request', str(e.exception.detail))
+
+    def test_resend_password_code(self):
+        self._register_and_confirm_user()
+
+        response = AuthService.reset_password({
+            'email': "test@gmail.com",
+        })
+        reset_id = response['reset_id']
+
+        first_result_reset_id = AuthService.resend_password_code({'reset_id': reset_id})
+        self.assertIsNotNone(first_result_reset_id)
+
+        second_result_reset_id = AuthService.resend_password_code({'reset_id': reset_id})
+        self.assertEqual(second_result_reset_id['reset_id'], first_result_reset_id['reset_id'])
+
+    def test_resend_password_code_expired(self):
+        with self.assertRaises(ValidationError) as e:
+            AuthService.resend_password_code({'reset_id': '43t3g3ge-sdcd43t34-rf3342r4767-r784635'})
+
+        self.assertIn('Code has expired', str(e.exception.detail))
 
 
     def test_confirm_reset_password_success(self):
@@ -178,6 +220,21 @@ class AuthServiceTest(TestCase):
         })
         self.assertIsNone(res)
 
+    def test_refresh_token_success(self):
+        user, refresh = self._register_and_confirm_user()
+
+        new_token = AuthService.refresh_token(str(refresh))
+
+        self.assertIsNotNone(new_token)
+        self.assertIsNotNone(new_token.access_token)
+        self.assertEqual(new_token['user_id'], user.id)
+
+    def test_refresh_token_invalid(self):
+        with self.assertRaises(ValidationError) as e:
+            AuthService.refresh_token(str('43t3g3ge-sdcd43t34-rf3342r4767-r784635'))
+
+        self.assertIn('Invalid refresh token', str(e.exception.detail))
+
 
 class AuthServiceApiTest(TestCase):
 
@@ -203,10 +260,14 @@ class AuthServiceApiTest(TestCase):
         reg_id = register_response.data['reg_id']
         code = cache.get(f'reg:{reg_id}')['code']
 
-        self.client.post('/api/auth/verify-email/', data={
+        confirm_response = self.client.post('/api/auth/verify-email/', data={
         'reg_id': reg_id,
         'code': code
         })
+
+        refresh = confirm_response.cookies['refresh_token'].value
+
+        return refresh
 
     def _reset_and_verify_reset_id(self):
         reset_id = self.client.post('/api/auth/reset-password/', data={
@@ -243,6 +304,24 @@ class AuthServiceApiTest(TestCase):
         data = {}
 
         response = self.client.post('/api/auth/register/', data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_resend_register(self):
+        register_response = self.client.post('/api/auth/register/', data=self.register_data)
+
+        first_response = self.client.post('/api/auth/resend-register-code/', data={'reg_id': register_response.data['reg_id']})
+
+        self.assertEqual(first_response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('reg_id', first_response.data)
+
+        second_response = self.client.post('/api/auth/resend-register-code/', data={'reg_id': register_response.data['reg_id']})
+
+        self.assertEqual(second_response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(second_response.data['reg_id'], first_response.data['reg_id'])
+
+    def test_resend_register_invalid(self):
+        response = self.client.post('/api/auth/resend-register-code/', data={'reg_id': '43t3g3ge-sdcd43t34-rf3342r4767-r784635'})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -341,6 +420,28 @@ class AuthServiceApiTest(TestCase):
 
         self.assertEqual(reset_id.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_resend_password(self):
+        self._register_and_confirm()
+
+        reset_id = self.client.post('/api/auth/reset-password/', data={
+            'email': self.register_data['email']
+        })
+
+        first_response = self.client.post('/api/auth/resend-password-code/', data={'reset_id': reset_id.data['reset_id']})
+
+        self.assertEqual(first_response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('reset_id', first_response.data)
+
+        second_response = self.client.post('/api/auth/resend-password-code/', data={'reset_id': reset_id.data['reset_id']})
+
+        self.assertEqual(second_response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(second_response.data['reset_id'], first_response.data['reset_id'])
+
+    def test_resend_password_invalid(self):
+        response = self.client.post('/api/auth/resend-password-code/', data={'reset_id': '43t3g3ge-sdcd43t34-rf3342r4767-r784635'})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_reset_password_confirm(self):
         self._register_and_confirm()
         reset_verify_id = self._reset_and_verify_reset_id()
@@ -426,6 +527,27 @@ class AuthServiceApiTest(TestCase):
 
         self.assertEqual(login_response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_refresh_token(self):
+        refresh = self._register_and_confirm()
+
+        self.client.cookies['refresh_token'] = refresh
+
+        response = self.client.post('/api/auth/refresh/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.cookies['refresh_token'])
+
+
+    def test_refresh_token_invalid(self):
+        refresh = str('43t3g3ge-sdcd43t34-rf3342r4767-r784635')
+
+        self.client.cookies['refresh_token'] = refresh
+
+        response = self.client.post('/api/auth/refresh/')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
 class OAuthTest(TestCase):
 
     @patch('apps.auth_app.services.oauth_service.GoogleAuthService.google_auth')
@@ -469,7 +591,7 @@ class OAuthTest(TestCase):
         mock_telegram_auth.return_value = (user, refresh)
 
         response = self.client.post('/api/auth/telegram-login/', data={
-            'telegram_id': 12345,
+            'id': 12345,
             'first_name': 'John',
             'last_name': 'Doe',
             'auth_date': int(time.time()),
@@ -484,10 +606,10 @@ class OAuthTest(TestCase):
 
     @patch('apps.auth_app.services.oauth_service.TelegramAuthService.telegram_auth')
     def test_telegram_auth_invalid(self, mock_telegram_auth):
-        mock_telegram_auth.side_effect = ValidationError({'detail': 'Invalid hash'})
+        mock_telegram_auth.side_effect = ValidationError({'detail': 'Invalid credentials'})
 
         response = self.client.post('/api/auth/telegram-login/', data={
-            'telegram_id': 12345,
+            'id': 12345,
             'first_name': 'John',
             'last_name': 'Doe',
             'auth_date': 1710000000,
