@@ -3,6 +3,8 @@ from django.db import transaction
 from django.db.models import F
 
 from django.conf import settings
+from rest_framework.exceptions import ValidationError
+
 from apps.wallet.models import Transaction, Wallet
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -46,20 +48,24 @@ class StripePaymentService:
 
     @staticmethod
     def handle_success(session):
-        metadata = getattr(session, "metadata", None) or {}
-        transaction_id = getattr(metadata, "transaction_id", None)
-        stripe_session_id = session.id
+        response = session.to_dict()
+        metadata = response.get("metadata") or {}
+        transaction_id = metadata.get("transaction_id")
+        stripe_session_id = response.get("id")
 
         if not transaction_id:
-            return
+            raise ValidationError({"detail": "Missing transaction_id in metadata"})
 
         with transaction.atomic():
             tx = Transaction.objects.select_for_update().filter(pk=transaction_id).first()
 
-            if not tx or tx.status == 'completed':
-                return
+            if not tx:
+                raise ValidationError({"detail": "Transaction not found"})
 
             if tx.stripe_session_id != stripe_session_id:
+                raise ValidationError({"detail":"Stripe session mismatch"})
+
+            if tx.status == "completed":
                 return
 
             tx.status = 'completed'
@@ -69,14 +75,26 @@ class StripePaymentService:
             wallet.balance = F('balance') + tx.amount
             wallet.save()
 
+        return {
+            "transaction_id": transaction_id,
+            "stripe_session_id": stripe_session_id,
+            "status": tx.status
+        }
+
     @staticmethod
     def handle_failed(session):
-        metadata = getattr(session, "metadata", None) or {}
-        transaction_id = getattr(metadata, "transaction_id", None)
+        response = session.to_dict()
+        metadata = response.get("metadata") or {}
+        transaction_id = metadata.get("transaction_id")
 
         if not transaction_id:
-            return
+            raise ValidationError({"detail": "Missing transaction_id in metadata"})
 
         Transaction.objects.filter(pk=transaction_id).update(
             status='failed',
         )
+
+        return {
+            "transaction_id": transaction_id,
+            "status": "failed"
+        }

@@ -39,8 +39,6 @@ class TransactionHistoryView(APIView):
 
         return response
 
-
-
 class WalletDepositView(APIView):
     permission_classes = (IsAuthenticated,)
 
