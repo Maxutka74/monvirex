@@ -23,6 +23,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_spectacular',
+    'channels'
 ]
 
 LOCAL_APPS = [
@@ -77,7 +78,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
@@ -125,6 +127,14 @@ CELERY_BEAT_SCHEDULE = {
     'expired-pending-every-hour': {
         'task': "apps.wallet.tasks.expired_pending_transactions",
         'schedule': 3600,
+    },
+    'update-crypto-currency-every-day': {
+        'task': "apps.assets.tasks.sync_assets_task",
+        'schedule': 86400,
+    },
+    'update-crypto-price-every-five_minute': {
+        'task': "apps.assets.tasks.update_price_task",
+        'schedule': 300
     }
 }
 
@@ -132,3 +142,5 @@ STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')
 STRIPE_SUCCESS_URL = config('STRIPE_SUCCESS_URL', default='http://localhost:5173/success/')
 STRIPE_CANCEL_URL = config('STRIPE_CANCEL_URL', default='http://localhost:5173/cancel/')
+
+ASGI_APPLICATION = "config.asgi.application"
