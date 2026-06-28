@@ -6,11 +6,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.wallet.serializers import DepositSerializer, WithdrawSerializer, TransactionHistorySerializer
+from apps.wallet.serializers import DepositSerializer, WithdrawSerializer, TransactionHistorySerializer, \
+    CryptoWalletSerializer, CryptoTransactionHistorySerializer
 
 from apps.wallet.services.wallet_service import WalletService
 from django.conf import settings
 from apps.wallet.services.stripe_service import StripePaymentService
+from apps.wallet.services.crypto_service import CryptoWalletService
 
 
 # Create your views here.
@@ -101,3 +103,28 @@ class WalletWithdrawView(APIView):
         return response
 
 
+class PortfolioView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        portfolio = CryptoWalletService.get_portfolio(user=request.user)
+        serializer = CryptoWalletSerializer(portfolio, many=True)
+
+        response = Response({
+            "portfolio": serializer.data
+        }, status=status.HTTP_200_OK)
+
+        return response
+
+class CryptoTransactionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        crypto_transactions = CryptoWalletService.get_crypto_transaction_history(user=request.user)
+        serializer = CryptoTransactionHistorySerializer(crypto_transactions, many=True)
+
+        response = Response({
+            "transactions": serializer.data
+        }, status=status.HTTP_200_OK)
+
+        return response

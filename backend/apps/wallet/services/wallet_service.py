@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 from apps.wallet.models import Transaction, Wallet
 from apps.wallet.services.stripe_service import StripePaymentService
+from apps.notifications.services.notification_service import NotificationService
 
 
 class WalletService:
@@ -105,6 +106,9 @@ class WalletService:
 
             wallet.refresh_from_db()
             withdraw_transaction.refresh_from_db()
+
+            NotificationService.create_notification(user=user, notification_type='withdraw', title='Withdraw successful',
+                                        message=f'Your withdrawal of {amount} USD has been successfully processed.')
 
             return {
                 "transaction_id": str(withdraw_transaction.id),

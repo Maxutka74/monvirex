@@ -6,6 +6,7 @@ from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
 from apps.wallet.models import Transaction, Wallet
+from apps.notifications.services.notification_service import NotificationService
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -74,6 +75,11 @@ class StripePaymentService:
             wallet = Wallet.objects.select_for_update().get(user=tx.user)
             wallet.balance = F('balance') + tx.amount
             wallet.save()
+
+        transaction_deposit = Transaction.objects.get(id=transaction_id)
+
+        NotificationService.create_notification(user=transaction_deposit.user, notification_type='deposit', title='Deposit successful',
+                                    message=f'Your deposit of {transaction_deposit.amount} USD has been successfully added to your balance.')
 
         return {
             "transaction_id": transaction_id,
