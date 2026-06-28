@@ -34,5 +34,12 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    @property
+    def avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+
+        return 'https://res.cloudinary.com/dfpfrizds/image/upload/v1782311086/user_ev9tiw.png'
+
     def __str__(self):
         return self.email or f"Telegram user: {self.telegram_id}"

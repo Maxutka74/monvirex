@@ -1,3 +1,5 @@
+from cProfile import Profile
+
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
@@ -86,7 +88,7 @@ class ConfirmResetPasswordSerializer(serializers.Serializer):
 class ChangePasswordSerializer(serializers.Serializer):
     reset_verify_id = serializers.CharField(required=True, min_length=36, max_length=36)
     password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
-    password_confirm = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
+    password_confirm = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'confirm_password'})
 
     def validate(self, data):
         password = data.get('password')
@@ -113,4 +115,64 @@ class TelegramLoginSerializer(serializers.Serializer):
     photo_url = serializers.URLField(required=False, allow_blank=True)
     auth_date = serializers.IntegerField(required=True)
     hash = serializers.CharField(required=True, max_length=200)
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'avatar')
+
+class ProfileChangeUsernameSerializer(serializers.Serializer):
+    first_name = serializers.CharField(required=True, max_length=50, allow_blank=True)
+    last_name = serializers.CharField(required=True, max_length=50, allow_blank=True)
+
+    def validate(self, data):
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+
+        if len(first_name) < 1 or len(last_name) < 1:
+            raise serializers.ValidationError({'detail':'First name and last name cannot be empty'})
+
+        return data
+
+class ProfileDeleteSerializer(serializers.Serializer):
+    password = serializers.CharField(required=True, min_length=8, write_only=True)
+
+class ProfileAvatarSerializer(serializers.Serializer):
+    avatar = serializers.ImageField(required=True)
+
+    def validate(self, data):
+        avatar = data.get('avatar')
+
+        ALLOWED_TYPES = [
+            'image/jpeg',
+            'image/png',
+            'image/jpg',
+            'image/webp',
+        ]
+
+        size_mb = avatar.size / 1024 / 1024
+
+        if size_mb > 3:
+            raise serializers.ValidationError({'detail':'Avatar must be less than 3 MB'})
+
+        if avatar.content_type not in ALLOWED_TYPES:
+            raise serializers.ValidationError({'detail':'Avatar type must be one of {}'.format(ALLOWED_TYPES)})
+
+        return data
+
+class ProfileChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, min_length=8, write_only=True)
+    new_password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
+    new_password_confirm = serializers.CharField(min_length=8, write_only=True, required=True,
+                                             style={'input_type': 'confirm_password'})
+
+    def validate(self, data):
+        new_password = data.get('new_password')
+        new_password_confirm = data.get('new_password_confirm')
+
+        if new_password != new_password_confirm:
+            raise serializers.ValidationError({'detail': 'Passwords do not match'})
+
+        return data
+
 

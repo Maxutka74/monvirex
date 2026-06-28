@@ -1,10 +1,9 @@
 from django.urls import path
-from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.auth_app.views import RegisterView, ConfirmRegisterView, LoginView, ResetPasswordView, LogoutView, \
     ConfirmResetPasswordView, ChangePasswordView, GoogleLoginView, TelegramLoginView, ResendRegisterCodeView, \
-    ResendPasswordCodeView, RefreshTokenView
+    ResendPasswordCodeView, RefreshTokenView, ProfileView, PortfolioChangePasswordView, PortfolioAvatarView, \
+    ProfileDeleteView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -17,6 +16,10 @@ urlpatterns = [
     path('resend-password-code/', ResendPasswordCodeView.as_view(), name='resend_register_code'),
     path('verify-reset-password/', ConfirmResetPasswordView.as_view(), name='confirm_reset_password'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/avatar/', PortfolioAvatarView.as_view(), name='profile_avatar'),
+    path('profile/change-password/', PortfolioChangePasswordView.as_view(), name='profile_change_password'),
+    path('profile/delete/', ProfileDeleteView.as_view(), name='profile_delete'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('refresh/', RefreshTokenView.as_view(), name='refresh'),
 ]
