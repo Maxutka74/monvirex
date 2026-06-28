@@ -11,6 +11,8 @@ local_settings.py
 db.sqlite3
 media/
 backend/staticfiles/
+backend/avatars/
+backend/celerybeat-schedule
 
 # Docker
 .env

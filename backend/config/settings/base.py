@@ -31,6 +31,7 @@ LOCAL_APPS = [
     'apps.wallet',
     'apps.assets',
     'apps.trades',
+    'apps.notifications'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -98,6 +99,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Monvirex API',
     'DESCRIPTION': 'Trading simulation platform',
     'VERSION': '1.0.0',
+    'COMPONENT_SPLIT_REQUEST': True
 }
 
 AUTH_USER_MODEL = 'auth_app.User'
