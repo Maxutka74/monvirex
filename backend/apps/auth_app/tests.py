@@ -1,11 +1,16 @@
 import time
+from io import BytesIO
 from unittest.mock import patch
 
+from PIL import Image
 from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db.models import Model
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.test import APIClient
 
 from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.models import User
@@ -624,3 +629,201 @@ class OAuthTest(TestCase):
         self.assertNotIn('refresh_token', response.cookies)
 
         mock_telegram_auth.assert_called_once()
+
+class ProfileServiceApiTest(TestCase):
+
+    def setUp(self):
+        patched = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patched.start()
+        self.addCleanup(patched.stop)
+
+        self.client = APIClient()
+
+        self.register_data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test@gmail.com',
+            'password': 'Test1234!',
+            'password_confirm': 'Test1234!'
+        }
+
+        self.user = self._register_and_confirm_user(self.register_data)
+
+    def _create_valid_image(self):
+        file = BytesIO()
+        image = Image.new('RGB', (100, 100), color='red')
+        image.save(file, 'JPEG')
+        file.seek(0)
+
+        return SimpleUploadedFile(
+            name='avatar.jpg',
+            content=file.read(),
+            content_type='image/jpeg'
+        )
+
+    def _create_invalid_image(self):
+        file = BytesIO()
+        image = Image.new('RGB', (100, 100), color='red')
+        image.save(file, 'GIF')
+        file.seek(0)
+
+        return SimpleUploadedFile(
+            name='avatar.jpg',
+            content=file.read(),
+            content_type='image/gif'
+        )
+
+    def _register_and_confirm_user(self, register_data):
+        response = AuthService.register(register_data)
+        reg_id = response['reg_id']
+        code = cache.get(f'reg:{reg_id}')['code']
+        user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
+        return user
+
+    def _auth(self):
+        refresh = RefreshToken.for_user(self.user)
+        self.client.cookies['access_token'] = str(refresh.access_token)
+
+    def test_get_profile_success(self):
+        self._auth()
+
+        response = self.client.get('/api/auth/profile/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn( 'first_name', response.data[self.user.email])
+
+    def test_get_profile_unauthorized(self):
+        response = self.client.get('/api/auth/profile/')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_profile_success(self):
+        self._auth()
+
+        response = self.client.patch('/api/auth/profile/', data={'first_name': 'Maxx', 'last_name': 'Volt'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[self.user.email]['first_name'], 'Maxx')
+        self.assertEqual(response.data[self.user.email]['last_name'], 'Volt')
+
+    def test_update_profile_empty_first_name(self):
+        self._auth()
+
+        response = self.client.patch('/api/auth/profile/', data={'first_name': '', 'last_name': 'Volt'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'][0], 'First name and last name cannot be empty')
+
+    def test_update_profile_empty_last_name(self):
+        self._auth()
+        response = self.client.patch('/api/auth/profile/', data={'first_name': 'Maxx', 'last_name': ''}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'][0], 'First name and last name cannot be empty')
+
+    def test_upload_avatar_success(self):
+        self._auth()
+        avatar = self._create_valid_image()
+
+        response = self.client.patch('/api/auth/profile/avatar/', data={'avatar': avatar}, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.avatar)
+        self.assertIn('.webp', self.user.avatar.name)
+
+    def test_upload_avatar_invalid_type(self):
+        self._auth()
+        avatar = self._create_invalid_image()
+
+        response = self.client.patch('/api/auth/profile/avatar/', data={'avatar': avatar}, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'][0], "Avatar type must be one of ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']")
+
+    def test_delete_avatar_success(self):
+        self._auth()
+        avatar = self._create_valid_image()
+
+        response = self.client.patch('/api/auth/profile/avatar/', data={'avatar': avatar}, format='multipart')
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response_delete_avatar = self.client.delete('/api/auth/profile/avatar/')
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(response_delete_avatar.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(self.user.avatar)
+
+    def test_change_password_success(self):
+        self._auth()
+
+        login_data = {
+            'email': 'test@gmail.com',
+            'password': 'Test2007'
+        }
+
+        change_password = {
+            'old_password': 'Test1234!',
+            'new_password': 'Test2007',
+            'new_password_confirm': 'Test2007',
+        }
+
+        response = self.client.post('/api/auth/profile/change-password/', data=change_password, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Password changed successfully')
+
+        response_login = self.client.post('/api/auth/login/', data=login_data, format='json')
+
+        self.assertEqual(response_login.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_login.data['message'], 'Login successful')
+
+    def test_change_password_wrong_old_password(self):
+        self._auth()
+
+        change_password = {
+            'old_password': 'Test1234!4242',
+            'new_password': 'Test2007',
+            'new_password_confirm': 'Test2007',
+        }
+
+        response = self.client.post('/api/auth/profile/change-password/', data=change_password, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'], 'Invalid credentials')
+
+    def test_change_password_confirm_not_match(self):
+        self._auth()
+
+        change_password = {
+            'old_password': 'Test1234!',
+            'new_password': 'Test200711',
+            'new_password_confirm': 'Test2007',
+        }
+
+        response = self.client.post('/api/auth/profile/change-password/', data=change_password, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['detail'][0], 'Passwords do not match')
+
+    def test_delete_profile_success(self):
+        self._auth()
+
+        response = self.client.post('/api/auth/profile/delete/', data={'password': 'Test1234!'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(User.objects.filter(id=self.user.id).exists())
+
+    def test_delete_profile_wrong_password(self):
+        self._auth()
+
+        response = self.client.post('/api/auth/profile/delete/', data={'password': 'Test1234252!'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(User.objects.filter(id=self.user.id).exists())
+        self.assertEqual(response.data['detail'], 'Invalid credentials')
