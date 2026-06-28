@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from assets.models import Asset
+from apps.assets.models import Asset
 
 
 # Register your models here.
