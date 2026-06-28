@@ -1,3 +1,4 @@
+from unittest import mock
 from unittest.mock import patch
 
 from django.core.cache import cache
@@ -10,7 +11,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.auth_app.services.auth_service import AuthService
 from apps.wallet.models import Wallet, Transaction
 from apps.wallet.services.wallet_service import WalletService
-from wallet.services.stripe_service import StripePaymentService
+from apps.assets.models import Asset
+from apps.trades.services.trade_service import TradeService
+from apps.wallet.services.stripe_service import StripePaymentService
+from wallet.services.crypto_service import CryptoWalletService
 
 
 # Create your tests here.
@@ -19,8 +23,11 @@ class WalletServiceTest(TestCase):
 
     def setUp(self):
         patches = patch('apps.wallet.services.stripe_service.StripePaymentService.create_checkout_session')
+        patches_two = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches_two.start()
         self.mock_create_checkout_session = patches.start()
         self.addCleanup(patches.stop)
+        self.addCleanup(patches_two.stop)
         self.mock_create_checkout_session.return_value = "https://checkout.test/session_123"
 
         self.register_data = {
@@ -155,6 +162,10 @@ class WalletServiceTest(TestCase):
 class StripeServiceTest(TestCase):
 
     def setUp(self):
+        patches = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
         self.register_data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -265,10 +276,84 @@ class StripeServiceTest(TestCase):
 
         self.assertEqual(e.exception.detail["detail"], "Missing transaction_id in metadata")
 
+class CryptoWalletServiceTest(TestCase):
+    def setUp(self):
+        patches = mock.patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
+        self.register_data_first_user = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.register_data_other_user = {
+            'first_name': 'Maxx',
+            'last_name': 'Vagov',
+            'email': 'test2@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.first_user = self._register_and_confirm_user(self.register_data_first_user)
+        self.other_user = self._register_and_confirm_user(self.register_data_other_user)
+
+        wallet = Wallet.objects.get(user=self.first_user)
+        wallet.balance = 20000
+        wallet.save()
+
+        wallet = Wallet.objects.get(user=self.other_user)
+        wallet.balance = 20000
+        wallet.save()
+
+        self.asset_btc = Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0, volume_24h=0)
+        self.asset_eth = Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0, volume_24h=0)
+
+    def _register_and_confirm_user(self, register_data):
+        response = AuthService.register(register_data)
+        reg_id = response['reg_id']
+        code = cache.get(f'reg:{reg_id}')['code']
+        user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
+        return user
+
+    def test_get_portfolio_returns_user_holdings(self):
+        TradeService.buy(self.first_user, 'BTCUSDT', 5000)
+        TradeService.buy(self.other_user, 'ETHUSDT', 5000)
+
+        portfolio = CryptoWalletService.get_portfolio(user=self.first_user)
+
+        self.assertEqual(portfolio.count(), 1)
+        self.assertEqual(portfolio.first().asset.symbol, 'BTCUSDT')
+        self.assertEqual(portfolio.first().user, self.first_user)
+
+    def test_get_portfolio_empty(self):
+
+        portfolio = CryptoWalletService.get_portfolio(user=self.first_user)
+        self.assertEqual(portfolio.count(), 0)
+
+    def test_get_crypto_transaction_history(self):
+        TradeService.buy(self.first_user, 'BTCUSDT', 5000)
+        TradeService.buy(self.first_user, 'ETHUSDT', 10000)
+
+        history = CryptoWalletService.get_crypto_transaction_history(user=self.first_user)
+
+        self.assertEqual(history.count(), 2)
+        self.assertEqual(history.first().asset,'ETHUSDT')
+
+    def test_get_crypto_transaction_history_empty(self):
+
+        history = CryptoWalletService.get_crypto_transaction_history(user=self.first_user)
+
+        self.assertEqual(history.count(), 0)
 
 class WalletServiceApiTest(APITestCase):
 
     def setUp(self):
+        patches = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
         self.register_data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -413,3 +498,127 @@ class WalletServiceApiTest(APITestCase):
         })
 
         self.assertEqual(response.status_code, 401)
+
+class PortfolioApiTest(APITestCase):
+
+    def setUp(self):
+        patches = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
+        self.register_data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.user = self._register_and_confirm_user()
+        wallet = Wallet.objects.get(user=self.user)
+        wallet.balance = 20000
+        wallet.save()
+
+        self.asset_btc = Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0, volume_24h=0)
+        self.asset_eth = Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0, volume_24h=0)
+
+    def _register_and_confirm_user(self):
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
+        code = cache.get(f'reg:{reg_id}')['code']
+        user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
+        return user
+
+    def test_portfolio_api(self):
+        TradeService.buy(self.user, 'BTCUSDT', 1000)
+
+        refresh = RefreshToken.for_user(self.user)
+        access_token = str(refresh.access_token)
+
+        self.client.cookies['access_token'] = access_token
+
+        response = self.client.get('/api/payment/portfolio/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('current_value', response.data['portfolio'][0])
+
+    def test_portfolio_api_empty(self):
+        refresh = RefreshToken.for_user(self.user)
+        access_token = str(refresh.access_token)
+
+        self.client.cookies['access_token'] = access_token
+
+        response = self.client.get('/api/payment/portfolio/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['portfolio'], [])
+
+    def test_portfolio_api_unauthorized(self):
+
+        response = self.client.get('/api/payment/portfolio/')
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
+
+class CryptoTransactionApiTest(APITestCase):
+    def setUp(self):
+        patches = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
+        self.register_data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.user = self._register_and_confirm_user()
+        wallet = Wallet.objects.get(user=self.user)
+        wallet.balance = 20000
+        wallet.save()
+
+        self.asset_btc = Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0,
+                                              volume_24h=0)
+        self.asset_eth = Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0,
+                                              volume_24h=0)
+
+    def _register_and_confirm_user(self):
+        response = AuthService.register(self.register_data)
+        reg_id = response['reg_id']
+        code = cache.get(f'reg:{reg_id}')['code']
+        user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
+        return user
+
+    def test_crypto_transactions_api(self):
+        TradeService.buy(self.user, 'BTCUSDT', 1000)
+        TradeService.buy(self.user, 'ETHUSDT', 1000)
+
+        refresh = RefreshToken.for_user(user=self.user)
+        access_token = str(refresh.access_token)
+
+        self.client.cookies['access_token'] = access_token
+
+        response = self.client.get('/api/payment/crypto_transactions/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['transactions'][0]['asset'], 'ETHUSDT')
+        self.assertEqual(response.data['transactions'][1]['asset'], 'BTCUSDT')
+
+    def test_crypto_transactions_api_empty(self):
+
+        refresh = RefreshToken.for_user(user=self.user)
+        access_token = str(refresh.access_token)
+
+        self.client.cookies['access_token'] = access_token
+
+        response = self.client.get('/api/payment/crypto_transactions/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['transactions'], [])
+
+    def test_crypto_transactions_api_unauthorized(self):
+
+        response = self.client.get('/api/payment/crypto_transactions/')
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
