@@ -1,18 +1,22 @@
 import stripe
+from django.conf import settings
 from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.wallet.serializers import DepositSerializer, WithdrawSerializer, TransactionHistorySerializer, \
-    CryptoWalletSerializer, CryptoTransactionHistorySerializer
-
-from apps.wallet.services.wallet_service import WalletService
-from django.conf import settings
-from apps.wallet.services.stripe_service import StripePaymentService
+from apps.wallet.serializers import (
+    CryptoTransactionHistorySerializer,
+    CryptoWalletSerializer,
+    DepositSerializer,
+    TransactionHistorySerializer,
+    WithdrawSerializer,
+)
 from apps.wallet.services.crypto_service import CryptoWalletService
+from apps.wallet.services.stripe_service import StripePaymentService
+from apps.wallet.services.wallet_service import WalletService
 
 
 # Create your views here.
@@ -21,12 +25,13 @@ class WalletBalanceView(APIView):
 
     def get(self, request):
         balance = WalletService.get_balance(user=request.user)
-        response = Response({
-            'user': request.user.email,
-            'balance': str(balance)
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {'user': request.user.email, 'balance': str(balance)},
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class TransactionHistoryView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -35,11 +40,14 @@ class TransactionHistoryView(APIView):
         transactions = WalletService.get_transaction_history(user=request.user)
         serializer = TransactionHistorySerializer(transactions, many=True)
 
-        response = Response({
-            'transactions': serializer.data,
-        })
+        response = Response(
+            {
+                'transactions': serializer.data,
+            }
+        )
 
         return response
+
 
 class WalletDepositView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -48,14 +56,22 @@ class WalletDepositView(APIView):
     def post(self, request):
         serializer = DepositSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        deposit_service = WalletService.deposit(user=request.user, amount=serializer.validated_data['amount'], idempotency_key=serializer.validated_data['idempotency_key'])
+        deposit_service = WalletService.deposit(
+            user=request.user,
+            amount=serializer.validated_data['amount'],
+            idempotency_key=serializer.validated_data['idempotency_key'],
+        )
 
-        response = Response({
-            'transaction_id': deposit_service['transaction_id'],
-            'checkout_url': deposit_service['checkout_url'],
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'transaction_id': deposit_service['transaction_id'],
+                'checkout_url': deposit_service['checkout_url'],
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class StripeWebhookView(APIView):
     permission_classes = (AllowAny,)
@@ -66,9 +82,7 @@ class StripeWebhookView(APIView):
 
         try:
             event = stripe.Webhook.construct_event(
-                payload,
-                sign_header,
-                settings.STRIPE_WEBHOOK_SECRET
+                payload, sign_header, settings.STRIPE_WEBHOOK_SECRET
             )
         except Exception:
             return HttpResponse(status=400)
@@ -78,11 +92,12 @@ class StripeWebhookView(APIView):
 
         elif event['type'] in [
             'payment_intent.payment_failed',
-            'payment_intent.requires_payment_method'
+            'payment_intent.requires_payment_method',
         ]:
             StripePaymentService.handle_failed(event['data']['object'])
 
         return HttpResponse(status=200)
+
 
 class WalletWithdrawView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -91,14 +106,21 @@ class WalletWithdrawView(APIView):
     def post(self, request):
         serializer = WithdrawSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        withdraw_service = WalletService.withdraw(user=request.user, amount=serializer.validated_data['amount'], idempotency_key=serializer.validated_data['idempotency_key'])
+        withdraw_service = WalletService.withdraw(
+            user=request.user,
+            amount=serializer.validated_data['amount'],
+            idempotency_key=serializer.validated_data['idempotency_key'],
+        )
 
-        response = Response({
-            "transaction_id": withdraw_service['transaction_id'],
-            "status": withdraw_service['status'],
-            "amount": withdraw_service['amount'],
-            "balance_after": withdraw_service['balance_after']
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'transaction_id': withdraw_service['transaction_id'],
+                'status': withdraw_service['status'],
+                'amount': withdraw_service['amount'],
+                'balance_after': withdraw_service['balance_after'],
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
 
@@ -110,21 +132,22 @@ class PortfolioView(APIView):
         portfolio = CryptoWalletService.get_portfolio(user=request.user)
         serializer = CryptoWalletSerializer(portfolio, many=True)
 
-        response = Response({
-            "portfolio": serializer.data
-        }, status=status.HTTP_200_OK)
+        response = Response({'portfolio': serializer.data}, status=status.HTTP_200_OK)
 
         return response
+
 
 class CryptoTransactionView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        crypto_transactions = CryptoWalletService.get_crypto_transaction_history(user=request.user)
+        crypto_transactions = CryptoWalletService.get_crypto_transaction_history(
+            user=request.user
+        )
         serializer = CryptoTransactionHistorySerializer(crypto_transactions, many=True)
 
-        response = Response({
-            "transactions": serializer.data
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {'transactions': serializer.data}, status=status.HTTP_200_OK
+        )
 
         return response

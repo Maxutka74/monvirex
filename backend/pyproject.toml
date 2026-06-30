@@ -1,0 +1,26 @@
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    "migrations",
+    ".venv",
+    "venv",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"config/settings/local.py" = ["F403", "F405"]
+"config/settings/prod.py" = ["F403", "F405"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "auto"

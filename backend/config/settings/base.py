@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -19,19 +20,15 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = [
-    'rest_framework',
-    'corsheaders',
-    'drf_spectacular',
-    'channels'
-]
+THIRD_PARTY_APPS = ['rest_framework', 'corsheaders', 'drf_spectacular', 'channels']
 
 LOCAL_APPS = [
     'apps.auth_app',
     'apps.wallet',
     'apps.assets',
     'apps.trades',
-    'apps.notifications'
+    'apps.notifications',
+    'apps.admin_panel',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -68,7 +65,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.'
+             'UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
@@ -99,7 +97,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Monvirex API',
     'DESCRIPTION': 'Trading simulation platform',
     'VERSION': '1.0.0',
-    'COMPONENT_SPLIT_REQUEST': True
+    'COMPONENT_SPLIT_REQUEST': True,
 }
 
 AUTH_USER_MODEL = 'auth_app.User'
@@ -107,16 +105,16 @@ AUTH_USER_MODEL = 'auth_app.User'
 COOKIE_SECURE = False
 SENDGRID_API_KEY = config('SENDGRID_API_KEY')
 EMAIL_FROM = config('EMAIL_FROM')
-GOOGLE_CLIENT_ID=config('GOOGLE_CLIENT_ID')
-TELEGRAM_BOT_TOKEN=config('TELEGRAM_BOT_TOKEN')
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
+TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
 
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
     }
 }
 
@@ -127,22 +125,24 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'expired-pending-every-hour': {
-        'task': "apps.wallet.tasks.expired_pending_transactions",
+        'task': 'apps.wallet.tasks.expired_pending_transactions',
         'schedule': 3600,
     },
     'update-crypto-currency-every-day': {
-        'task': "apps.assets.tasks.sync_assets_task",
+        'task': 'apps.assets.tasks.sync_assets_task',
         'schedule': 86400,
     },
     'update-crypto-price-every-five_minute': {
-        'task': "apps.assets.tasks.update_price_task",
-        'schedule': 300
-    }
+        'task': 'apps.assets.tasks.update_price_task',
+        'schedule': 300,
+    },
 }
 
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')
-STRIPE_SUCCESS_URL = config('STRIPE_SUCCESS_URL', default='http://localhost:5173/success/')
+STRIPE_SUCCESS_URL = config(
+    'STRIPE_SUCCESS_URL', default='http://localhost:5173/success/'
+)
 STRIPE_CANCEL_URL = config('STRIPE_CANCEL_URL', default='http://localhost:5173/cancel/')
 
-ASGI_APPLICATION = "config.asgi.application"
+ASGI_APPLICATION = 'config.asgi.application'

@@ -1,15 +1,19 @@
-from rest_framework import status, filters
+from rest_framework import filters, status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.assets.serializers import AssetListSerializer, AssetDetailSerializer, AssetKlineSerializer
-from apps.assets.service.binance.service import AssetService
-from apps.assets.selectors import AssetSelector
-from apps.assets.service.binance.validators import validate_symbol, validate_interval
 from apps.assets.pagination import AssetsPagination
+from apps.assets.selectors import AssetSelector
+from apps.assets.serializers import (
+    AssetDetailSerializer,
+    AssetKlineSerializer,
+    AssetListSerializer,
+)
+from apps.assets.service.binance.service import AssetService
+from apps.assets.service.binance.validators import validate_interval, validate_symbol
 
 
 # Create your views here.
@@ -19,10 +23,17 @@ class AssetListView(ListAPIView):
     pagination_class = AssetsPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ['symbol', 'name']
-    ordering_fields = ['current_price', 'price_change_24h', 'volume_24h', 'symbol', 'name']
+    ordering_fields = [
+        'current_price',
+        'price_change_24h',
+        'volume_24h',
+        'symbol',
+        'name',
+    ]
 
     def get_queryset(self):
         return AssetSelector.get_assets()
+
 
 class AssetDetailView(APIView):
     permission_classes = (AllowAny,)
@@ -33,16 +44,14 @@ class AssetDetailView(APIView):
         asset = AssetSelector.get_asset(symbol=symbol)
 
         if not asset:
-            raise NotFound({"detail": "Not found"})
+            raise NotFound({'detail': 'Not found'})
 
         serializer = AssetDetailSerializer(asset)
 
-        response = Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
+        response = Response(serializer.data, status=status.HTTP_200_OK)
 
         return response
+
 
 class AssetKlinesView(APIView):
     permission_classes = (AllowAny,)
@@ -57,9 +66,6 @@ class AssetKlinesView(APIView):
 
         serializer = AssetKlineSerializer(klines, many=True)
 
-        response = Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
+        response = Response(serializer.data, status=status.HTTP_200_OK)
 
         return response

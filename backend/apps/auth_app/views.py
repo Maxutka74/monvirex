@@ -1,20 +1,32 @@
-
 from drf_spectacular.utils import extend_schema
-from rest_framework import status, response
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.auth_app.serializers import RegisterSerializer, LoginSerializer, ConfirmRegisterSerializer, \
-    ResetPasswordSerializer, ConfirmResetPasswordSerializer, ChangePasswordSerializer, GoogleLoginSerializer, \
-    TelegramLoginSerializer, ResendRegisterSerializer, ResendPasswordSerializer, ProfileSerializer, \
-    ProfileChangeUsernameSerializer, ProfileDeleteSerializer, ProfileChangePasswordSerializer, ProfileAvatarSerializer
+from apps.auth_app.serializers import (
+    ChangePasswordSerializer,
+    ConfirmRegisterSerializer,
+    ConfirmResetPasswordSerializer,
+    GoogleLoginSerializer,
+    LoginSerializer,
+    ProfileAvatarSerializer,
+    ProfileChangePasswordSerializer,
+    ProfileChangeUsernameSerializer,
+    ProfileDeleteSerializer,
+    ProfileSerializer,
+    RegisterSerializer,
+    ResendPasswordSerializer,
+    ResendRegisterSerializer,
+    ResetPasswordSerializer,
+    TelegramLoginSerializer,
+)
 from apps.auth_app.services.auth_service import AuthService
-from apps.auth_app.utils.cookies import set_auth_cookies, delete_auth_cookies
 from apps.auth_app.services.oauth_service import GoogleAuthService, TelegramAuthService
 from apps.auth_app.services.profile_service import ProfileService
+from apps.auth_app.utils.cookies import delete_auth_cookies, set_auth_cookies
 
 
 # Create your views here.
@@ -27,14 +39,17 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         reset_data = AuthService.register(serializer.validated_data)
 
-        response = Response({
-            "message": f"Verification code sent to your email",
-            "reg_id": reset_data['reg_id'],
-            "email": reset_data['email'],
-            "expires_at": reset_data['expires_at']
-
-        }, status=status.HTTP_202_ACCEPTED)
+        response = Response(
+            {
+                'message': 'Verification code sent to your email',
+                'reg_id': reset_data['reg_id'],
+                'email': reset_data['email'],
+                'expires_at': reset_data['expires_at'],
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
         return response
+
 
 class ResendRegisterCodeView(APIView):
     permission_classes = (AllowAny,)
@@ -45,13 +60,15 @@ class ResendRegisterCodeView(APIView):
         serializer.is_valid(raise_exception=True)
         reset_data = AuthService.resend_register_code(serializer.validated_data)
 
-        response = Response({
-            "message": f"Verification code sent to your email",
-            "reg_id": reset_data['reg_id'],
-            "email": reset_data['email'],
-            "expires_at": reset_data['expires_at']
-
-        }, status=status.HTTP_202_ACCEPTED)
+        response = Response(
+            {
+                'message': 'Verification code sent to your email',
+                'reg_id': reset_data['reg_id'],
+                'email': reset_data['email'],
+                'expires_at': reset_data['expires_at'],
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
         return response
 
 
@@ -64,17 +81,19 @@ class ConfirmRegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user, refresh = AuthService.confirm_register(data=serializer.validated_data)
 
-        response = Response({
-            "message": "User created successfully",
-            "data": {
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "email": user.email
-            }
-        }, status=status.HTTP_201_CREATED)
+        response = Response(
+            {
+                'message': 'User created successfully',
+                'data': {
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'email': user.email,
+                },
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
         return set_auth_cookies(response, refresh)
-
 
 
 class LoginView(APIView):
@@ -88,11 +107,10 @@ class LoginView(APIView):
 
         remembre_me = serializer.validated_data['remember_me']
 
-        response = Response({
-            "message": "Login successful"
-        }, status=status.HTTP_200_OK)
+        response = Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
 
         return set_auth_cookies(response, refresh, remembre_me)
+
 
 class GoogleLoginView(APIView):
     permission_classes = (AllowAny,)
@@ -103,11 +121,15 @@ class GoogleLoginView(APIView):
         serializer.is_valid(raise_exception=True)
         user, refresh = GoogleAuthService.google_auth(serializer.validated_data)
 
-        response = Response({
-            'message': 'User authenticated successfully',
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'message': 'User authenticated successfully',
+            },
+            status=status.HTTP_200_OK,
+        )
 
-        return set_auth_cookies(response,refresh, remember_me=True)
+        return set_auth_cookies(response, refresh, remember_me=True)
+
 
 class TelegramLoginView(APIView):
     permission_classes = (AllowAny,)
@@ -118,11 +140,14 @@ class TelegramLoginView(APIView):
         serializer.is_valid(raise_exception=True)
         user, refresh = TelegramAuthService.telegram_auth(serializer.validated_data)
 
-        response = Response({
-            'message': 'User authenticated successfully',
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'message': 'User authenticated successfully',
+            },
+            status=status.HTTP_200_OK,
+        )
 
-        return set_auth_cookies(response,refresh, remember_me=True)
+        return set_auth_cookies(response, refresh, remember_me=True)
 
 
 class ResetPasswordView(APIView):
@@ -134,14 +159,18 @@ class ResetPasswordView(APIView):
         serializer.is_valid(raise_exception=True)
         reset_data = AuthService.reset_password(serializer.validated_data)
 
-        response = Response({
-            "message": "Reset password code sent to your email",
-            "reset_id": reset_data['reset_id'],
-            'email': reset_data['email'],
-            'expires_at': reset_data['expires_at']
-        }, status=status.HTTP_202_ACCEPTED)
+        response = Response(
+            {
+                'message': 'Reset password code sent to your email',
+                'reset_id': reset_data['reset_id'],
+                'email': reset_data['email'],
+                'expires_at': reset_data['expires_at'],
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
 
         return response
+
 
 class ResendPasswordCodeView(APIView):
     permission_classes = (AllowAny,)
@@ -152,15 +181,17 @@ class ResendPasswordCodeView(APIView):
         serializer.is_valid(raise_exception=True)
         reset_data = AuthService.resend_password_code(serializer.validated_data)
 
-        response = Response({
-            "message": "Reset password code sent to your email",
-            "reset_id": reset_data['reset_id'],
-            'email': reset_data['email'],
-            'expires_at': reset_data['expires_at']
-        }, status=status.HTTP_202_ACCEPTED)
+        response = Response(
+            {
+                'message': 'Reset password code sent to your email',
+                'reset_id': reset_data['reset_id'],
+                'email': reset_data['email'],
+                'expires_at': reset_data['expires_at'],
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
 
         return response
-
 
 
 class ConfirmResetPasswordView(APIView):
@@ -172,12 +203,13 @@ class ConfirmResetPasswordView(APIView):
         serializer.is_valid(raise_exception=True)
         reset_verify_id = AuthService.confirm_reset_password(serializer.validated_data)
 
-        response = Response({
-            'message': 'Reset code confirmed',
-            'reset_verify_id': reset_verify_id
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {'message': 'Reset code confirmed', 'reset_verify_id': reset_verify_id},
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class ChangePasswordView(APIView):
     permission_classes = (AllowAny,)
@@ -188,11 +220,15 @@ class ChangePasswordView(APIView):
         serializer.is_valid(raise_exception=True)
         AuthService.change_password(serializer.validated_data)
 
-        response = Response({
-            "message": "Password changed successfully",
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'message': 'Password changed successfully',
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -202,13 +238,16 @@ class ProfileView(APIView):
         profile = ProfileService.get_profile(user=request.user)
         serializer = ProfileSerializer(profile)
 
-        response = Response({
-            request.user.email: {
-                'first_name': serializer.data['first_name'],
-                'last_name': serializer.data['last_name'],
-                'avatar': request.user.avatar_url
-            }
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                request.user.email: {
+                    'first_name': serializer.data['first_name'],
+                    'last_name': serializer.data['last_name'],
+                    'avatar': request.user.avatar_url,
+                }
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
 
@@ -216,17 +255,22 @@ class ProfileView(APIView):
     def patch(self, request):
         serializer = ProfileChangeUsernameSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        first_name, last_name = ProfileService.patch_profile(user = request.user, first_name=serializer.validated_data['first_name'], last_name=serializer.validated_data['last_name'])
+        first_name, last_name = ProfileService.patch_profile(
+            user=request.user,
+            first_name=serializer.validated_data['first_name'],
+            last_name=serializer.validated_data['last_name'],
+        )
 
-        response = Response({
-            "message": "Change your data successfully",
-            request.user.email: {
-                'first_name': first_name,
-                'last_name': last_name
-            }
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'message': 'Change your data successfully',
+                request.user.email: {'first_name': first_name, 'last_name': last_name},
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class ProfileDeleteView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -235,12 +279,14 @@ class ProfileDeleteView(APIView):
     def post(self, request):
         serializer = ProfileDeleteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        ProfileService.delete_profile(user=request.user, password=serializer.validated_data['password'])
+        ProfileService.delete_profile(
+            user=request.user, password=serializer.validated_data['password']
+        )
 
-        response = Response({
-        }, status=status.HTTP_204_NO_CONTENT)
+        response = Response({}, status=status.HTTP_204_NO_CONTENT)
 
         return response
+
 
 class PortfolioAvatarView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -250,12 +296,14 @@ class PortfolioAvatarView(APIView):
     def patch(self, request):
         serializer = ProfileAvatarSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        avatar = ProfileService.patch_profile_avatar(user=request.user, avatar=serializer.validated_data['avatar'])
+        avatar = ProfileService.patch_profile_avatar(
+            user=request.user, avatar=serializer.validated_data['avatar']
+        )
 
-        response = Response({
-            'message': 'Portfolio avatar updated successfully',
-            'avatar': avatar
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {'message': 'Portfolio avatar updated successfully', 'avatar': avatar},
+            status=status.HTTP_200_OK,
+        )
 
         return response
 
@@ -266,6 +314,7 @@ class PortfolioAvatarView(APIView):
 
         return response
 
+
 class PortfolioChangePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -273,13 +322,21 @@ class PortfolioChangePasswordView(APIView):
     def post(self, request):
         serializer = ProfileChangePasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        ProfileService.post_change_password(user=request.user, old_password=serializer.validated_data['old_password'], new_password=serializer.validated_data['new_password'])
+        ProfileService.post_change_password(
+            user=request.user,
+            old_password=serializer.validated_data['old_password'],
+            new_password=serializer.validated_data['new_password'],
+        )
 
-        response = Response({
-            "message": "Password changed successfully",
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'message': 'Password changed successfully',
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class LogoutView(APIView):
     permission_classes = (AllowAny,)
@@ -288,6 +345,7 @@ class LogoutView(APIView):
         response = Response(status=status.HTTP_204_NO_CONTENT)
 
         return delete_auth_cookies(response)
+
 
 class RefreshTokenView(APIView):
     permission_classes = (AllowAny,)
@@ -302,8 +360,8 @@ class RefreshTokenView(APIView):
         except ValidationError:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        response = Response({
-            'message': 'Reset token successfully'
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {'message': 'Reset token successfully'}, status=status.HTTP_200_OK
+        )
 
         return set_auth_cookies(response, refresh_token_new)

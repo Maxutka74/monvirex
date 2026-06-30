@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -42,4 +43,4 @@ class User(AbstractUser):
         return 'https://res.cloudinary.com/dfpfrizds/image/upload/v1782311086/user_ev9tiw.png'
 
     def __str__(self):
-        return self.email or f"Telegram user: {self.telegram_id}"
+        return self.email or f'Telegram user: {self.telegram_id}'

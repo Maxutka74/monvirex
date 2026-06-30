@@ -8,27 +8,30 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.auth_app.services.auth_service import AuthService
-from apps.wallet.models import Wallet, Transaction
-from apps.wallet.services.wallet_service import WalletService
 from apps.assets.models import Asset
+from apps.auth_app.services.auth_service import AuthService
 from apps.trades.services.trade_service import TradeService
+from apps.wallet.models import Transaction, Wallet
 from apps.wallet.services.stripe_service import StripePaymentService
+from apps.wallet.services.wallet_service import WalletService
 from wallet.services.crypto_service import CryptoWalletService
-
 
 # Create your tests here.
 
-class WalletServiceTest(TestCase):
 
+class WalletServiceTest(TestCase):
     def setUp(self):
-        patches = patch('apps.wallet.services.stripe_service.StripePaymentService.create_checkout_session')
+        patches = patch(
+            'apps.wallet.services.stripe_service.StripePaymentService.create_checkout_session'
+        )
         patches_two = patch('apps.auth_app.tasks.send_email.apply_async')
         self.mock_send_email = patches_two.start()
         self.mock_create_checkout_session = patches.start()
         self.addCleanup(patches.stop)
         self.addCleanup(patches_two.stop)
-        self.mock_create_checkout_session.return_value = "https://checkout.test/session_123"
+        self.mock_create_checkout_session.return_value = (
+            'https://checkout.test/session_123'
+        )
 
         self.register_data = {
             'first_name': 'John',
@@ -43,7 +46,6 @@ class WalletServiceTest(TestCase):
         code = cache.get(f'reg:{reg_id}')['code']
         user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
         return user
-
 
     def test_get_balance(self):
         user = self._register_and_confirm_user()
@@ -64,8 +66,12 @@ class WalletServiceTest(TestCase):
     def test_get_transaction_history(self):
         user = self._register_and_confirm_user()
 
-        t1 = Transaction.objects.create(user=user, transaction_type='deposit', amount=100)
-        t2 = Transaction.objects.create(user=user, transaction_type='withdraw', amount=50)
+        t1 = Transaction.objects.create(
+            user=user, transaction_type='deposit', amount=100
+        )
+        t2 = Transaction.objects.create(
+            user=user, transaction_type='withdraw', amount=50
+        )
 
         transaction_history = WalletService.get_transaction_history(user)
 
@@ -75,19 +81,15 @@ class WalletServiceTest(TestCase):
         self.assertEqual(transaction_history[0], t2)
         self.assertEqual(transaction_history[1], t1)
 
-
     def test_deposit_success(self):
         user = self._register_and_confirm_user()
 
         response = WalletService.deposit(user, 150)
 
-        self.assertIn('transaction_id' ,response)
+        self.assertIn('transaction_id', response)
         self.assertIn('checkout_url', response)
 
-        self.assertEqual(
-            response['checkout_url'],
-            "https://checkout.test/session_123"
-        )
+        self.assertEqual(response['checkout_url'], 'https://checkout.test/session_123')
 
         self.mock_create_checkout_session.assert_called_once()
 
@@ -97,12 +99,14 @@ class WalletServiceTest(TestCase):
         key = 'test-key'
 
         first_response = WalletService.deposit(user, 150, idempotency_key=key)
-        second_response = WalletService.deposit(user, 150 , idempotency_key=key)
+        second_response = WalletService.deposit(user, 150, idempotency_key=key)
 
         self.assertIsNotNone(first_response)
         self.assertIsNotNone(second_response)
 
-        self.assertEqual(second_response['transaction_id'], first_response['transaction_id'])
+        self.assertEqual(
+            second_response['transaction_id'], first_response['transaction_id']
+        )
 
         self.mock_create_checkout_session.assert_called_once()
 
@@ -125,12 +129,11 @@ class WalletServiceTest(TestCase):
 
         response = WalletService.withdraw(user, 150)
 
-        self.assertIn('transaction_id' ,response)
+        self.assertIn('transaction_id', response)
 
         self.assertEqual(response['balance_after'], '50.00')
 
         self.assertEqual(response['status'], 'completed')
-
 
     def test_withdraw_insufficient_balance(self):
         user = self._register_and_confirm_user()
@@ -160,7 +163,6 @@ class WalletServiceTest(TestCase):
 
 
 class StripeServiceTest(TestCase):
-
     def setUp(self):
         patches = patch('apps.auth_app.tasks.send_email.apply_async')
         self.mock_send_email = patches.start()
@@ -183,20 +185,23 @@ class StripeServiceTest(TestCase):
     def test_handle_success(self):
         user = self._register_and_confirm_user()
 
-        tx = Transaction.objects.create(user=user, transaction_type='deposit', amount=100, stripe_session_id="sess_123")
+        tx = Transaction.objects.create(
+            user=user,
+            transaction_type='deposit',
+            amount=100,
+            stripe_session_id='sess_123',
+        )
         tx.save()
 
         wallet = Wallet.objects.get(user=user)
         wallet.balance = 200
         wallet.save()
 
-        session = type("obj", (), {})()
-        session.id = "sess_123"
+        session = type('obj', (), {})()
+        session.id = 'sess_123'
         session.to_dict = lambda: {
-            "id": "sess_123",
-            "metadata": {
-                "transaction_id": str(tx.id)
-            }
+            'id': 'sess_123',
+            'metadata': {'transaction_id': str(tx.id)},
         }
 
         StripePaymentService.handle_success(session)
@@ -209,72 +214,69 @@ class StripeServiceTest(TestCase):
         self.assertEqual(tx.stripe_session_id, session.id)
 
     def test_handle_success_transaction_not_found(self):
-        session = type("obj", (), {})()
-        session.id = "sess_123"
+        session = type('obj', (), {})()
+        session.id = 'sess_123'
         session.to_dict = lambda: {
-            "id": "sess_123",
-            "metadata": {
-                "transaction_id": "3fa00f11-5717-1111-b3fc-2c963f66afa5"
-            }
+            'id': 'sess_123',
+            'metadata': {'transaction_id': '3fa00f11-5717-1111-b3fc-2c963f66afa5'},
         }
 
         with self.assertRaises(ValidationError) as e:
             StripePaymentService.handle_success(session)
 
-        self.assertEqual(e.exception.detail["detail"], "Transaction not found")
+        self.assertEqual(e.exception.detail['detail'], 'Transaction not found')
 
     def test_handle_success_session_mismatch(self):
         user = self._register_and_confirm_user()
 
-        tx = Transaction.objects.create(user=user, transaction_type='deposit', amount=100, stripe_session_id="sess")
+        tx = Transaction.objects.create(
+            user=user, transaction_type='deposit', amount=100, stripe_session_id='sess'
+        )
         tx.save()
         tx.refresh_from_db()
 
-        session = type("obj", (), {})()
-        session.id = "sess_123"
+        session = type('obj', (), {})()
+        session.id = 'sess_123'
         session.to_dict = lambda: {
-            "id": "sess_123",
-            "metadata": {
-                "transaction_id": tx.id
-            }
+            'id': 'sess_123',
+            'metadata': {'transaction_id': tx.id},
         }
 
         with self.assertRaises(ValidationError) as e:
             StripePaymentService.handle_success(session)
 
-        self.assertEqual(e.exception.detail["detail"], "Stripe session mismatch")
+        self.assertEqual(e.exception.detail['detail'], 'Stripe session mismatch')
 
     def test_stripe_handle_failed_success(self):
         user = self._register_and_confirm_user()
 
-        tx = Transaction.objects.create(user=user, transaction_type='deposit', amount=100, status='pending')
+        tx = Transaction.objects.create(
+            user=user, transaction_type='deposit', amount=100, status='pending'
+        )
         tx.save()
 
-        session = type("obj", (), {})()
-        session.to_dict = lambda: {
-            "metadata": {
-                "transaction_id": tx.id
-            }
-        }
+        session = type('obj', (), {})()
+        session.to_dict = lambda: {'metadata': {'transaction_id': tx.id}}
 
         result = StripePaymentService.handle_failed(session)
 
         tx.refresh_from_db()
 
         self.assertEqual(tx.status, 'failed')
-        self.assertEqual(result["status"], 'failed')
-        self.assertEqual(result["transaction_id"], tx.id)
+        self.assertEqual(result['status'], 'failed')
+        self.assertEqual(result['transaction_id'], tx.id)
 
     def test_handle_failed_missing_transaction_id(self):
-        session = type("obj", (), {})()
-        session.to_dict = lambda: {
-            "metadata": {}
-        }
+        session = type('obj', (), {})()
+        session.to_dict = lambda: {'metadata': {}}
 
         with self.assertRaises(ValidationError) as e:
             StripePaymentService.handle_failed(session)
 
-        self.assertEqual(e.exception.detail["detail"], "Missing transaction_id in metadata")
+        self.assertEqual(
+            e.exception.detail['detail'], 'Missing transaction_id in metadata'
+        )
+
 
 class CryptoWalletServiceTest(TestCase):
     def setUp(self):
@@ -307,8 +309,20 @@ class CryptoWalletServiceTest(TestCase):
         wallet.balance = 20000
         wallet.save()
 
-        self.asset_btc = Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0, volume_24h=0)
-        self.asset_eth = Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0, volume_24h=0)
+        self.asset_btc = Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            current_price=50000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        self.asset_eth = Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            current_price=2000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
 
     def _register_and_confirm_user(self, register_data):
         response = AuthService.register(register_data)
@@ -336,19 +350,23 @@ class CryptoWalletServiceTest(TestCase):
         TradeService.buy(self.first_user, 'BTCUSDT', 5000)
         TradeService.buy(self.first_user, 'ETHUSDT', 10000)
 
-        history = CryptoWalletService.get_crypto_transaction_history(user=self.first_user)
+        history = CryptoWalletService.get_crypto_transaction_history(
+            user=self.first_user
+        )
 
         self.assertEqual(history.count(), 2)
-        self.assertEqual(history.first().asset,'ETHUSDT')
+        self.assertEqual(history.first().asset, 'ETHUSDT')
 
     def test_get_crypto_transaction_history_empty(self):
 
-        history = CryptoWalletService.get_crypto_transaction_history(user=self.first_user)
+        history = CryptoWalletService.get_crypto_transaction_history(
+            user=self.first_user
+        )
 
         self.assertEqual(history.count(), 0)
 
-class WalletServiceApiTest(APITestCase):
 
+class WalletServiceApiTest(APITestCase):
     def setUp(self):
         patches = patch('apps.auth_app.tasks.send_email.apply_async')
         self.mock_send_email = patches.start()
@@ -395,8 +413,12 @@ class WalletServiceApiTest(APITestCase):
 
         self.client.cookies['access_token'] = access_token
 
-        Transaction.objects.create(user=user, transaction_type='deposit', amount=100, stripe_session_id="sess1")
-        Transaction.objects.create(user=user, transaction_type='deposit', amount=200, stripe_session_id="sess2")
+        Transaction.objects.create(
+            user=user, transaction_type='deposit', amount=100, stripe_session_id='sess1'
+        )
+        Transaction.objects.create(
+            user=user, transaction_type='deposit', amount=200, stripe_session_id='sess2'
+        )
 
         response = self.client.get('/api/payment/transactions/')
 
@@ -417,10 +439,13 @@ class WalletServiceApiTest(APITestCase):
 
         self.client.cookies['access_token'] = access_token
 
-        response = self.client.post('/api/payment/deposit/', data={
-          "idempotency_key": "3fa85f64-0027-4562-b3fc-2c963f66afa6",
-          "amount": 195.4
-        })
+        response = self.client.post(
+            '/api/payment/deposit/',
+            data={
+                'idempotency_key': '3fa85f64-0027-4562-b3fc-2c963f66afa6',
+                'amount': 195.4,
+            },
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('transaction_id', response.data)
@@ -434,19 +459,28 @@ class WalletServiceApiTest(APITestCase):
 
         self.client.cookies['access_token'] = access_token
 
-        response = self.client.post('/api/payment/deposit/', data={
-          "idempotency_key": "3fa85f64-0027-4562-b3fc-2c963f66afa6",
-          "amount": "-100"
-        })
+        response = self.client.post(
+            '/api/payment/deposit/',
+            data={
+                'idempotency_key': '3fa85f64-0027-4562-b3fc-2c963f66afa6',
+                'amount': '-100',
+            },
+        )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data['amount'][0], "Ensure this value is greater than or equal to 0.01.")
+        self.assertEqual(
+            response.data['amount'][0],
+            'Ensure this value is greater than or equal to 0.01.',
+        )
 
     def test_deposit_unauthorized_api(self):
-        response = self.client.post('/api/payment/deposit/', data={
-          "idempotency_key": "3fa85f64-0027-4562-b3fc-2c963f66afa6",
-          "amount": "100"
-        })
+        response = self.client.post(
+            '/api/payment/deposit/',
+            data={
+                'idempotency_key': '3fa85f64-0027-4562-b3fc-2c963f66afa6',
+                'amount': '100',
+            },
+        )
 
         self.assertEqual(response.status_code, 401)
 
@@ -462,10 +496,13 @@ class WalletServiceApiTest(APITestCase):
         wallet.balance = 200
         wallet.save()
 
-        response = self.client.post('/api/payment/withdraw/', data={
-          "idempotency_key": "3fa85f64-1831-4562-b3fc-2c963f66afa6",
-          "amount": "25"
-        })
+        response = self.client.post(
+            '/api/payment/withdraw/',
+            data={
+                'idempotency_key': '3fa85f64-1831-4562-b3fc-2c963f66afa6',
+                'amount': '25',
+            },
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('transaction_id', response.data)
@@ -483,24 +520,30 @@ class WalletServiceApiTest(APITestCase):
         wallet.balance = 200
         wallet.save()
 
-        response = self.client.post('/api/payment/withdraw/', data={
-          "idempotency_key": "3fa85f64-1831-4562-b3fc-2c963f66afa6",
-          "amount": "250"
-        })
+        response = self.client.post(
+            '/api/payment/withdraw/',
+            data={
+                'idempotency_key': '3fa85f64-1831-4562-b3fc-2c963f66afa6',
+                'amount': '250',
+            },
+        )
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['detail'], 'Insufficient balance')
 
     def test_withdraw_unauthorized_api(self):
-        response = self.client.post('/api/payment/withdraw/', data={
-          "idempotency_key": "3fa85f64-1831-4562-b3fc-2c963f66afa6",
-          "amount": "25"
-        })
+        response = self.client.post(
+            '/api/payment/withdraw/',
+            data={
+                'idempotency_key': '3fa85f64-1831-4562-b3fc-2c963f66afa6',
+                'amount': '25',
+            },
+        )
 
         self.assertEqual(response.status_code, 401)
 
-class PortfolioApiTest(APITestCase):
 
+class PortfolioApiTest(APITestCase):
     def setUp(self):
         patches = patch('apps.auth_app.tasks.send_email.apply_async')
         self.mock_send_email = patches.start()
@@ -518,8 +561,20 @@ class PortfolioApiTest(APITestCase):
         wallet.balance = 20000
         wallet.save()
 
-        self.asset_btc = Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0, volume_24h=0)
-        self.asset_eth = Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0, volume_24h=0)
+        self.asset_btc = Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            current_price=50000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        self.asset_eth = Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            current_price=2000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
 
     def _register_and_confirm_user(self):
         response = AuthService.register(self.register_data)
@@ -557,7 +612,10 @@ class PortfolioApiTest(APITestCase):
         response = self.client.get('/api/payment/portfolio/')
 
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
+        self.assertEqual(
+            response.data['detail'], 'Authentication credentials were not provided.'
+        )
+
 
 class CryptoTransactionApiTest(APITestCase):
     def setUp(self):
@@ -577,10 +635,20 @@ class CryptoTransactionApiTest(APITestCase):
         wallet.balance = 20000
         wallet.save()
 
-        self.asset_btc = Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0,
-                                              volume_24h=0)
-        self.asset_eth = Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0,
-                                              volume_24h=0)
+        self.asset_btc = Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            current_price=50000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        self.asset_eth = Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            current_price=2000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
 
     def _register_and_confirm_user(self):
         response = AuthService.register(self.register_data)
@@ -621,4 +689,6 @@ class CryptoTransactionApiTest(APITestCase):
         response = self.client.get('/api/payment/crypto_transactions/')
 
         self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
+        self.assertEqual(
+            response.data['detail'], 'Authentication credentials were not provided.'
+        )

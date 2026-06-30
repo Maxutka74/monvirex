@@ -4,10 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.notifications.services.notification_service import NotificationService
-
-from apps.notifications.serializer import NotificationSerializer
 from apps.notifications.pagination import NotificationPagination
+from apps.notifications.serializer import NotificationSerializer
+from apps.notifications.services.notification_service import NotificationService
 
 
 # Create your views here.
@@ -25,20 +24,27 @@ class NotificationListView(APIView):
 
         return paginator.get_paginated_response(serializer.data)
 
+
 class NotificationMarkAsReadView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def patch(self, request, notification_id):
-        notification = NotificationService.mark_as_read(user=request.user, notification_id=notification_id)
-        
-        if not notification:
-            raise Http404("Notification not found")
+        notification = NotificationService.mark_as_read(
+            user=request.user, notification_id=notification_id
+        )
 
-        response = Response({
-            'message': 'Message read',
-        }, status=status.HTTP_200_OK)
+        if not notification:
+            raise Http404('Notification not found')
+
+        response = Response(
+            {
+                'message': 'Message read',
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class NotificationMarkAllAsReadView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -46,12 +52,16 @@ class NotificationMarkAllAsReadView(APIView):
     def patch(self, request):
         notification_count = NotificationService.mark_all_as_read(user=request.user)
 
-        response = Response({
-            'message': 'All read',
-            'updated_count': notification_count,
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'message': 'All read',
+                'updated_count': notification_count,
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response
+
 
 class NotificationUnreadCountView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -59,8 +69,11 @@ class NotificationUnreadCountView(APIView):
     def get(self, request):
         notifications_count = NotificationService.get_unread_count(user=request.user)
 
-        response = Response({
-            'unread_count': notifications_count,
-        }, status=status.HTTP_200_OK)
+        response = Response(
+            {
+                'unread_count': notifications_count,
+            },
+            status=status.HTTP_200_OK,
+        )
 
         return response

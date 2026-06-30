@@ -5,14 +5,13 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.auth_app.services.auth_service import AuthService
-from apps.wallet.models import Wallet, Transaction, CryptoTransaction
 from apps.assets.models import Asset
+from apps.auth_app.services.auth_service import AuthService
+from apps.wallet.models import CryptoTransaction, Transaction, Wallet
 
 
 # Create your tests here.
 class PermissionsApiTest(APITestCase):
-
     def setUp(self):
         patches = patch('apps.auth_app.tasks.send_email.apply_async')
         self.mock_send_email = patches.start()
@@ -64,6 +63,7 @@ class PermissionsApiTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+
 class AdminApiTest(APITestCase):
     def setUp(self):
         patches = patch('apps.auth_app.tasks.send_email.apply_async')
@@ -98,10 +98,20 @@ class AdminApiTest(APITestCase):
         Wallet.objects.filter(user=self.user_one).update(balance=10000)
         Wallet.objects.filter(user=self.user_two).update(balance=80000)
 
-        Asset.objects.create(symbol='BTCUSDT', name='BTC', current_price=50000, price_change_24h=0,
-                                              volume_24h=0)
-        Asset.objects.create(symbol='ETHUSDT', name='ETH', current_price=2000, price_change_24h=0,
-                                              volume_24h=0)
+        Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            current_price=50000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            current_price=2000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
 
     def _register_and_confirm_user(self, data):
         response = AuthService.register(data)
@@ -143,19 +153,33 @@ class AdminApiTest(APITestCase):
         refresh = RefreshToken.for_user(self.user_admin)
         self.client.cookies['access_token'] = str(refresh.access_token)
 
-        response_one = self.client.patch(f'/api/admin-panel/users/{self.user_one.id}/toggle-active/')
+        response_one = self.client.patch(
+            f'/api/admin-panel/users/{self.user_one.id}/toggle-active/'
+        )
 
         self.assertEqual(response_one.status_code, status.HTTP_200_OK)
         self.assertEqual(response_one.data['is_active'], False)
 
-        response_two = self.client.patch(f'/api/admin-panel/users/{self.user_one.id}/toggle-active/')
+        response_two = self.client.patch(
+            f'/api/admin-panel/users/{self.user_one.id}/toggle-active/'
+        )
 
         self.assertEqual(response_two.status_code, status.HTTP_200_OK)
         self.assertEqual(response_two.data['is_active'], True)
 
     def test_users_transactions(self):
-        first_transaction = Transaction.objects.create(user=self.user_one, transaction_type='deposit', amount='1000', status='completed')
-        second_transaction = Transaction.objects.create(user=self.user_two, transaction_type='deposit', amount='10040', status='completed')
+        first_transaction = Transaction.objects.create(
+            user=self.user_one,
+            transaction_type='deposit',
+            amount='1000',
+            status='completed',
+        )
+        second_transaction = Transaction.objects.create(
+            user=self.user_two,
+            transaction_type='deposit',
+            amount='10040',
+            status='completed',
+        )
 
         refresh = RefreshToken.for_user(self.user_admin)
         self.client.cookies['access_token'] = str(refresh.access_token)
@@ -168,8 +192,22 @@ class AdminApiTest(APITestCase):
         self.assertEqual(response.data['results'][1]['id'], str(first_transaction.id))
 
     def test_users_crypto_transactions(self):
-        first_transaction = CryptoTransaction.objects.create(user=self.user_one, asset='BTCUSDT', usdt_amount=1000, crypto_amount=0.0001, transaction_type='buy', status='completed')
-        second_transaction = CryptoTransaction.objects.create(user=self.user_two, asset='ETHUSDT', usdt_amount=1200, crypto_amount=0.01, transaction_type='buy', status='completed')
+        first_transaction = CryptoTransaction.objects.create(
+            user=self.user_one,
+            asset='BTCUSDT',
+            usdt_amount=1000,
+            crypto_amount=0.0001,
+            transaction_type='buy',
+            status='completed',
+        )
+        second_transaction = CryptoTransaction.objects.create(
+            user=self.user_two,
+            asset='ETHUSDT',
+            usdt_amount=1200,
+            crypto_amount=0.01,
+            transaction_type='buy',
+            status='completed',
+        )
 
         refresh = RefreshToken.for_user(self.user_admin)
         self.client.cookies['access_token'] = str(refresh.access_token)
@@ -185,12 +223,16 @@ class AdminApiTest(APITestCase):
         refresh = RefreshToken.for_user(self.user_admin)
         self.client.cookies['access_token'] = str(refresh.access_token)
 
-        response_one = self.client.patch('/api/admin-panel/assets/BTCUSDT/toggle-active/')
+        response_one = self.client.patch(
+            '/api/admin-panel/assets/BTCUSDT/toggle-active/'
+        )
 
         self.assertEqual(response_one.status_code, status.HTTP_200_OK)
         self.assertEqual(response_one.data['is_active'], False)
 
-        response_two = self.client.patch('/api/admin-panel/assets/BTCUSDT/toggle-active/')
+        response_two = self.client.patch(
+            '/api/admin-panel/assets/BTCUSDT/toggle-active/'
+        )
 
         self.assertEqual(response_two.status_code, status.HTTP_200_OK)
         self.assertEqual(response_two.data['is_active'], True)
@@ -207,9 +249,20 @@ class AdminApiTest(APITestCase):
         mock_sync_assets_task.delay.assert_called_once()
 
     def test_stats(self):
-        Transaction.objects.create(user=self.user_one, transaction_type='deposit', amount='1000', status='completed')
-        CryptoTransaction.objects.create(user=self.user_one, asset='BTCUSDT', usdt_amount=1000, crypto_amount=0.0001,
-                                         transaction_type='buy', status='completed')
+        Transaction.objects.create(
+            user=self.user_one,
+            transaction_type='deposit',
+            amount='1000',
+            status='completed',
+        )
+        CryptoTransaction.objects.create(
+            user=self.user_one,
+            asset='BTCUSDT',
+            usdt_amount=1000,
+            crypto_amount=0.0001,
+            transaction_type='buy',
+            status='completed',
+        )
 
         refresh = RefreshToken.for_user(self.user_admin)
         self.client.cookies['access_token'] = str(refresh.access_token)
@@ -221,8 +274,3 @@ class AdminApiTest(APITestCase):
         self.assertEqual(response.data['total_wallet_balance'], '90000.00')
         self.assertEqual(response.data['total_transactions_24h'], 1)
         self.assertEqual(response.data['total_crypto_transaction_24h'], 1)
-
-
-
-
-

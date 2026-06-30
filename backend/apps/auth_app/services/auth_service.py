@@ -2,19 +2,19 @@ import logging
 from time import time
 
 from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.core.cache import cache
 
-from apps.auth_app.tasks import send_email
-from apps.auth_app.utils.otp import generate_otp, generate_id
 from apps.auth_app.models import User
+from apps.auth_app.tasks import send_email
+from apps.auth_app.utils.otp import generate_id, generate_otp
 
 logger = logging.getLogger(__name__)
 
-class AuthService:
 
+class AuthService:
     @staticmethod
     def register(data):
         email = data['email']
@@ -28,10 +28,10 @@ class AuthService:
         expires_at = (time() + 121) * 1000
 
         user_data = {
-            "first_name": data['first_name'],
-            "last_name": data['last_name'],
-            "email": email,
-            "password": make_password(data['password']),
+            'first_name': data['first_name'],
+            'last_name': data['last_name'],
+            'email': email,
+            'password': make_password(data['password']),
         }
 
         response_data = {
@@ -40,14 +40,26 @@ class AuthService:
             'expires_at': expires_at,
         }
 
-        cache.set(f'reg:{reg_id}', {
-            'email': email,
-            'user_data': user_data,
-            'code': code,
-        }, timeout=900)
+        cache.set(
+            f'reg:{reg_id}',
+            {
+                'email': email,
+                'user_data': user_data,
+                'code': code,
+            },
+            timeout=900,
+        )
         cache.set(f'email_lock:{email}', response_data, timeout=120)
 
-        send_email.apply_async(args=[email, 'Monvirex - Email Verification Code', {'code':code}, 'auth_app/verification_email.html'], countdown=5)
+        send_email.apply_async(
+            args=[
+                email,
+                'Monvirex - Email Verification Code',
+                {'code': code},
+                'auth_app/verification_email.html',
+            ],
+            countdown=5,
+        )
 
         return response_data
 
@@ -75,14 +87,26 @@ class AuthService:
             'expires_at': expires_at,
         }
 
-        cache.set(f'reg:{reg_id}', {
-            'email': email,
-            'user_data': user_data,
-            'code': code,
-        }, timeout=900)
+        cache.set(
+            f'reg:{reg_id}',
+            {
+                'email': email,
+                'user_data': user_data,
+                'code': code,
+            },
+            timeout=900,
+        )
         cache.set(f'email_lock:{email}', response_data, timeout=120)
 
-        send_email.apply_async(args=[email, 'Monvirex - Email Verification Code', {'code':code}, 'auth_app/verification_email.html'], countdown=5)
+        send_email.apply_async(
+            args=[
+                email,
+                'Monvirex - Email Verification Code',
+                {'code': code},
+                'auth_app/verification_email.html',
+            ],
+            countdown=5,
+        )
 
         return response_data
 
@@ -105,7 +129,7 @@ class AuthService:
 
         refresh = RefreshToken.for_user(user=user)
 
-        cache.delete(f"reg:{data['reg_id']}")
+        cache.delete(f'reg:{data["reg_id"]}')
         cache.delete(f'email_lock:{user.email}')
 
         return user, refresh
@@ -115,7 +139,7 @@ class AuthService:
         user = User.objects.filter(email=data['email']).first()
 
         if not user or not user.check_password(data['password']):
-            logger.warning(f"Failed login attempt for: {data['email']}")
+            logger.warning(f'Failed login attempt for: {data["email"]}')
             raise ValidationError({'detail': 'Invalid credentials'})
 
         refresh = RefreshToken.for_user(user=user)
@@ -134,25 +158,33 @@ class AuthService:
         code = generate_otp()
         expires_at = (time() + 121) * 1000
 
-        response_data = {
-            'reset_id': reset_id,
-            'email': email,
-            'expires_at': expires_at
-        }
+        response_data = {'reset_id': reset_id, 'email': email, 'expires_at': expires_at}
 
         try:
             User.objects.get(email=email)
-            cache.set(f'reset:{reset_id}', {
-                'email': email,
-                'code': code,
-            }, timeout=900)
+            cache.set(
+                f'reset:{reset_id}',
+                {
+                    'email': email,
+                    'code': code,
+                },
+                timeout=900,
+            )
             cache.set(f'reset_lock:{email}', response_data, timeout=120)
 
         except User.DoesNotExist:
-            logger.warning(f"Password reset requested for non-existing email: {email}")
+            logger.warning(f'Password reset requested for non-existing email: {email}')
             raise ValidationError({'detail': 'Invalid request'})
 
-        send_email.apply_async(args=[email, 'Monvirex - Скидання пароля', {'code': code}, 'auth_app/reset_password_email.html'], countdown=5)
+        send_email.apply_async(
+            args=[
+                email,
+                'Monvirex - Скидання пароля',
+                {'code': code},
+                'auth_app/reset_password_email.html',
+            ],
+            countdown=5,
+        )
 
         return response_data
 
@@ -172,22 +204,22 @@ class AuthService:
         code = generate_otp()
         expires_at = (time() + 121) * 1000
 
-        response_data = {
-            'reset_id': reset_id,
-            'email': email,
-            'expires_at': expires_at
-        }
+        response_data = {'reset_id': reset_id, 'email': email, 'expires_at': expires_at}
 
-        cache.set(f'reset:{reset_id}', {
-            'email': email,
-            'code': code
-        })
+        cache.set(f'reset:{reset_id}', {'email': email, 'code': code})
         cache.set(f'reset_lock:{email}', response_data, timeout=120)
 
-        send_email.apply_async(args=[email, 'Monvirex - Скидання пароля', {'code': code}, 'auth_app/reset_password_email.html'], countdown=5)
+        send_email.apply_async(
+            args=[
+                email,
+                'Monvirex - Скидання пароля',
+                {'code': code},
+                'auth_app/reset_password_email.html',
+            ],
+            countdown=5,
+        )
 
         return response_data
-
 
     @staticmethod
     def confirm_reset_password(data):
@@ -205,7 +237,6 @@ class AuthService:
         reset_verify_id = generate_id()
         email = data_cache['email']
 
-
         cache.set(f'reset_verify:{reset_verify_id}', email, timeout=900)
 
         cache.delete(f'reset:{data["reset_id"]}')
@@ -214,21 +245,20 @@ class AuthService:
 
     @staticmethod
     def change_password(data):
-        email = cache.get(f"reset_verify:{data['reset_verify_id']}")
+        email = cache.get(f'reset_verify:{data["reset_verify_id"]}')
 
         if not email:
             raise ValidationError({'detail': 'Code has expired'})
 
         password = data['password']
 
-
         user = User.objects.get(email=email)
         user.set_password(password)
         user.save()
 
-        logger.info(f"Password changed for: {email}")
+        logger.info(f'Password changed for: {email}')
 
-        cache.delete(f"reset_verify:{data['reset_verify_id']}")
+        cache.delete(f'reset_verify:{data["reset_verify_id"]}')
         cache.delete(f'reset_lock:{email}')
 
     @staticmethod
@@ -237,7 +267,7 @@ class AuthService:
             token = RefreshToken(data)
             user_id = token['user_id']
             User.objects.get(id=user_id)
-            
+
             return token
 
         except TokenError:
@@ -245,4 +275,3 @@ class AuthService:
 
         except User.DoesNotExist:
             raise ValidationError({'detail': 'User does not exist'})
-

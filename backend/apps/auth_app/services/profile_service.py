@@ -1,14 +1,13 @@
 from io import BytesIO
 
-from PIL import Image, ImageOps
 from django.core.files.base import ContentFile
+from PIL import Image, ImageOps
 from rest_framework.exceptions import ValidationError
 
 from apps.auth_app.models import User
 
 
 class ProfileService:
-
     @staticmethod
     def get_profile(user):
         return User.objects.get(id=user.id)
@@ -34,10 +33,10 @@ class ProfileService:
         image = image.convert('RGB')
         image = ImageOps.fit(image, (64, 64))
 
-        buffer =BytesIO()
+        buffer = BytesIO()
         image.save(buffer, format='WEBP', quality=90, optimize=True)
 
-        file_name = f"avatar_{profile.id}.webp"
+        file_name = f'avatar_{profile.id}.webp'
         image_file = ContentFile(buffer.getvalue(), name=file_name)
 
         profile.avatar.save(file_name, image_file, save=True)
@@ -52,7 +51,6 @@ class ProfileService:
             profile.avatar.delete(save=False)
             profile.save()
 
-
     @staticmethod
     def post_change_password(user, old_password, new_password):
         profile = ProfileService.get_profile(user)
@@ -63,7 +61,6 @@ class ProfileService:
 
         profile.set_password(new_password)
         profile.save()
-
 
     @staticmethod
     def delete_profile(user, password):

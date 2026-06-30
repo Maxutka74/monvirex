@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.wallet.models import Transaction, CryptoTransaction
+from apps.wallet.models import CryptoTransaction, Transaction
 
 
 class TransactionHistorySerializer(serializers.ModelSerializer):
@@ -8,13 +8,20 @@ class TransactionHistorySerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ('id', 'transaction_type', 'amount', 'status', 'created_at')
 
+
 class DepositSerializer(serializers.Serializer):
     idempotency_key = serializers.UUIDField(required=True)
-    amount = serializers.DecimalField(required=True, max_digits=10, decimal_places=2, min_value=0.01)
+    amount = serializers.DecimalField(
+        required=True, max_digits=10, decimal_places=2, min_value=0.01
+    )
+
 
 class WithdrawSerializer(serializers.Serializer):
     idempotency_key = serializers.UUIDField(required=True)
-    amount = serializers.DecimalField(required=True, max_digits=10, decimal_places=2, min_value=0.01)
+    amount = serializers.DecimalField(
+        required=True, max_digits=10, decimal_places=2, min_value=0.01
+    )
+
 
 class CryptoWalletSerializer(serializers.Serializer):
     asset = serializers.CharField(source='asset.symbol', max_length=20)
@@ -29,7 +36,16 @@ class CryptoWalletSerializer(serializers.Serializer):
     def get_profit_loss(self, obj):
         return str(obj.profit_loss)
 
+
 class CryptoTransactionHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = CryptoTransaction
-        fields = ('id', 'asset', 'transaction_type', 'crypto_amount', 'usdt_amount', 'status', 'created_at')
+        fields = (
+            'id',
+            'asset',
+            'transaction_type',
+            'crypto_amount',
+            'usdt_amount',
+            'status',
+            'created_at',
+        )

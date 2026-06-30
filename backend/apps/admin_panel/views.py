@@ -3,9 +3,15 @@ from rest_framework.views import APIView
 
 from apps.admin_panel.pagination import AdminPagination
 from apps.admin_panel.permissions import IsAdminUser
-from apps.admin_panel.serializers import AdminUserListSerializer, AdminUserDetailSerializer, \
-    AdminUserToggleActiveSerializer, AdminUserTransactionAllSerializer, AdminUserCryptoTransactionAllSerializer, \
-    AdminAssetToggleActiveSerializer, AdminStatsSerializer
+from apps.admin_panel.serializers import (
+    AdminAssetToggleActiveSerializer,
+    AdminStatsSerializer,
+    AdminUserCryptoTransactionAllSerializer,
+    AdminUserDetailSerializer,
+    AdminUserListSerializer,
+    AdminUserToggleActiveSerializer,
+    AdminUserTransactionAllSerializer,
+)
 from apps.admin_panel.services.admin_services import AdminPanelServices
 
 
@@ -27,6 +33,7 @@ class AdminUserListView(APIView):
 
         return paginator.get_paginated_response(data=serializer.data)
 
+
 class AdminUserDetailView(APIView):
     permission_classes = (IsAdminUser,)
 
@@ -37,6 +44,7 @@ class AdminUserDetailView(APIView):
 
         return Response(serializer.data)
 
+
 class AdminUserToggleActiveView(APIView):
     permission_classes = (IsAdminUser,)
 
@@ -46,6 +54,7 @@ class AdminUserToggleActiveView(APIView):
         serializer = AdminUserToggleActiveSerializer(data)
 
         return Response(serializer.data)
+
 
 class AdminUserTransactionsAllView(APIView):
     permission_classes = (IsAdminUser,)
@@ -61,6 +70,7 @@ class AdminUserTransactionsAllView(APIView):
 
         return paginator.get_paginated_response(serializer.data)
 
+
 class AdminUserCryptoTransactionsAllView(APIView):
     permission_classes = (IsAdminUser,)
     pagination_classes = AdminPagination
@@ -75,6 +85,7 @@ class AdminUserCryptoTransactionsAllView(APIView):
 
         return paginator.get_paginated_response(serializer.data)
 
+
 class AdminAssetToggleActiveView(APIView):
     permission_classes = (IsAdminUser,)
 
@@ -84,6 +95,7 @@ class AdminAssetToggleActiveView(APIView):
         serializer = AdminAssetToggleActiveSerializer(data)
 
         return Response(serializer.data)
+
 
 class AdminSyncAssetView(APIView):
     permission_classes = (IsAdminUser,)

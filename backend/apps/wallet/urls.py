@@ -1,7 +1,14 @@
 from django.urls import path
 
-from apps.wallet.views import WalletDepositView, WalletWithdrawView, WalletBalanceView, TransactionHistoryView, \
-    StripeWebhookView, PortfolioView, CryptoTransactionView
+from apps.wallet.views import (
+    CryptoTransactionView,
+    PortfolioView,
+    StripeWebhookView,
+    TransactionHistoryView,
+    WalletBalanceView,
+    WalletDepositView,
+    WalletWithdrawView,
+)
 
 urlpatterns = [
     path('balance/', WalletBalanceView.as_view(), name='balance'),
@@ -10,5 +17,9 @@ urlpatterns = [
     path('stripe/webhook/', StripeWebhookView.as_view(), name='stripe_webhook'),
     path('withdraw/', WalletWithdrawView.as_view(), name='withdraw'),
     path('portfolio/', PortfolioView.as_view(), name='portfolio'),
-    path('crypto_transactions/', CryptoTransactionView.as_view(), name='crypto_transactions')
+    path(
+        'crypto_transactions/',
+        CryptoTransactionView.as_view(),
+        name='crypto_transactions',
+    ),
 ]

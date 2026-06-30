@@ -1,4 +1,5 @@
 import logging
+
 from celery import shared_task
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -13,7 +14,7 @@ def send_email(email, subject, context, template_name):
         from_email=settings.EMAIL_FROM,
         to_emails=email,
         subject=subject,
-        html_content=render_to_string(template_name, context)
+        html_content=render_to_string(template_name, context),
     )
 
     try:

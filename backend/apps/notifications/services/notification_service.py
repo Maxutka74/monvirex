@@ -2,10 +2,11 @@ from apps.notifications.models import Notification
 
 
 class NotificationService:
-
     @staticmethod
     def create_notification(user, notification_type, title, message):
-        notification = Notification.objects.create(user=user, notification_type=notification_type, title=title, message=message)
+        notification = Notification.objects.create(
+            user=user, notification_type=notification_type, title=title, message=message
+        )
         return notification
 
     @staticmethod
@@ -34,4 +35,3 @@ class NotificationService:
     def get_unread_count(user):
         notifications = Notification.objects.filter(user=user, is_read=False)
         return notifications.count()
-

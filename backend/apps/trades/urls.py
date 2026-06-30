@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.trades.views import BuyView, SellView, ExchangeView
+from apps.trades.views import BuyView, ExchangeView, SellView
 
 urlpatterns = [
     path('buy/', BuyView.as_view(), name='buy'),
