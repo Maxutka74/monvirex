@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.db.models import Sum
 from django.utils import timezone
@@ -9,10 +10,16 @@ from apps.assets.tasks import sync_assets_task
 from apps.auth_app.models import User
 from apps.wallet.models import CryptoTransaction, CryptoWallet, Transaction, Wallet
 
+logger = logging.getLogger(__name__)
 
 class AdminPanelServices:
     @staticmethod
     def get_users(search=None, is_active=None):
+        logger.info(
+            "Admin requested users list search=%s is_active=%s",
+            search,
+            is_active,
+        )
         users = User.objects.all().order_by('-date_joined')
 
         if search:
@@ -25,9 +32,12 @@ class AdminPanelServices:
 
     @staticmethod
     def get_user_detail(user_id):
+        logger.info("Admin requested user detail user_id=%s", user_id)
         user = User.objects.filter(id=user_id).first()
 
         if not user:
+            logger.warning("Admin requested non-existing"
+                           " user detail user_id=%s", user_id)
             raise ValidationError('User does not exist')
 
         wallet = Wallet.objects.filter(user=user).first()
@@ -48,13 +58,24 @@ class AdminPanelServices:
 
     @staticmethod
     def toggle_user_active(user_id):
+        logger.info("Admin requested user active toggle user_id=%s", user_id)
         user = User.objects.filter(id=user_id).first()
 
         if not user:
+            logger.warning("Admin tried to toggle non-existing"
+                           " user user_id=%s", user_id)
             raise ValidationError('User does not exist')
 
+        old_status = user.is_active
         user.is_active = not user.is_active
         user.save()
+
+        logger.warning(
+            "Admin changed user active status user_id=%s old_status=%s new_status=%s",
+            user.id,
+            old_status,
+            user.is_active,
+        )
 
         return {
             'id': user.id,
@@ -64,6 +85,8 @@ class AdminPanelServices:
 
     @staticmethod
     def transaction_user_all():
+        logger.info("Admin requested all fiat transactions")
+
         all_users_transactions = []
         transactions = (
             Transaction.objects.select_related('user').all().order_by('-created_at')
@@ -85,6 +108,8 @@ class AdminPanelServices:
 
     @staticmethod
     def crypto_transaction_user_all():
+        logger.info("Admin requested all crypto transactions")
+
         all_users_crypto_transactions = []
 
         crypto_transactions = (
@@ -113,24 +138,39 @@ class AdminPanelServices:
     def toggle_asset_active(symbol):
         symbol = symbol.strip().upper()
 
-        asset = Asset.objects.get(symbol=symbol)
+        logger.info("Admin requested asset active toggle symbol=%s", symbol)
+
+        asset = Asset.objects.filter(symbol=symbol).first()
 
         if not asset:
+            logger.warning("Admin tried to toggle non-existing asset symbol=%s", symbol)
             raise ValidationError('Asset does not exist')
 
+        old_status = asset.is_active
         asset.is_active = not asset.is_active
         asset.save()
+
+        logger.warning(
+            "Admin changed asset active status symbol=%s old_status=%s new_status=%s",
+            asset.symbol,
+            old_status,
+            asset.is_active,
+        )
 
         return {'symbol': asset.symbol, 'is_active': asset.is_active}
 
     @staticmethod
     def sync_asset():
+        logger.info("Admin started assets sync task")
+
         sync_assets_task.delay()
 
         return {'message': 'Successfully sync asset'}
 
     @staticmethod
     def get_platform_stats():
+        logger.info("Admin requested platform stats")
+
         created_at = timezone.now() - datetime.timedelta(hours=24)
 
         users_count = User.objects.all().count()

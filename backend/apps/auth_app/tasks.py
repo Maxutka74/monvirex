@@ -7,9 +7,15 @@ from sendgrid import Mail, SendGridAPIClient
 
 logger = logging.getLogger(__name__)
 
-
 @shared_task
 def send_email(email, subject, context, template_name):
+    logger.info(
+        "Celery task send_email started email=%s subject=%s template=%s",
+        email,
+        subject,
+        template_name,
+    )
+
     mail = Mail(
         from_email=settings.EMAIL_FROM,
         to_emails=email,
@@ -23,3 +29,10 @@ def send_email(email, subject, context, template_name):
     except Exception as e:
         logger.error(f'Failed to send verification email to {email}: {e}')
         raise
+
+    logger.info(
+        "Celery task send_email finished successfully email=%s subject=%s template=%s",
+        email,
+        subject,
+        template_name,
+    )

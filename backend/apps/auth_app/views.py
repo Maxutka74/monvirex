@@ -27,11 +27,18 @@ from apps.auth_app.services.auth_service import AuthService
 from apps.auth_app.services.oauth_service import GoogleAuthService, TelegramAuthService
 from apps.auth_app.services.profile_service import ProfileService
 from apps.auth_app.utils.cookies import delete_auth_cookies, set_auth_cookies
+from config.throttles import (
+    LoginThrottle,
+    RegisterThrottle,
+    ResendCodeThrottle,
+    ResetPasswordThrottle,
+)
 
 
 # Create your views here.
 class RegisterView(APIView):
     permission_classes = (AllowAny,)
+    throttle_classes = [RegisterThrottle]
 
     @extend_schema(request=RegisterSerializer)
     def post(self, request):
@@ -53,6 +60,7 @@ class RegisterView(APIView):
 
 class ResendRegisterCodeView(APIView):
     permission_classes = (AllowAny,)
+    throttle_classes = [ResendCodeThrottle]
 
     @extend_schema(request=ResendRegisterSerializer)
     def post(self, request):
@@ -98,6 +106,7 @@ class ConfirmRegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = (AllowAny,)
+    throttle_classes = [LoginThrottle]
 
     @extend_schema(request=LoginSerializer)
     def post(self, request):
@@ -152,6 +161,7 @@ class TelegramLoginView(APIView):
 
 class ResetPasswordView(APIView):
     permission_classes = (AllowAny,)
+    throttle_classes = [ResetPasswordThrottle]
 
     @extend_schema(request=ResetPasswordSerializer)
     def post(self, request):
@@ -174,6 +184,7 @@ class ResetPasswordView(APIView):
 
 class ResendPasswordCodeView(APIView):
     permission_classes = (AllowAny,)
+    throttle_classes = [ResendCodeThrottle]
 
     @extend_schema(request=ResendPasswordSerializer)
     def post(self, request):

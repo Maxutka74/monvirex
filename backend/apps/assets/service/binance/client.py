@@ -1,8 +1,11 @@
+import logging
+
 import httpx
 from django.core.cache import cache
 
 from apps.assets.errors import ErrorHandler
 
+logger = logging.getLogger(__name__)
 
 class BinanceClient:
     def __init__(self):
@@ -10,12 +13,15 @@ class BinanceClient:
         self.client = httpx.Client(base_url=self.base_url, timeout=5)
 
     def get_exchange_info(self):
+        logger.info("Fetching Binance exchange info")
+
         symbols_data = []
 
         try:
             response = self.client.get('v3/exchangeInfo')
             response.raise_for_status()
         except (httpx.TimeoutException, httpx.RequestError, httpx.HTTPStatusError) as e:
+            logger.exception("Failed to fetch Binance exchange info")
             ErrorHandler.handle_httpx_error(e)
         data = response.json()
         symbols = data['symbols']
@@ -28,15 +34,23 @@ class BinanceClient:
                     }
                 )
 
+        logger.info(
+            "Fetched Binance exchange info successfully symbols_count=%s",
+            len(symbols_data),
+        )
+
         return symbols_data
 
     def get_all_tickers(self):
+        logger.info("Fetching Binance 24h tickers")
+
         tickets_data = []
 
         try:
             response = self.client.get('v3/ticker/24hr')
             response.raise_for_status()
         except (httpx.TimeoutException, httpx.RequestError, httpx.HTTPStatusError) as e:
+            logger.exception("Failed to fetch Binance 24h tickers")
             ErrorHandler.handle_httpx_error(e)
         data = response.json()
         for symbol in data:
@@ -50,9 +64,21 @@ class BinanceClient:
                     }
                 )
 
+        logger.info(
+            "Fetched Binance 24h tickers successfully tickers_count=%s",
+            len(tickets_data),
+        )
+
         return tickets_data
 
     def get_klines(self, symbol: str, interval: str, limit: int = 500):
+        logger.info(
+            "Fetching Binance klines symbol=%s interval=%s limit=%s",
+            symbol,
+            interval,
+            limit,
+        )
+
         key = f'klines:{symbol}:{interval}'
         klines_data = []
 
@@ -66,7 +92,14 @@ class BinanceClient:
             )
             response.raise_for_status()
         except (httpx.TimeoutException, httpx.RequestError, httpx.HTTPStatusError) as e:
+            logger.exception(
+                "Failed to fetch Binance klines symbol=%s interval=%s limit=%s",
+                symbol,
+                interval,
+                limit,
+            )
             ErrorHandler.handle_httpx_error(e)
+
         data = response.json()
 
         for kline in data:
@@ -82,5 +115,13 @@ class BinanceClient:
             )
 
         cache.set(key, klines_data, timeout=60 * 10)
+
+        logger.info(
+            "Fetched and cached Binance klines"
+            " successfully symbol=%s interval=%s count=%s",
+            symbol,
+            interval,
+            len(klines_data),
+        )
 
         return klines_data

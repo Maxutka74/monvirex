@@ -19,8 +19,11 @@ class AuthService:
     def register(data):
         email = data['email']
 
+        logger.info("Register requested email=%s", email)
+
         existing = cache.get(f'email_lock:{email}')
         if existing:
+            logger.info("Register email lock exists email=%s", email)
             return existing
 
         reg_id = generate_id()
@@ -61,6 +64,12 @@ class AuthService:
             countdown=5,
         )
 
+        logger.info(
+            "Registration verification email scheduled email=%s reg_id=%s",
+            email,
+            reg_id,
+        )
+
         return response_data
 
     @staticmethod
@@ -68,7 +77,10 @@ class AuthService:
         reg_id = data['reg_id']
         data_cache = cache.get(f'reg:{reg_id}')
 
+        logger.info("Resend registration code requested reg_id=%s", reg_id)
+
         if not data_cache:
+            logger.warning("Resend registration code failed expired reg_id=%s", reg_id)
             raise ValidationError({'detail': 'Code has expired'})
 
         email = data_cache['email']
@@ -108,6 +120,8 @@ class AuthService:
             countdown=5,
         )
 
+        logger.info("Registration code resent email=%s reg_id=%s", email, reg_id)
+
         return response_data
 
     @staticmethod
@@ -125,7 +139,8 @@ class AuthService:
             raise ValidationError({'detail': 'Code is not valid'})
 
         user = User.objects.create(**user_data)
-        logger.info(f'User created: {user.email}')
+        logger.info("User registered successfully"
+                    " user_id=%s email=%s", user.id, user.email)
 
         refresh = RefreshToken.for_user(user=user)
 
@@ -139,10 +154,13 @@ class AuthService:
         user = User.objects.filter(email=data['email']).first()
 
         if not user or not user.check_password(data['password']):
-            logger.warning(f'Failed login attempt for: {data["email"]}')
+            logger.warning("Failed login attempt email=%s", data['email'])
             raise ValidationError({'detail': 'Invalid credentials'})
 
         refresh = RefreshToken.for_user(user=user)
+
+        logger.info("User logged in successfully"
+                    " user_id=%s email=%s", user.id, user.email)
 
         return user, refresh
 
@@ -173,7 +191,7 @@ class AuthService:
             cache.set(f'reset_lock:{email}', response_data, timeout=120)
 
         except User.DoesNotExist:
-            logger.warning(f'Password reset requested for non-existing email: {email}')
+            logger.warning("Password reset requested for non-existing email=%s", email)
             raise ValidationError({'detail': 'Invalid request'})
 
         send_email.apply_async(
@@ -185,6 +203,9 @@ class AuthService:
             ],
             countdown=5,
         )
+
+        logger.info("Password reset email scheduled"
+                    " email=%s reset_id=%s", email, reset_id)
 
         return response_data
 
@@ -223,6 +244,9 @@ class AuthService:
 
     @staticmethod
     def confirm_reset_password(data):
+        logger.info("Reset password confirmation requested"
+                    " reset_id=%s", data['reset_id'])
+
         data_cache = cache.get(f'reset:{data["reset_id"]}')
 
         if not data_cache:
@@ -232,6 +256,7 @@ class AuthService:
         code = data['code']
 
         if code != code_check:
+            logger.warning("Invalid reset password code reset_id=%s", data['reset_id'])
             raise ValidationError({'detail': 'Code is not valid'})
 
         reset_verify_id = generate_id()
@@ -240,6 +265,8 @@ class AuthService:
         cache.set(f'reset_verify:{reset_verify_id}', email, timeout=900)
 
         cache.delete(f'reset:{data["reset_id"]}')
+
+        logger.info("Reset password confirmed email=%s", email)
 
         return reset_verify_id
 
@@ -256,7 +283,7 @@ class AuthService:
         user.set_password(password)
         user.save()
 
-        logger.info(f'Password changed for: {email}')
+        logger.info("Password changed successfully user_id=%s email=%s", user.id, email)
 
         cache.delete(f'reset_verify:{data["reset_verify_id"]}')
         cache.delete(f'reset_lock:{email}')

@@ -6,12 +6,14 @@ from rest_framework.views import APIView
 
 from apps.trades.serializers import BuySerializer, ExchangeSerializer, SellSerializer
 from apps.trades.services.trade_service import TradeService
+from config.throttles import TradeThrottle
 
 # Create your views here.
 
 
 class BuyView(APIView):
     permission_classes = (IsAuthenticated,)
+    throttle_classes = [TradeThrottle]
 
     @extend_schema(request=BuySerializer)
     def post(self, request):
@@ -36,6 +38,7 @@ class BuyView(APIView):
 
 class SellView(APIView):
     permission_classes = (IsAuthenticated,)
+    throttle_classes = [TradeThrottle]
 
     @extend_schema(request=SellSerializer)
     def post(self, request):
@@ -60,6 +63,7 @@ class SellView(APIView):
 
 class ExchangeView(APIView):
     permission_classes = (IsAuthenticated,)
+    throttle_classes = [TradeThrottle]
 
     @extend_schema(request=ExchangeSerializer)
     def post(self, request):

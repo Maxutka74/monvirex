@@ -17,6 +17,7 @@ from apps.wallet.serializers import (
 from apps.wallet.services.crypto_service import CryptoWalletService
 from apps.wallet.services.stripe_service import StripePaymentService
 from apps.wallet.services.wallet_service import WalletService
+from config.throttles import DepositThrottle
 
 
 # Create your views here.
@@ -51,6 +52,7 @@ class TransactionHistoryView(APIView):
 
 class WalletDepositView(APIView):
     permission_classes = (IsAuthenticated,)
+    throttle_classes = [DepositThrottle]
 
     @extend_schema(request=DepositSerializer)
     def post(self, request):

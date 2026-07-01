@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
@@ -5,12 +7,26 @@ from apps.assets.models import Asset
 from apps.notifications.services.notification_service import NotificationService
 from apps.wallet.models import CryptoTransaction, CryptoWallet, Wallet
 
+logger = logging.getLogger(__name__)
 
 class TradeService:
     @staticmethod
     def buy(user, symbol, amount_usdt):
+        logger.info(
+            "Buy crypto requested user_id=%s symbol=%s amount_usdt=%s",
+            user.id,
+            symbol,
+            amount_usdt,
+        )
+
         asset = Asset.objects.filter(symbol=symbol).first()
         if not asset:
+            logger.warning(
+                "Buy crypto failed asset not found user_id=%s symbol=%s",
+                user.id,
+                symbol,
+            )
+
             raise ValidationError({'detail': 'Asset not found'})
 
         price_asset = asset.current_price
@@ -19,8 +35,23 @@ class TradeService:
         with transaction.atomic():
             wallet = Wallet.objects.select_for_update().filter(user=user).first()
             if not wallet:
+                logger.warning(
+                    "Buy crypto failed wallet does not exist user_id=%s symbol=%s",
+                    user.id,
+                    symbol,
+                )
+
                 raise ValidationError({'detail': 'Wallet does not exist'})
             if wallet.balance < amount_usdt:
+                logger.warning(
+                    "Buy crypto failed insufficient balance"
+                    " user_id=%s symbol=%s balance=%s amount_usdt=%s",
+                    user.id,
+                    symbol,
+                    wallet.balance,
+                    amount_usdt,
+                )
+
                 raise ValidationError({'detail': 'Insufficient balance'})
 
             crypto_wallet, created = CryptoWallet.objects.get_or_create(
@@ -48,6 +79,17 @@ class TradeService:
                 status='completed',
             )
 
+        logger.info(
+            "Buy crypto completed user_id=%s transaction_id=%s "
+            "symbol=%s crypto_amount=%s usdt_amount=%s balance_after=%s",
+            user.id,
+            transaction_crypto.id,
+            symbol,
+            amount_crypto,
+            amount_usdt,
+            wallet.balance,
+        )
+
         NotificationService.create_notification(
             user=user,
             notification_type='buy',
@@ -71,8 +113,21 @@ class TradeService:
 
     @staticmethod
     def sell(user, symbol, amount_crypto):
+        logger.info(
+            "Sell crypto requested user_id=%s symbol=%s amount_crypto=%s",
+            user.id,
+            symbol,
+            amount_crypto,
+        )
+
         asset = Asset.objects.filter(symbol=symbol).first()
         if not asset:
+            logger.warning(
+                "Sell crypto failed asset not found user_id=%s symbol=%s",
+                user.id,
+                symbol,
+            )
+
             raise ValidationError({'detail': 'Asset not found'})
 
         amount_usdt = amount_crypto * asset.current_price
@@ -86,12 +141,35 @@ class TradeService:
             )
 
             if not wallet:
+                logger.warning(
+                    "Sell crypto failed wallet does not"
+                    " exist user_id=%s symbol=%s",
+                    user.id,
+                    symbol,
+                )
+
                 raise ValidationError({'detail': 'Wallet does not exist'})
 
             if not crypto_wallet:
+                logger.warning(
+                    "Sell crypto failed crypto wallet"
+                    " does not exist user_id=%s symbol=%s",
+                    user.id,
+                    symbol,
+                )
+
                 raise ValidationError({'detail': 'Crypto-Wallet does not exist'})
 
             if crypto_wallet.amount < amount_crypto:
+                logger.warning(
+                    "Sell crypto failed insufficient crypto"
+                    " balance user_id=%s symbol=%s wallet_amount=%s amount_crypto=%s",
+                    user.id,
+                    symbol,
+                    crypto_wallet.amount,
+                    amount_crypto,
+                )
+
                 raise ValidationError(
                     {'detail': 'Wallet balance is lower than amount crypto'}
                 )
@@ -114,6 +192,19 @@ class TradeService:
                 transaction_type='sell',
                 status='completed',
             )
+
+        logger.info(
+            "Sell crypto completed"
+            " user_id=%s transaction_id=%s symbol=%s crypto_amount=%s"
+            " usdt_amount=%s balance_after=%s remaining_amount=%s",
+            user.id,
+            transaction_crypto.id,
+            symbol,
+            amount_crypto,
+            amount_usdt,
+            wallet.balance,
+            remaining_amount,
+        )
 
         NotificationService.create_notification(
             user=user,
@@ -139,13 +230,36 @@ class TradeService:
 
     @staticmethod
     def exchange(user, from_asset, to_asset, amount_crypto):
+        logger.info(
+            "Exchange crypto requested "
+            "user_id=%s from_asset=%s to_asset=%s amount_crypto=%s",
+            user.id,
+            from_asset,
+            to_asset,
+            amount_crypto,
+        )
+
         if from_asset == to_asset:
+            logger.warning(
+                "Exchange crypto failed same assets user_id=%s asset=%s",
+                user.id,
+                from_asset,
+            )
+
             raise ValidationError({'detail': 'Asset cannot be the same'})
 
         asset_from = Asset.objects.filter(symbol=from_asset).first()
         asset_to = Asset.objects.filter(symbol=to_asset).first()
 
         if not asset_from or not asset_to:
+            logger.warning(
+                "Exchange crypto failed asset not"
+                " found user_id=%s from_asset=%s to_asset=%s",
+                user.id,
+                from_asset,
+                to_asset,
+            )
+
             raise ValidationError({'detail': 'Asset not found'})
 
         with transaction.atomic():
@@ -156,8 +270,25 @@ class TradeService:
             )
 
             if not crypto_wallet_from:
+                logger.warning(
+                    "Exchange crypto failed source crypto"
+                    " wallet does not exist user_id=%s from_asset=%s",
+                    user.id,
+                    from_asset,
+                )
+
                 raise ValidationError({'detail': 'Crypto-Wallet does not exist'})
+
             if crypto_wallet_from.amount < amount_crypto:
+                logger.warning(
+                    "Exchange crypto failed insufficient crypto balance"
+                    " user_id=%s from_asset=%s wallet_amount=%s amount_crypto=%s",
+                    user.id,
+                    from_asset,
+                    crypto_wallet_from.amount,
+                    amount_crypto,
+                )
+
                 raise ValidationError({'detail': 'Insufficient crypto balance'})
 
             crypto_wallet_to, created = (
@@ -191,6 +322,18 @@ class TradeService:
                 transaction_type='exchange',
                 status='completed',
             )
+
+        logger.info(
+            "Exchange crypto completed user_id=%s transaction_id=%s"
+            " from_asset=%s to_asset=%s amount_from=%s amount_to=%s usdt_equivalent=%s",
+            user.id,
+            transaction_crypto.id,
+            from_asset,
+            to_asset,
+            amount_crypto,
+            amount_to,
+            amount_usdt,
+        )
 
         NotificationService.create_notification(
             user=user,
