@@ -1,7 +1,7 @@
 from rest_framework import filters, status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,7 +18,7 @@ from apps.assets.service.binance.validators import validate_interval, validate_s
 
 # Create your views here.
 class AssetListView(ListAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = AssetListSerializer
     pagination_class = AssetsPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
@@ -36,7 +36,7 @@ class AssetListView(ListAPIView):
 
 
 class AssetDetailView(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, symbol):
         symbol = validate_symbol(symbol)
@@ -54,7 +54,7 @@ class AssetDetailView(APIView):
 
 
 class AssetKlinesView(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, symbol, interval, limit):
         client = AssetService()
@@ -67,5 +67,19 @@ class AssetKlinesView(APIView):
         serializer = AssetKlineSerializer(klines, many=True)
 
         response = Response(serializer.data, status=status.HTTP_200_OK)
+
+        return response
+
+class TopMoversView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        limit = request.query_params.get('limit', 7)
+
+        data = AssetSelector.get_top_movers(limit=limit)
+
+        serializer = AssetListSerializer(data, many=True)
+
+        response = Response({'top_movers': serializer.data}, status=status.HTTP_200_OK)
 
         return response
