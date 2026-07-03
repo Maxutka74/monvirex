@@ -5,4 +5,4 @@ class WalletConfig(AppConfig):
     name = 'apps.wallet'
 
     def ready(self):
-        pass
+        import apps.wallet.signals
