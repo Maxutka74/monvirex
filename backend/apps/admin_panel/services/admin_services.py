@@ -8,7 +8,13 @@ from rest_framework.exceptions import ValidationError
 from apps.assets.models import Asset
 from apps.assets.tasks import sync_assets_task
 from apps.auth_app.models import User
-from apps.wallet.models import CryptoTransaction, CryptoWallet, Transaction, Wallet
+from apps.wallet.models import (
+    CryptoTransaction,
+    CryptoWallet,
+    PortfolioSnapshot,
+    Transaction,
+    Wallet,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -174,7 +180,8 @@ class AdminPanelServices:
         created_at = timezone.now() - datetime.timedelta(hours=24)
 
         users_count = User.objects.all().count()
-        wallet_balance = Wallet.objects.all().aggregate(Sum('balance'))
+        wallet_balance = Wallet.objects.all().aggregate(total=Sum('balance'))
+        total_wallet_balance = wallet_balance['total'] or 0
         transaction_count = Transaction.objects.filter(
             created_at__gte=created_at
         ).count()
@@ -182,9 +189,30 @@ class AdminPanelServices:
             created_at__gte=created_at
         ).count()
 
+        total_crypto_value = 0
+
+        crypto_wallets = CryptoWallet.objects.all().select_related('asset')
+        for crypto_wallet in crypto_wallets:
+            total_crypto_value += (crypto_wallet.amount *
+                                   crypto_wallet.asset.current_price)
+
+        total_portfolio_value = total_wallet_balance + total_crypto_value
+
+        total_snapshots_count = PortfolioSnapshot.objects.all().count()
+
+        logger.info(
+            'Admin portfolio stats calculated: crypto=%s, portfolio=%s, snapshots=%s',
+            total_crypto_value,
+            total_portfolio_value,
+            total_snapshots_count,
+        )
+
         return {
             'total_users': users_count,
-            'total_wallet_balance': wallet_balance['balance__sum'],
+            'total_wallet_balance': total_wallet_balance,
             'total_transactions_24h': transaction_count,
             'total_crypto_transaction_24h': crypto_transaction_count,
+            'total_crypto_value': total_crypto_value,
+            'total_portfolio_value': total_portfolio_value,
+            'total_snapshots_count': total_snapshots_count
         }

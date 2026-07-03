@@ -76,3 +76,9 @@ class AdminStatsSerializer(serializers.Serializer):
     )
     total_transactions_24h = serializers.IntegerField(read_only=True)
     total_crypto_transaction_24h = serializers.IntegerField(read_only=True)
+    total_crypto_value = serializers.DecimalField(
+        max_digits=20, decimal_places=10, read_only=True)
+    total_portfolio_value = serializers.DecimalField(
+        max_digits=20, decimal_places=10, read_only=True
+    )
+    total_snapshots_count = serializers.IntegerField(read_only=True)
