@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.wallet.models import CryptoTransaction, Transaction
+from apps.wallet.models import CryptoTransaction, PortfolioSnapshot, Transaction
 
 
 class TransactionHistorySerializer(serializers.ModelSerializer):
@@ -49,3 +49,8 @@ class CryptoTransactionHistorySerializer(serializers.ModelSerializer):
             'status',
             'created_at',
         )
+
+class PortfolioSnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PortfolioSnapshot
+        fields = ('created_at', 'wallet_balance', 'crypto_value', 'total_value')

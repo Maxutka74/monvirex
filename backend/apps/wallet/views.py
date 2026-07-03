@@ -11,10 +11,13 @@ from apps.wallet.serializers import (
     CryptoTransactionHistorySerializer,
     CryptoWalletSerializer,
     DepositSerializer,
+    PortfolioSnapshotSerializer,
     TransactionHistorySerializer,
     WithdrawSerializer,
 )
+from apps.wallet.services.activity_summary_service import ActivitySummaryService
 from apps.wallet.services.crypto_service import CryptoWalletService
+from apps.wallet.services.portfolio_snapshot_service import PortfolioSnapshotService
 from apps.wallet.services.stripe_service import StripePaymentService
 from apps.wallet.services.wallet_service import WalletService
 from config.throttles import DepositThrottle
@@ -151,5 +154,33 @@ class CryptoTransactionView(APIView):
         response = Response(
             {'transactions': serializer.data}, status=status.HTTP_200_OK
         )
+
+        return response
+
+class PortfolioHistoryView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        period = request.query_params.get('period', '7d')
+
+        portfolio_snapshot = PortfolioSnapshotService.get_history(user=request.user,
+                                                                  period=period)
+        serializer = PortfolioSnapshotSerializer(portfolio_snapshot, many=True)
+
+        response = Response({'portfolio_snapshots': serializer.data},
+                            status=status.HTTP_200_OK)
+
+        return response
+
+class ActivitySummaryView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        period = request.query_params.get('period', '7d')
+        summary = ActivitySummaryService.get_summary(user=request.user,
+                                                     period=period)
+
+        response = Response({'period': period, 'summary': summary},
+                            status=status.HTTP_200_OK)
 
         return response

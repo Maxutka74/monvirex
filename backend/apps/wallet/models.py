@@ -122,3 +122,22 @@ class CryptoTransaction(models.Model):
         return (f'{self.user.email or self.user.telegram_id} - {self.asset} - '
                 f'{self.transaction_type} - {self.usdt_amount} - '
                 f'{self.crypto_amount} - {self.status}')
+
+class PortfolioSnapshot(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'created_at'])
+        ]
+
+        ordering = ['created_at']
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='portfolio_snapshots')
+    wallet_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    crypto_value = models.DecimalField(max_digits=20, decimal_places=10, default=0)
+    total_value = models.DecimalField(max_digits=20, decimal_places=10, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (f'{self.user.email or self.user.telegram_id} - '
+                f'{self.total_value} - {self.created_at}')

@@ -24,7 +24,7 @@ THIRD_PARTY_APPS = ['rest_framework', 'corsheaders', 'drf_spectacular', 'channel
 
 LOCAL_APPS = [
     'apps.auth_app',
-    'apps.wallet',
+    'apps.wallet.apps.WalletConfig',
     'apps.assets',
     'apps.trades',
     'apps.notifications',
@@ -172,7 +172,6 @@ CACHES = {
     }
 }
 
-
 CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
@@ -182,6 +181,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.wallet.tasks.expired_pending_transactions',
         'schedule': 3600,
     },
+    'create-snapshots-every-hour': {
+        'task': 'apps.wallet.tasks.create_portfolio_snapshots',
+        'schedule': 3600,
+    },
     'update-crypto-currency-every-day': {
         'task': 'apps.assets.tasks.sync_assets_task',
         'schedule': 86400,
@@ -189,7 +192,7 @@ CELERY_BEAT_SCHEDULE = {
     'update-crypto-price-every-five_minute': {
         'task': 'apps.assets.tasks.update_price_task',
         'schedule': 300,
-    },
+    }
 }
 
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
