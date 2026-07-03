@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
 
@@ -12,9 +13,12 @@ from apps.assets.models import Asset
 from apps.auth_app.services.auth_service import AuthService
 from apps.trades.services.trade_service import TradeService
 from apps.wallet.models import Transaction, Wallet
+from apps.wallet.services.activity_summary_service import ActivitySummaryService
+from apps.wallet.services.crypto_service import CryptoWalletService
+from apps.wallet.services.portfolio_snapshot_service import PortfolioSnapshotService
 from apps.wallet.services.stripe_service import StripePaymentService
 from apps.wallet.services.wallet_service import WalletService
-from wallet.services.crypto_service import CryptoWalletService
+from apps.wallet.tasks import create_portfolio_snapshots
 
 # Create your tests here.
 
@@ -692,3 +696,175 @@ class CryptoTransactionApiTest(APITestCase):
         self.assertEqual(
             response.data['detail'], 'Authentication credentials were not provided.'
         )
+
+class PortfolioSnapshotApiTest(APITestCase):
+    def setUp(self):
+        patches = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
+        self.first_register_data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test1@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.second_register_data = {
+            'first_name': 'Maxx',
+            'last_name': 'Grov',
+            'email': 'test2@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.user_one = self._register_and_confirm_user(self.first_register_data)
+        wallet = Wallet.objects.get(user=self.user_one)
+        wallet.balance = 20000
+        wallet.save()
+
+
+        self.user_two = self._register_and_confirm_user(self.second_register_data)
+        wallet = Wallet.objects.get(user=self.user_two)
+        wallet.balance = 10000
+        wallet.save()
+
+        self.asset_btc = Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            current_price=50000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        self.asset_eth = Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            current_price=2000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+
+        TradeService.buy(self.user_one, 'BTCUSDT', 10000)
+        TradeService.buy(self.user_two, 'ETHUSDT', 10000)
+
+    def _register_and_confirm_user(self, data):
+        response = AuthService.register(data)
+        reg_id = response['reg_id']
+        code = cache.get(f'reg:{reg_id}')['code']
+        user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
+        return user
+
+    def _auth(self, user):
+        refresh = RefreshToken.for_user(user)
+        self.client.cookies['access_token'] = str(refresh.access_token)
+
+    def test_create_snapshot_success(self):
+        data = PortfolioSnapshotService.create_snapshot(self.user_one)
+
+        self.assertEqual(data.wallet_balance, 10000)
+        self.assertEqual(str(round(data.crypto_value, 3)), str('10000.000'))
+        self.assertEqual(data.total_value, 20000)
+
+    def test_portfolio_history_only_current_user_snapshots(self):
+        PortfolioSnapshotService.create_snapshot(self.user_one)
+        data = PortfolioSnapshotService.get_history(user=self.user_one, period='7d')
+
+        self.assertNotEqual(data[0].user.email, self.second_register_data['email'])
+        self.assertEqual(data[0].user.email, self.first_register_data['email'])
+
+    def test_portfolio_history_invalid_period_returns_400(self):
+        self._auth(self.user_one)
+
+        response = self.client.get('/api/payment/portfolio/history/?period=120d/')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_task_creates_snapshot(self):
+        task_snapshot = create_portfolio_snapshots()
+
+        self.assertEqual(task_snapshot['created_snapshots'], 2)
+        self.assertEqual(task_snapshot['failed_snapshots'], 0)
+
+class ActivitySummary(APITestCase):
+    def setUp(self):
+        patches = patch('apps.auth_app.tasks.send_email.apply_async')
+        self.mock_send_email = patches.start()
+        self.addCleanup(patches.stop)
+
+        self.first_register_data = {
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'email': 'test1@gmail.com',
+            'password': 'Test1234!',
+        }
+
+        self.user_one = self._register_and_confirm_user(self.first_register_data)
+        wallet = Wallet.objects.get(user=self.user_one)
+        wallet.balance = 20000
+        wallet.save()
+
+        self.asset_btc = Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            current_price=50000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        self.asset_eth = Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            current_price=2000,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+
+        TradeService.buy(self.user_one, 'BTCUSDT', 10000)
+        TradeService.sell(self.user_one, 'BTCUSDT', Decimal(0.01))
+        TradeService.exchange(self.user_one, 'BTCUSDT', 'ETHUSDT', Decimal(0.1))
+
+    def _register_and_confirm_user(self, data):
+        response = AuthService.register(data)
+        reg_id = response['reg_id']
+        code = cache.get(f'reg:{reg_id}')['code']
+        user, _ = AuthService.confirm_register({'reg_id': reg_id, 'code': code})
+        return user
+
+    def _auth(self, user):
+        refresh = RefreshToken.for_user(user)
+        self.client.cookies['access_token'] = str(refresh.access_token)
+
+    def test_activity_summary_success(self):
+        data = ActivitySummaryService.get_summary(self.user_one, period='7d')
+
+        self.assertEqual(data['deposit'], 0)
+        self.assertEqual(data['withdraw'], 0)
+        self.assertEqual(data['buy'], 10000)
+        self.assertEqual(data['sell'], 500)
+        self.assertEqual(str(round(data['exchange'], 3)), str('5000.000'))
+
+    def test_activity_summary_ignores_not_completed_transactions(self):
+        Transaction.objects.create(user=self.user_one, transaction_type='deposit',
+                                   amount=1000,
+                                   status='pending')
+
+        data_before = ActivitySummaryService.get_summary(self.user_one, period='7d')
+
+        self.assertEqual(data_before['deposit'], 0)
+
+        Transaction.objects.create(user=self.user_one, transaction_type='deposit',
+                                   amount=1000,
+                                   status='completed')
+
+        data_after = ActivitySummaryService.get_summary(self.user_one, period='7d')
+
+        self.assertEqual(data_after['deposit'], 1000)
+
+    def test_activity_summary_invalid_period_returns_400(self):
+        self._auth(self.user_one)
+
+        first_response = self.client.get('/api/payment/activity-summary/?period=120d/')
+
+        self.assertEqual(first_response.status_code, 400)
+
+        second_response = self.client.get('/api/payment/activity-summary/?period=1d/')
+
+        self.assertEqual(second_response.status_code, 400)

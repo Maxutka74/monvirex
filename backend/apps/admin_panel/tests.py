@@ -274,3 +274,6 @@ class AdminApiTest(APITestCase):
         self.assertEqual(response.data['total_wallet_balance'], '90000.00')
         self.assertEqual(response.data['total_transactions_24h'], 1)
         self.assertEqual(response.data['total_crypto_transaction_24h'], 1)
+        self.assertEqual(response.data['total_crypto_value'], '0.0000000000')
+        self.assertEqual(response.data['total_portfolio_value'], '90000.0000000000')
+        self.assertEqual(response.data['total_snapshots_count'], 0)
