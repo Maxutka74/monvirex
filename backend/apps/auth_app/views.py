@@ -36,6 +36,23 @@ from config.throttles import (
 
 
 # Create your views here.
+class CheckAuthMe(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        current_user = request.user
+
+        response = Response({
+            'id': current_user.id,
+            'email': current_user.email,
+            'first_name': current_user.first_name,
+            'last_name': current_user.last_name,
+            'is_staff': current_user.is_staff,
+            'is_superuser': current_user.is_superuser
+        })
+
+        return response
+
 class RegisterView(APIView):
     permission_classes = (AllowAny,)
     throttle_classes = [RegisterThrottle]

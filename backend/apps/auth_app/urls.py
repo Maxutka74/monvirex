@@ -16,10 +16,11 @@ from apps.auth_app.views import (
     ResendPasswordCodeView,
     ResendRegisterCodeView,
     ResetPasswordView,
-    TelegramLoginView,
+    TelegramLoginView, CheckAuthMe,
 )
 
 urlpatterns = [
+    path('me/', CheckAuthMe.as_view(), name='me'),
     path('register/', RegisterView.as_view(), name='register'),
     path(
         'resend-register-code/',
