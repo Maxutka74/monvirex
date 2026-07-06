@@ -195,7 +195,7 @@ const LoginForm = () => {
                     </div>
                 </div>
         </form>
-        {isSuccess && <SuccessModal title={t('auth.modals.login_success_title')} message={t('auth.modals.login_success_message')} link={'#'} buttonName={t('auth.modals.get_started')} />}
+        {isSuccess && <SuccessModal title={t('auth.modals.login_success_title')} message={t('auth.modals.login_success_message')} link={'/dashboard'} buttonName={t('auth.modals.get_started')} />}
         </>
     )
 }

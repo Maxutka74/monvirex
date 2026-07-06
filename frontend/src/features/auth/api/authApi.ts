@@ -45,6 +45,8 @@ export type TelegramLoginData = {
 const register = async (data: RegisterData): Promise<{reg_id: string, email: string, expires_at: number}> => {
     const response = await api.post('/auth/register/', data)
 
+    sessionStorage.setItem('verify_token', 'true')
+
     return response.data
 }
 
@@ -56,6 +58,8 @@ const resendRegister = async (reg_id: string): Promise<{reg_id: string, email: s
 
 const verifyEmail = async (data: VerifyData): Promise<User> => {
     const response = await api.post('/auth/verify-email/', data)
+
+    sessionStorage.removeItem('verify_token')
 
     return response.data
 }
@@ -74,6 +78,8 @@ const logout = async (): Promise<void> => {
 const resetPassword = async (email: string): Promise<{reset_id: string, email: string, expires_at: number}> => {
     const response = await api.post('/auth/reset-password/', { email })
 
+    sessionStorage.setItem('reset_token', 'true')
+
     return response.data
 }
 
@@ -86,11 +92,16 @@ const resendPassword = async (reset_id: string): Promise<{reset_id: string, emai
 const verifyResetPassword = async (data: VerifyResetData): Promise<{reset_verify_id: string }> => {
     const response = await api.post('/auth/verify-reset-password/', data)
 
+    sessionStorage.removeItem('reset_token')
+    sessionStorage.setItem('reset_verify_token', 'true')
+
     return response.data
 }
 
 const changePassword = async (data: ChangeData): Promise<void> => {
     await api.post('/auth/change-password/', data)
+
+    sessionStorage.removeItem('reset_verify_token')
 
 }
 
