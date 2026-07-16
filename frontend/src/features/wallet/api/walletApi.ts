@@ -21,11 +21,19 @@ export type UserPortfolio = {
     profit_loss: string
 }
 
+export type UserCryptoHistoryResponse = {
+    portfolio: UserPortfolio[]
+}
+
 export type UserSnapshot = {
     created_at: string
     wallet_balance: string
     current_value: string
     total_value: string
+}
+
+export type UserSnapshotHistoryResponse  = {
+    portfolio_snapshots: UserSnapshot[]
 }
 
 export type UserSummary = {
@@ -72,18 +80,18 @@ const withdraw = async (
     return response.data
 }
 
-const getPortfolio = async (): Promise<UserPortfolio[]> => {
+const getPortfolio = async (): Promise<UserCryptoHistoryResponse> => {
     const response = await api.get('/payment/portfolio/')
     return response.data
 }
 
-const getPortfolioHistory = async (): Promise<UserSnapshot[]> => {
+const getPortfolioHistory = async (): Promise<UserSnapshotHistoryResponse> => {
     const response = await api.get('/payment/portfolio/history/')
     return response.data
 }
 
-const getActivitySummary = async (): Promise<UserSummary> => {
-    const response = await api.get('/payment/activity-summary/')
+const getActivitySummary = async (period: string): Promise<UserSummary> => {
+    const response = await api.get(`/payment/activity-summary/?period=${period}`)
     return response.data
 }
 
