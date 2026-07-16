@@ -5,8 +5,9 @@ import VerifyPasswordPage from "./pages/auth/VerifyPasswordPage.tsx";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage.tsx";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage.tsx";
 import ProtectedRoute from "./app/router/ProtectedRoute.tsx";
-import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 import AuthFlowRoute from "./app/router/AuthFlowRoute.tsx";
+import MainLayout from "./app/layouts/MainLayout.tsx";
+import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 
 function App() {
 
@@ -25,7 +26,9 @@ function App() {
                 <Route path='/change-password' element={<ChangePasswordPage />} />
                 </Route>
                 <Route element={<ProtectedRoute />}>
-                    <Route path='/dashboard' element={<DashboardPage />} />
+                    <Route element={<MainLayout />} >
+                        <Route path='/dashboard' element={<DashboardPage />} />
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
