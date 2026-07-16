@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type {User} from '../types/user'
 import api from "../../../shared/api/instance"
 
-type UserStore = {
+export type UserStore = {
     user: User | null
     isAuth: boolean
     isLoading: boolean

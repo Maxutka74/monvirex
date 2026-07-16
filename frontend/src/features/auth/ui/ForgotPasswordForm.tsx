@@ -5,11 +5,8 @@ import authHooks from  '../model/useAuth.ts'
 import {GoArrowLeft} from "react-icons/go";
 import {Link, useNavigate} from "react-router-dom";
 import type {AxiosError} from "axios";
-import {useTranslation} from "react-i18next";
 
 const ForgotPasswordForm = () => {
-    const { t } = useTranslation();
-
     const [ email , setEmail ] = useState<string>('');
     const [ incorrectEmail, setIncorrectEmail] = useState<boolean>(false);
 
@@ -50,15 +47,15 @@ const ForgotPasswordForm = () => {
                         />
                         <p className="text-[14px] font-medium">
                             {incorrectEmail
-                                ? t('auth.errors.invalid_email')
-                                : backendError || t('auth.errors.something_went_wrong')}
+                                ? "Please enter a valid email address"
+                                : backendError || "Something went wrong"}
                         </p>
                     </div>
                 }
 
                 <label htmlFor="email"
                        className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    {t('auth.email')}
+                    Email
                 </label>
                 <div className={`w-full h-12 flex items-center bg-gray-100 border 
                 ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
@@ -73,7 +70,7 @@ const ForgotPasswordForm = () => {
                         id='email'
                         value={email}
                         onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
-                        placeholder={t('auth.placeholders.email')}
+                        placeholder={'Input your email'}
                         className='w-full outline-none'
                         autoComplete='email'
                     />
@@ -84,13 +81,13 @@ const ForgotPasswordForm = () => {
                         : 'bg-[#ECEFF3] cursor-not-allowed'} mb-6`}
                         disabled={!(email.trim().length > 0)}
                     >
-                        {t('auth.continue')}
+                        Continue
                     </button>
                     <Link to="/"
                           className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"
                     >
                         <GoArrowLeft />
-                        {t('auth.back')}
+                        Back
                     </Link>
                 </div>
             </form>

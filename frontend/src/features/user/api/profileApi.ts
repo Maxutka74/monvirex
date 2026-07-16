@@ -6,6 +6,8 @@ export type Profile = {
     'avatar': string,
 }
 
+export type ProfileResponse = Record<string, Profile>
+
 export type UpdateProfile = {
     'first_name': string,
     'last_name': string,
@@ -15,7 +17,7 @@ export type UpdateAvatar = {
     'avatar': File
 }
 
-const getProfile = async (): Promise<Profile> => {
+const getProfile = async (): Promise<ProfileResponse> => {
     const response = await api.get('/auth/profile/')
 
     return response.data

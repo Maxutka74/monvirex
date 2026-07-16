@@ -12,11 +12,8 @@ import { FaTelegram } from "react-icons/fa";
 import {GoogleLogin} from "@react-oauth/google";
 import { LoginButton } from '@telegram-auth/react'
 import type {AxiosError} from "axios";
-import {useTranslation} from "react-i18next";
 
 const LoginForm = () => {
-    const { t } = useTranslation();
-
     const [ email, setEmail ] = useState<string>('')
     const [ password, setPassword ] = useState<string>('')
 
@@ -60,15 +57,15 @@ const LoginForm = () => {
                     />
                     <p className="text-[14px] font-medium">
                         {incorrectEmail
-                            ? t('auth.errors.invalid_email')
-                            : backendError || t('auth.errors.something_went_wrong')}
+                            ? "Please enter a valid email address"
+                            : backendError || "Something went wrong"}
                     </p>
                 </div>
             }
 
             <label htmlFor="email"
                 className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                {t('auth.email')}
+                Email
             </label>
             <div className={`w-full h-12 flex items-center bg-gray-100 border 
             ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
@@ -83,14 +80,14 @@ const LoginForm = () => {
                     id='email'
                     value={email}
                     onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
-                    placeholder={t('auth.placeholders.email')}
+                    placeholder={"Input your email"}
                     className='w-full outline-none'
                     autoComplete="email"
                 />
             </div>
             <label htmlFor="password"
                    className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                {t('auth.password')}
+                Password
             </label>
             <div className={`w-full h-12 flex items-center bg-gray-100 border 
             ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
@@ -105,7 +102,7 @@ const LoginForm = () => {
                     id='password'
                     value={password}
                     onChange={(e) => {setPassword(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
-                    placeholder={t('auth.placeholders.password')}
+                    placeholder={"Input your password"}
                     className='w-full outline-none'
                     autoComplete="current-password"
                 />
@@ -126,7 +123,7 @@ const LoginForm = () => {
                     : 'bg-[#ECEFF3] cursor-not-allowed'}`}
                 disabled={!(email.trim().length > 0 && password.length > 0)}
                 >
-                    {t('auth.login')}
+                    Login
                 </button>
                 <div className='flex flex-row items-center justify-between'>
                     <div className='flex items-center justify-center gap-2'>
@@ -139,19 +136,19 @@ const LoginForm = () => {
                             }
                         </div>
                         <span className="text-[14px] text-[#666D80] font-medium">
-                            {t('auth.remember_me')}
+                            Remember me
                         </span>
                     </div>
                     <Link to={'/reset-password'}
                           className="text-[14px] text-[#6F6F6F] font-medium">
-                        {t('auth.forgot_password')}
+                        Forgot password?
                     </Link>
                 </div>
             </div>
                 <div className="w-full flex flex-row items-center justify-between gap-4 mb-6">
                     <hr className="w-full h-[2px] text-[#C1C7D0]" />
                     <span className="text-[12px] text-[#818898] font-medium ">
-                        {t('auth.or_sign_in')}
+                        Or
                     </span>
                     <hr className="w-full h-[2px] text-[#C1C7D0]" />
                 </div>
@@ -160,7 +157,7 @@ const LoginForm = () => {
                         <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
                             <FcGoogle size={24} />
                             <span className="text-[14px]">
-                                {t('auth.sign_in_google')}
+                                Sign in with Google
                             </span>
                         </div>
 
@@ -181,7 +178,7 @@ const LoginForm = () => {
                                          className="text-[#229ED9]"
                             />
                             <span className="text-[14px]">
-                                {t('auth.sign_in_telegram')}
+                                Sign in with Telegram
                             </span>
                         </div>
                         <div className="absolute inset-0 opacity-0 z-50 overflow-hidden">
@@ -195,7 +192,7 @@ const LoginForm = () => {
                     </div>
                 </div>
         </form>
-        {isSuccess && <SuccessModal title={t('auth.modals.login_success_title')} message={t('auth.modals.login_success_message')} link={'/dashboard'} buttonName={t('auth.modals.get_started')} />}
+        {isSuccess && <SuccessModal title={"Login Successful"} message={"Let's get started and take your customer support dashboard to the next level!"} link={'/dashboard'} buttonName={"Get Started"} />}
         </>
     )
 }
