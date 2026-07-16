@@ -32,8 +32,24 @@ class AssetListView(ListAPIView):
     ]
 
     def get_queryset(self):
-        return AssetSelector.get_assets()
+        queryset = AssetSelector.get_assets()
+        symbols = self.request.query_params.get('symbols', None)
 
+        if symbols is None:
+            return queryset
+
+        symbols_list = symbols.split(',')
+
+        clear_symbols = []
+
+        for symbol in symbols_list:
+            if len(symbol.strip()) > 0:
+                clear_symbols.append(symbol.strip())
+
+        if len(clear_symbols) == 0:
+            return queryset.none()
+
+        return queryset.filter(symbol__in=clear_symbols)
 
 class AssetDetailView(APIView):
     permission_classes = (IsAuthenticated,)

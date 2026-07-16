@@ -137,7 +137,7 @@ class AssetsAPITest(TestCase):
         self._auth(user=self.user_one)
 
         Asset.objects.create(
-            symbol='BTC',
+            symbol='BTCUSDT',
             name='BTC',
             is_active=True,
             current_price=1,
@@ -145,7 +145,7 @@ class AssetsAPITest(TestCase):
             volume_24h=0,
         )
         Asset.objects.create(
-            symbol='ETH',
+            symbol='ETHUSDT',
             name='ETH',
             is_active=False,
             current_price=1,
@@ -158,8 +158,36 @@ class AssetsAPITest(TestCase):
         symbols = [i['symbol'] for i in res.data['results']]
 
         self.assertEqual(res.status_code, 200)
-        self.assertIn('BTC', symbols)
-        self.assertNotIn('ETH', symbols)
+        self.assertIn('BTCUSDT', symbols)
+        self.assertNotIn('ETHUSDT', symbols)
+
+    def test_asset_list_query_params_api(self):
+        self._auth(user=self.user_one)
+
+        Asset.objects.create(
+            symbol='BTCUSDT',
+            name='BTC',
+            is_active=True,
+            current_price=1,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+        Asset.objects.create(
+            symbol='ETHUSDT',
+            name='ETH',
+            is_active=True,
+            current_price=1,
+            price_change_24h=0,
+            volume_24h=0,
+        )
+
+        res = self.client.get('/api/crypto/assets/?symbols=BTCUSDT')
+
+        symbols = [i['symbol'] for i in res.data['results']]
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('BTCUSDT', symbols)
+        self.assertNotIn('ETHUSDT', symbols)
 
     def test_asset_detail_api(self):
         self._auth(user=self.user_one)

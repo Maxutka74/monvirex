@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 
 from django.db import IntegrityError, transaction
 from django.db.models import F
@@ -132,6 +133,10 @@ class WalletService:
 
             try:
                 wallet = Wallet.objects.select_for_update().get(user=user)
+
+                fee = amount * Decimal('0.01')
+                total = amount + fee
+
             except Wallet.DoesNotExist:
                 logger.warning(
                     "Withdraw failed wallet does not exist user_id=%s amount=%s",
@@ -141,13 +146,13 @@ class WalletService:
 
                 raise ValidationError({'detail': 'Wallet does not exist'})
 
-            if wallet.balance < amount:
+            if wallet.balance < total:
                 logger.warning(
                     "Withdraw failed insufficient"
                     " balance user_id=%s balance=%s amount=%s",
                     user.id,
                     wallet.balance,
-                    amount,
+                    total,
                 )
 
                 raise ValidationError({'detail': 'Insufficient balance'})
@@ -178,7 +183,7 @@ class WalletService:
                 amount,
             )
 
-            wallet.balance = F('balance') - amount
+            wallet.balance = F('balance') - total
             wallet.save()
 
             withdraw_transaction.status = 'completed'
@@ -200,7 +205,7 @@ class WalletService:
                 user=user,
                 notification_type='withdraw',
                 title='Withdraw successful',
-                message=f'Your withdrawal of {amount} USD has'
+                message=f'Your withdrawal of {amount} USDT has'
                         f' been successfully processed.',
             )
 

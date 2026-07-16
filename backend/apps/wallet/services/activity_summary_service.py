@@ -16,6 +16,7 @@ class ActivitySummaryService:
         period = period.strip().lower()
 
         period_days = {
+            '1d': 1,
             '7d': 7,
             '30d': 30,
         }

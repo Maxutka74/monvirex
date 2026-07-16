@@ -94,7 +94,7 @@ class TradeService:
             user=user,
             notification_type='buy',
             title='Crypto purchase completed',
-            message=f'You bought {amount_crypto} {asset.symbol} for {amount_usdt} USD.',
+            message=f'You bought {round(amount_crypto, 8)} {asset.symbol} for {round(amount_usdt, 2)} USD.',
         )
 
         return {
@@ -210,8 +210,8 @@ class TradeService:
             user=user,
             notification_type='sell',
             title='Crypto sale completed',
-            message=f'You sold {round(amount_crypto, 3)} {asset.symbol}'
-                    f' for {round(amount_usdt, 1)} USD.',
+            message=f'You sold {round(amount_crypto, 8)} {asset.symbol}'
+                    f' for {round(amount_usdt, 2)} USD.',
         )
 
         return {
@@ -339,8 +339,8 @@ class TradeService:
             user=user,
             notification_type='exchange',
             title='Crypto exchange completed',
-            message=f'You exchanged {round(amount_crypto, 3)} {from_asset}'
-                    f' to {round(amount_to, 3)} {to_asset}.',
+            message=f'You exchanged {round(amount_crypto, 8)} {from_asset}'
+                    f' to {round(amount_to, 8)} {to_asset}.',
         )
 
         return {

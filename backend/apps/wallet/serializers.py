@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from rest_framework import serializers
 
 from apps.wallet.models import CryptoTransaction, PortfolioSnapshot, Transaction
@@ -12,7 +14,7 @@ class TransactionHistorySerializer(serializers.ModelSerializer):
 class DepositSerializer(serializers.Serializer):
     idempotency_key = serializers.UUIDField(required=True)
     amount = serializers.DecimalField(
-        required=True, max_digits=10, decimal_places=2, min_value=0.01
+        required=True, max_digits=10, decimal_places=2, min_value=10
     )
 
 

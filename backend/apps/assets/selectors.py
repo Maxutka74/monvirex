@@ -2,6 +2,8 @@ import logging
 
 from rest_framework.exceptions import ValidationError
 
+from django.db.models.functions import Abs
+
 from apps.assets.models import Asset
 
 logger = logging.getLogger(__name__)
@@ -33,9 +35,13 @@ class AssetSelector:
             logger.info('Top movers limit capped from %s to 20', limit)
             limit = 20
 
-        assets = Asset.objects.filter(
-            is_active=True
-        ).order_by('-price_change_24h')[:limit]
+        assets = (
+            Asset.objects
+            .filter(is_active=True)
+            .exclude(price_change_24h=0)
+            .annotate(abs_change=Abs('price_change_24h'))
+            .order_by('-abs_change')[:limit]
+        )
 
         logger.info('Top movers fetched: count=%s', len(assets))
 
