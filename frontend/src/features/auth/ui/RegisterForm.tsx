@@ -7,11 +7,8 @@ import {GoogleLogin} from "@react-oauth/google";
 import {FaTelegram} from "react-icons/fa";
 import {LoginButton} from "@telegram-auth/react";
 import type {AxiosError} from "axios";
-import {useTranslation} from "react-i18next";
 
 const RegisterForm = () => {
-    const { t } = useTranslation();
-
     const [ firstName, setFirstName ] = useState<string>('');
     const [ lastName, setLastName ] = useState<string>('');
     const [ email, setEmail ] = useState<string>('')
@@ -73,8 +70,8 @@ const RegisterForm = () => {
                         />
                         <p className="text-[14px] font-medium">
                             {incorrectEmail
-                                ? t('auth.errors.invalid_email')
-                                : backendError || t('auth.errors.something_went_wrong')}
+                                ? "Please enter a valid email address"
+                                : backendError || "Something went wrong"}
                         </p>
                     </div>
                 }
@@ -84,7 +81,7 @@ const RegisterForm = () => {
                                        className="ml-[10px] text-[#DF1C41] shrink-0"
                         />
                         <p className="text-[14px] font-medium">
-                            {t('auth.errors.password_invalid')}
+                            Password must contain uppercase letter, lowercase letter and number
                         </p>
                     </div>
                 )}
@@ -93,7 +90,7 @@ const RegisterForm = () => {
                     <div className="w-full flex flex-col">
                     <label htmlFor="firstName"
                            className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                        {t('auth.first_name')}
+                        First Name
                     </label>
                         <div className={`xl:w-[212px] h-12 flex items-center bg-gray-100 border 
                         ${firstName.trim().length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
@@ -107,7 +104,7 @@ const RegisterForm = () => {
                                 id='firstName'
                                 value={firstName}
                                 onChange={(e) => {setFirstName(e.target.value);}}
-                                placeholder={t('auth.placeholders.first_name')}
+                                placeholder={'Input your first name'}
                                 className='w-full outline-none'
                             />
                         </div>
@@ -116,7 +113,7 @@ const RegisterForm = () => {
                     <div className="w-full flex flex-col">
                         <label htmlFor="lastName"
                                className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                            {t('auth.last_name')}
+                            Last Name
                         </label>
                         <div className={`xl:w-[212px] h-12 flex items-center bg-gray-100 border 
                         ${lastName.trim().length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
@@ -130,7 +127,7 @@ const RegisterForm = () => {
                                 id='lastName'
                                 value={lastName}
                                 onChange={(e) => {setLastName(e.target.value);}}
-                                placeholder={t('auth.placeholders.last_name')}
+                                placeholder={"Input your last name"}
                                 className='w-full outline-none'
                             />
                         </div>
@@ -139,7 +136,7 @@ const RegisterForm = () => {
 
                 <label htmlFor="email"
                        className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    {t('auth.email')}
+                    Email
                 </label>
                 <div className={`w-full h-12 flex items-center bg-gray-100 border 
                 ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
@@ -161,7 +158,7 @@ const RegisterForm = () => {
                 </div>
                 <label htmlFor="password"
                        className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    {t('auth.password')}
+                    Password
                 </label>
                 <div className={`w-full h-12 flex items-center bg-gray-100 border 
                 ${password.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
@@ -175,7 +172,7 @@ const RegisterForm = () => {
                         id='password'
                         value={password}
                         onChange={(e) => {setPassword(e.target.value); setIncorrectPassword(false);}}
-                        placeholder={t('auth.password')}
+                        placeholder={'Password'}
                         className='w-full outline-none'
                         autoComplete="new-password"
                     />
@@ -193,7 +190,7 @@ const RegisterForm = () => {
                 </div>
                 <label htmlFor='confirm_password'
                        className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    {t('auth.confirm_password')}
+                    Confirm Password
                 </label>
                 <div className={`w-full h-12 flex items-center bg-gray-100 border 
                 ${passwordConfirm.length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
@@ -207,7 +204,7 @@ const RegisterForm = () => {
                         id='confirm_password'
                         value={passwordConfirm}
                         onChange={(e) => {setConfirmPassword(e.target.value); setIncorrectPassword(false);}}
-                        placeholder={t('auth.placeholders.confirm_password')}
+                        placeholder={"Input to confirm password"}
                         className='w-full outline-none'
                         autoComplete="new-password"
                     />
@@ -240,13 +237,13 @@ const RegisterForm = () => {
                         && passwordConfirm.length > 7
                         && password === passwordConfirm)}
                     >
-                            {t('auth.continue')}
+                        Continue
                     </button>
                 </div>
                 <div className="w-full flex flex-row items-center justify-between gap-4 mb-6">
                     <hr className="w-full h-[2px] text-[#C1C7D0]" />
                     <span className="text-[12px] text-[#818898] font-medium ">
-                        {t('auth.or_sign_up')}
+                        Or
                     </span>
                     <hr className="w-full h-[2px] text-[#C1C7D0]" />
                 </div>
@@ -255,7 +252,7 @@ const RegisterForm = () => {
                         <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
                             <FcGoogle size={24} />
                             <span className="text-[14px]">
-                                {t('auth.sign_up_google')}
+                                Sign up with Google
                             </span>
                         </div>
                         <div
@@ -274,7 +271,7 @@ const RegisterForm = () => {
                         <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
                             <FaTelegram  size={24} className="text-[#229ED9]"/>
                             <span className="text-[14px]">
-                                {t('auth.sign_up_telegram')}
+                                Sign up with Telegram
                             </span>
                         </div>
                         <div className="absolute inset-0 opacity-0 z-50 overflow-hidden">

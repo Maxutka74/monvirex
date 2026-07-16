@@ -3,10 +3,8 @@ import logo from "../../assets/Monvirex.png";
 import {SiGoogleanalytics} from "react-icons/si";
 import {FaExchangeAlt} from "react-icons/fa";
 import {MdSecurity} from "react-icons/md";
-import {useTranslation} from "react-i18next";
 
 const AuthHero = () => {
-    const { t } = useTranslation();
 
     return (
         <div
@@ -27,15 +25,15 @@ const AuthHero = () => {
                 />
 
                 <h2 className="text-[48px] leading-[58px] font-semibold mb-5">
-                    {t('auth.hero_title')},
+                    Smart Crypto Analytics,
                     <br />
                     <span className="text-[#4775FF]">
-                    {t('auth.hero_title_blue')}
+                    Trading & Exchange
             </span>
                 </h2>
 
                 <p className="text-[18px] leading-8 text-[#4B5563]">
-                    {t('auth.hero_description')}
+                    Track the market, analyze live charts and trade crypto securely on one platform.
                 </p>
             </div>
 
@@ -47,11 +45,11 @@ const AuthHero = () => {
                     />
 
                     <h3 className="font-semibold text-[18px] mb-2">
-                        {t('auth.analytics_title')}
+                        Real-time Analytics
                     </h3>
 
                     <p className="text-[#4B5563] leading-7">
-                        {t('auth.analytics_description')}
+                        Live crypto charts and market insights updated instantly.
                     </p>
                 </div>
 
@@ -62,11 +60,11 @@ const AuthHero = () => {
                     />
 
                     <h3 className="font-semibold text-[18px] mb-2">
-                        {t('auth.exchange_title')}
+                        Trade & Exchange
                     </h3>
 
                     <p className="text-[#4B5563] leading-7">
-                        {t('auth.exchange_description')}
+                        Buy, sell and exchange digital assets with ease.
                     </p>
                 </div>
 
@@ -77,11 +75,11 @@ const AuthHero = () => {
                     />
 
                     <h3 className="font-semibold text-[18px] mb-2">
-                        {t('auth.security_title')}
+                        Secure & Reliable
                     </h3>
 
                     <p className="text-[#4B5563] leading-7">
-                        {t('auth.security_description')}
+                        Advanced protection for your crypto assets and account.
                     </p>
                 </div>
             </div>

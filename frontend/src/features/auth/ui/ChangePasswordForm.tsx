@@ -8,11 +8,8 @@ import {GoArrowLeft} from "react-icons/go";
 import {Link} from "react-router-dom";
 import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
 import type {AxiosError} from "axios";
-import {useTranslation} from "react-i18next";
 
 const ChangePasswordForm = () => {
-    const {t} = useTranslation();
-
     const [password, setPassword] = useState<string>('')
     const [passwordConfirm, setConfirmPassword] = useState<string>('')
     const [incorrectPassword, setIncorrectPassword] = useState<boolean>(false)
@@ -57,8 +54,8 @@ const ChangePasswordForm = () => {
                         <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41] shrink-0"/>
                         <p className="text-[14px] font-medium">
                             {incorrectPassword
-                                ? t('auth.errors.password_error')
-                                : backendError || t('auth.errors.something_went_wrong')
+                                ? 'Your password must be at least 8 characters long and include a capital letter and a number'
+                                : backendError || 'Something went wrong'
                             }
                         </p>
                     </div>
@@ -66,7 +63,7 @@ const ChangePasswordForm = () => {
 
                 <label htmlFor="password"
                        className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    {t('auth.password')}
+                    Password
                 </label>
                 <div
                     className={`w-full h-12 flex items-center bg-gray-100 border 
@@ -86,7 +83,7 @@ const ChangePasswordForm = () => {
                             setIncorrectPassword(false);
                             if (isError) reset()
                         }}
-                        placeholder={t('auth.placeholders.password')}
+                        placeholder='Input your password'
                         className='w-full outline-none'
                         autoComplete="new-password"
                     />
@@ -104,7 +101,7 @@ const ChangePasswordForm = () => {
                 </div>
                 <label htmlFor='confirm_password'
                        className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    {t('auth.confirm_password')}
+                    Confirm Password
                 </label>
                 <div
                     className={`w-full h-12 flex items-center bg-gray-100 border
@@ -124,7 +121,7 @@ const ChangePasswordForm = () => {
                             setIncorrectPassword(false);
                             if (isError) reset()
                         }}
-                        placeholder={t('auth.placeholders.confirm_password')}
+                        placeholder='Input to confirm password'
                         className='w-full outline-none'
                         autoComplete="new-password"
                     />
@@ -146,20 +143,20 @@ const ChangePasswordForm = () => {
                           ${!(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm) ? 'bg-[#429EFF] cursor-pointer' 
                             : 'bg-[#ECEFF3] cursor-not-allowed'}`}
                         disabled={(password.length === 0 || passwordConfirm.length === 0 || password !== passwordConfirm)}>
-                        {t('auth.confirm')}
+                        Confirm
                     </button>
                     <Link to="/verify-reset-password"
                           onClick={() => localStorage.removeItem('reset_verify_token')}
                           className="w-[85px] h-[40px] flex items-center justify-center gap-3">
                         <GoArrowLeft/>
-                        {t('auth.back')}
+                        Back
                     </Link>
                 </div>
             </form>
-            {isSuccess && <SuccessModal title={t('auth.modals.password_success_title')}
-                                        message={t('auth.modals.password_success_message')}
+            {isSuccess && <SuccessModal title={'Password updated successfully'}
+                                        message={'Your password has been successfully updated, please log in first'}
                                         link={'/'}
-                                        buttonName={t('auth.modals.login_now')}/>}
+                                        buttonName={'Login Now'}/>}
         </>
     )
 }

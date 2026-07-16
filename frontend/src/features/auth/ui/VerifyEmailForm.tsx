@@ -5,18 +5,20 @@ import {Link} from "react-router-dom";
 import {GoArrowLeft} from "react-icons/go";
 import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
 import type {AxiosError} from "axios";
-import {useTranslation} from "react-i18next";
 
 const VerifyEmailForm = () => {
-    const { t } = useTranslation();
-
-    const resetData = JSON.parse(sessionStorage.getItem("verify_token") || '{}');
+    const [resetData] = useState(() =>
+        JSON.parse(sessionStorage.getItem("verify_token") || '{}')
+    )
 
     const [ code, setCode ] = useState(['', '', '', '', '', ''])
-    const [ timer, setTimer ] = useState<number>(0)
+    const [ timer, setTimer ] = useState<number>(() => {
+        const remainingTime = resetData.expires_at - Date.now()
+
+        return remainingTime > 0 ? Math.floor(remainingTime / 1000) : 0
+    })
 
     const inputs = useRef<(HTMLInputElement | null)[]>([])
-    const remainingTime = resetData.expires_at - Date.now()
 
     const { mutate: resendRegister } = authHooks.useResendRegister()
     const { mutate: verifyRegisterUser, isSuccess, isError, error, reset } = authHooks.useVerifyEmail()
@@ -69,10 +71,6 @@ const VerifyEmailForm = () => {
     }
 
     useEffect(() => {
-        if (remainingTime > 0) setTimer(Math.floor(remainingTime / 1000))
-    }, []);
-
-    useEffect(() => {
         if (timer <= 0) return
 
         const interval = setInterval(() => {
@@ -99,7 +97,7 @@ const VerifyEmailForm = () => {
                 }
 
                 <p className="text-[18px] font-medium mb-4">
-                    {t('auth.enter_otp')}
+                    Enter your OTP
                 </p>
                 <div className="flex flex-row items-center justify-center gap-3">
                     {code.map((num, index) => (
@@ -122,14 +120,14 @@ const VerifyEmailForm = () => {
                 <div className="mt-6 mb-6">
                     <div className="flex flex-row items-center justify-start gap-2 mb-4">
                         <p className="font-medium text-[#666D80] text-[14px] ">
-                            {t('auth.didnt_receive')}
+                            Didn't receive the email?
                         </p>
                         {timer > 0? <div> <span>{Math.floor(timer / 60)}</span><span>:</span><span>{(timer % 60).toString().padStart(2, '0')}</span> </div>
                             : <button
                                 type='button'
                                 onClick={() => blockResendCode()}
                                 className="cursor-pointer">
-                                {t('auth.resend_code')}
+                                Click to resend code
                             </button>}
                     </div>
                     <div className="flex flex-col items-center justify-center gap-6 mb-6">
@@ -138,18 +136,18 @@ const VerifyEmailForm = () => {
                             ${code.every(item=> item !== '')? 'text-white bg-[#429EFF] cursor-pointer'
                                 : 'bg-[#ECEFF3] cursor-not-allowed'} `}
                             disabled={!(code.every(item => item !== ''))}>
-                            {t('auth.create_account_button')}
+                            Create Account
                         </button>
                         <Link to="/"
                             onClick={() => sessionStorage.removeItem('verify_token')}
                               className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3">
                             <GoArrowLeft />
-                            {t('auth.back')}
+                            Back
                         </Link>
                     </div>
                 </div>
             </form>
-            {isSuccess && <SuccessModal title={t('auth.modals.register_success_title')} message={t('auth.modals.register_success_message')} link={'#'} buttonName={t('auth.modals.get_started')} />}
+            {isSuccess && <SuccessModal title={'Congratulations, You\'re In'} message={'Let\'s get started and take your customer support dashboard to the next level!'} link={'#'} buttonName={'Get Started'} />}
         </>
     )
 }
