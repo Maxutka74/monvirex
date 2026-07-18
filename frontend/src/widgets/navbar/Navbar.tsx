@@ -1,14 +1,27 @@
-import {NavLink, useNavigate} from "react-router-dom";
-import { IoIosArrowDown, IoIosArrowUp, IoMdNotificationsOutline } from "react-icons/io";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
+import {
+    IoIosArrowDown,
+    IoIosArrowUp,
+    IoMdNotificationsOutline,
+} from "react-icons/io";
 
 import logo from "../../assets/MonvirexLogo.png";
-import {useEffect, useState} from "react";
-import ProfileDropdown from "./ProfileDropdown.tsx";
+
 import authApi from "../../features/auth/api/authApi.ts";
-import profileApi, {type Profile} from "../../features/user/api/profileApi.ts";
-import useUserStore, {type UserStore} from "../../entities/user/model/userStore.ts";
 import notificationsApi from "../../features/notifications/api/notificationsApi.ts";
+import profileApi, {
+    type Profile,
+} from "../../features/user/api/profileApi.ts";
+
+import useUserStore, {
+    type UserStore,
+} from "../../entities/user/model/userStore.ts";
+
+import MobileMenu from "./MobileMenu.tsx";
 import NotificationDropdown from "./NotificationDropdown.tsx";
+import ProfileDropdown from "./ProfileDropdown.tsx";
 
 const Navbar = () => {
     const navItems = [
@@ -20,12 +33,17 @@ const Navbar = () => {
     ];
 
     const navigate = useNavigate();
-    const [profileData, setProfileData] = useState<Profile|null>(null)
-    const [unreadNotifications, setUnreadNotifications] = useState<number>(0)
-    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-    const [isNotificationsDropdownOpen, setIsNotificationsDropdownOpen] = useState(false);
 
-    const email = useUserStore((state: UserStore | null) => state?.user?.email)
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [profileData, setProfileData] = useState<Profile | null>(null);
+    const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const [isNotificationsDropdownOpen, setIsNotificationsDropdownOpen] =
+        useState(false);
+
+    const email = useUserStore(
+        (state: UserStore | null) => state?.user?.email
+    );
 
     const logoutFunc = async () => {
         try {
@@ -34,51 +52,67 @@ const Navbar = () => {
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     useEffect(() => {
         const navbarData = async () => {
-            if(!email) return;
+            if (!email) return;
 
             try {
-                const data = await profileApi.getProfile()
-                const unReadNotificationData = await notificationsApi.getUnreadCount()
+                const data = await profileApi.getProfile();
+                const unReadNotificationData =
+                    await notificationsApi.getUnreadCount();
 
-                setProfileData(data[email])
-                setUnreadNotifications(unReadNotificationData.unread_count)
+                setProfileData(data[email]);
+                setUnreadNotifications(unReadNotificationData.unread_count);
             } catch (error) {
                 console.error(error);
             }
-        }
+        };
 
         navbarData();
-    }, [email])
+    }, [email]);
 
     return (
-        <header className="w-full h-[96px] flex items-center justify-between px-8 bg-transparent overflow-visible">
+        <header className="relative flex h-[80px] w-full items-center justify-between overflow-visible bg-transparent px-4 md:px-6 xl:h-[96px] xl:px-8">
             <div className="flex items-center gap-3">
+                <button
+                    className="xl:hidden"
+                    onClick={() => {
+                        setIsMenuOpen(!isMenuOpen);
+                        setIsProfileDropdownOpen(false);
+                        setIsNotificationsDropdownOpen(false);
+                    }}
+                >
+                    {isMenuOpen ? (
+                        <HiOutlineX size={34} />
+                    ) : (
+                        <HiOutlineMenuAlt3 size={34} />
+                    )}
+                </button>
+
                 <img
-                    className="w-[76px] h-[76px] object-contain"
+                    className="h-[58px] w-[58px] object-contain xl:h-[76px] xl:w-[76px]"
                     src={logo}
                     alt="Monvirex Logo"
                 />
 
-                <h1 className="text-[36px] font-medium">
+                <h1 className="hidden text-[36px] font-medium xl:block">
                     MONVIREX
                 </h1>
             </div>
 
-            <nav className="h-[54px] flex items-center gap-2">
+            <nav className="hidden h-[54px] items-center gap-2 xl:flex">
                 {navItems.map((navItem) => (
                     <NavLink
                         key={navItem.path}
                         to={navItem.path}
                         className={({ isActive }) =>
-                            `h-[44px] px-5 flex justify-center items-center rounded-full font-medium ${
-                            isActive
-                            ? "bg-white text-[#429EFF]"
-                            : "text-black hover:text-[#429EFF]"
-                        }`
+                            `h-[44px] px-5 flex items-center justify-center rounded-full font-medium transition-colors ${
+                                isActive
+                                    ? "bg-white text-[#429EFF]"
+                                    : "text-black hover:text-[#429EFF]"
+                            }`
                         }
                     >
                         {navItem.label}
@@ -86,39 +120,106 @@ const Navbar = () => {
                 ))}
             </nav>
 
-            <div className="flex items-center gap-3">
-                <button className="w-[100px] h-[44px] text-white bg-[#429EFF] rounded-full">
+            <div className="flex items-center gap-4 xl:gap-3">
+                <button className="flex h-[42px] items-center justify-center whitespace-nowrap rounded-full bg-[#429EFF] px-4 text-[15px] text-white cursor-pointer xl:h-[44px] xl:w-[100px] xl:px-5">
                     Buy & Sell
                 </button>
 
-                <button className="relative w-[50px] h-[50px] flex justify-center items-center rounded-full cursor-pointer" onClick={() => setIsNotificationsDropdownOpen(!isNotificationsDropdownOpen)}>
-                    <span className="absolute -top-1 -right-1 w-[20px] h-[20px] flex justify-center items-center text-[12px] text-white bg-[#DF1C41] rounded-full">
+                <button
+                    className="relative flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white shadow cursor-pointer xl:bg-transparent"
+                    onClick={() => {
+                        setIsNotificationsDropdownOpen(
+                            !isNotificationsDropdownOpen
+                        );
+                        setIsMenuOpen(false);
+                        setIsProfileDropdownOpen(false);
+                    }}
+                >
+                    <span className="absolute -top-1 -right-1 flex h-[20px] w-[20px] items-center justify-center rounded-full bg-[#DF1C41] text-[12px] text-white">
                         {unreadNotifications}
                     </span>
 
                     <IoMdNotificationsOutline size={30} />
                 </button>
 
-                <button className="flex items-center gap-1 cursor-pointer" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
+                <button
+                    className="flex items-center gap-1 cursor-pointer"
+                    onClick={() => {
+                        setIsProfileDropdownOpen(!isProfileDropdownOpen);
+                        setIsMenuOpen(false);
+                        setIsNotificationsDropdownOpen(false);
+                    }}
+                >
                     <img
                         src={profileData?.avatar}
                         alt=""
-                        className="w-[42px] h-[42px] rounded-full object-cover"
+                        className="
+                            w-[40px]
+                            h-[40px]
+                            xl:w-[42px]
+                            xl:h-[42px]
+                        "
                     />
-                    {isProfileDropdownOpen ? (
-                        <IoIosArrowDown className="size-[18px]" />
-                        ):
-                        <IoIosArrowUp className="size-[18px]" />
-                    }
 
+                    <div className="hidden xl:block">
+                        {isProfileDropdownOpen ? (
+                            <IoIosArrowDown className="size-[18px]" />
+                        ) : (
+                            <IoIosArrowUp className="size-[18px]" />
+                        )}
+                    </div>
                 </button>
-                {isProfileDropdownOpen && (<div className='absolute top-21 right-1'>
-                    <ProfileDropdown firstName={profileData?.first_name || ''} lastName={profileData?.last_name || ''} email={email || ''} logoutFunc={logoutFunc} />
-                </div>)}
-                {isNotificationsDropdownOpen && (<div className='absolute top-21 right-1'>
-                    <NotificationDropdown unreadNotifications={unreadNotifications} setUnreadNotifications={setUnreadNotifications} />
-                </div>)}
+
+                {isProfileDropdownOpen && (
+                    <div
+                        className="
+                            absolute
+                            top-[72px]
+                            right-2
+                            z-10
+                            w-[310px]
+                            max-w-[calc(100vw-16px)]
+                            xl:top-21
+                            xl:right-1
+                        "
+                    >
+                        <ProfileDropdown
+                            firstName={profileData?.first_name || ""}
+                            lastName={profileData?.last_name || ""}
+                            email={email || ""}
+                            logoutFunc={logoutFunc}
+                        />
+                    </div>
+                )}
+
+                {isNotificationsDropdownOpen && (
+                    <div
+                        className="
+                            absolute
+                            top-[72px]
+                            right-2
+                            z-10
+                            w-[95vw]
+                            max-w-[500px]
+                            xl:top-21
+                            xl:right-1
+                            xl:w-auto
+                        "
+                    >
+                        <NotificationDropdown
+                            unreadNotifications={unreadNotifications}
+                            setUnreadNotifications={setUnreadNotifications}
+                        />
+                    </div>
+                )}
             </div>
+
+            {isMenuOpen && (
+                <MobileMenu
+                    navItems={navItems}
+                    onClose={() => setIsMenuOpen(false)}
+                />
+            )}
         </header>
     );
 };
