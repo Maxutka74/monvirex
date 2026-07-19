@@ -1,13 +1,13 @@
 import { BiCheckDouble } from "react-icons/bi"
 import {useEffect, useState} from "react";
-import notificationsApi, {type Notification} from "../../features/notifications/api/notificationsApi.ts";
+import notificationsApi, {type Notification} from "../../../features/notifications/api/notificationsApi.ts";
 import {MdAddCard, MdOutlineNotificationsActive} from "react-icons/md";
 import {LiaMoneyBillWaveSolid} from "react-icons/lia";
 import {LuBadgeDollarSign, LuShoppingCart} from "react-icons/lu";
 import {RiExchangeDollarLine} from "react-icons/ri";
 import * as React from "react";
 import NotificationDetailModal from "./NotificationDetailModal.tsx";
-import api from "../../shared/api/instance.ts";
+import api from "../../../shared/api/instance.ts";
 
 type NotificationProps = {
     unreadNotifications: number,

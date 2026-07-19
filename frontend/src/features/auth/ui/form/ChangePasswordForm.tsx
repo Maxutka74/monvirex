@@ -2,11 +2,11 @@ import {useState} from "react";
 
 import {FiEye, FiEyeOff, FiLock} from "react-icons/fi";
 
-import authHooks from '../model/useAuth.ts'
+import authHooks from '../../model/useAuth.ts'
 import {BiErrorCircle} from "react-icons/bi";
 import {GoArrowLeft} from "react-icons/go";
 import {Link} from "react-router-dom";
-import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
+import SuccessModal from "../../../../shared/ui/SuccessModal.tsx";
 import type {AxiosError} from "axios";
 
 const ChangePasswordForm = () => {

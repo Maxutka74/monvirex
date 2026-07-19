@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {GoArrowLeft} from "react-icons/go";
 import {Link} from "react-router-dom";
 
-import authHooks from '../model/useAuth.ts'
+import authHooks from '../../model/useAuth.ts'
 import {BiErrorCircle} from "react-icons/bi";
 import type {AxiosError} from "axios";
 

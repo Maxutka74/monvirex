@@ -1,7 +1,7 @@
-import BalanceOverviewCard from "../../widgets/dashboard/BalanceOverviewCard.tsx";
-import TopMoversCard from "../../widgets/dashboard/TopMoversCard.tsx";
-import MyPortfolioCard from "../../widgets/dashboard/MyPortfolioCard.tsx";
-import MonvirexAICard from "../../widgets/dashboard/MonvirexAICard.tsx";
+import BalanceOverviewCard from "../../widgets/dashboard/balance/BalanceOverviewCard.tsx";
+import TopMoversCard from "../../widgets/dashboard/movers/TopMoversCard.tsx";
+import MyPortfolioCard from "../../widgets/dashboard/portfolio/MyPortfolioCard.tsx";
+import MonvirexAICard from "../../widgets/dashboard/ai/MonvirexAICard.tsx";
 
 const DashboardPage = () => {
     return (

@@ -4,7 +4,7 @@ import { RiMessage2Line } from "react-icons/ri";
 import { LuCalendar } from "react-icons/lu";
 import { FiTag } from "react-icons/fi";
 
-import type { Notification } from "../../features/notifications/api/notificationsApi.ts";
+import type { Notification } from "../../../features/notifications/api/notificationsApi.ts";
 
 type NotificationDetailModalProps = {
     notification: Notification;

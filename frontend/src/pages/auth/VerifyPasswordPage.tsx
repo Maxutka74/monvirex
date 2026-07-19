@@ -1,6 +1,6 @@
-import VerifyPasswordForm from "../../features/auth/ui/VerifyPasswordForm.tsx";
+import VerifyPasswordForm from "../../features/auth/ui/form/VerifyPasswordForm.tsx";
 import AuthHero from "../../shared/ui/AuthHero.tsx";
-import MobileLogo from "../../shared/ui/MobileLogo.tsx";
+import MobileLogo from "../../features/auth/ui/MobileLogo.tsx";
 
 
 const VerifyPasswordPage = () => {

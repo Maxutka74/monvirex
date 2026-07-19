@@ -8,7 +8,7 @@ import {
     Tooltip,
 } from "recharts";
 
-import type { UserSnapshot } from "../../features/wallet/api/walletApi.ts";
+import type { UserSnapshot } from "../../../features/wallet/api/walletApi.ts";
 
 type Props = {
     history: UserSnapshot[];

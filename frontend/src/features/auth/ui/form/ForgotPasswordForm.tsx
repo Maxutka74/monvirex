@@ -1,7 +1,7 @@
 import {BiErrorCircle} from "react-icons/bi";
 import {FiMail} from "react-icons/fi";
 import {useState} from "react";
-import authHooks from  '../model/useAuth.ts'
+import authHooks from '../../model/useAuth.ts'
 import {GoArrowLeft} from "react-icons/go";
 import {Link, useNavigate} from "react-router-dom";
 import type {AxiosError} from "axios";

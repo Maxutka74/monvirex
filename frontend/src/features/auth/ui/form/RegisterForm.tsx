@@ -1,5 +1,5 @@
 import {useState} from "react";
-import authHooks from "../model/useAuth.ts";
+import authHooks from "../../model/useAuth.ts";
 import {BiErrorCircle, BiUser} from "react-icons/bi";
 import {FiEye, FiEyeOff, FiLock, FiMail} from "react-icons/fi";
 import {FcGoogle} from "react-icons/fc";

@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 import Navbar from "../../widgets/navbar/Navbar.tsx";
 
-import bgImage from "../../assets/Dashboard.png";
+import bgImage from "../../assets/images/Dashboard.png";
 
 const MainLayout = () => {
     return (

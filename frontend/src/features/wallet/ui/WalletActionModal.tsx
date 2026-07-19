@@ -2,7 +2,7 @@ import { FiDollarSign } from "react-icons/fi"
 import { LuWallet } from "react-icons/lu"
 import {IoMdClose} from "react-icons/io";
 import {useState} from "react";
-import walletApi from "../../features/wallet/api/walletApi.ts";
+import walletApi from "../api/walletApi.ts";
 import {RiLoaderLine} from "react-icons/ri";
 import {BiErrorCircle} from "react-icons/bi";
 

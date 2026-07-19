@@ -1,9 +1,9 @@
 import {useEffect, useRef, useState} from "react";
-import authHooks from "../model/useAuth.ts";
+import authHooks from "../../model/useAuth.ts";
 import {BiErrorCircle} from "react-icons/bi";
 import {Link} from "react-router-dom";
 import {GoArrowLeft} from "react-icons/go";
-import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
+import SuccessModal from "../../../../shared/ui/SuccessModal.tsx";
 import type {AxiosError} from "axios";
 
 const VerifyEmailForm = () => {

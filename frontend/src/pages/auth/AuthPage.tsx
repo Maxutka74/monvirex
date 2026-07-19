@@ -1,8 +1,8 @@
 import {useState} from "react";
-import LoginForm from "../../features/auth/ui/LoginForm.tsx";
-import RegisterForm from "../../features/auth/ui/RegisterForm.tsx";
+import LoginForm from "../../features/auth/ui/form/LoginForm.tsx";
+import RegisterForm from "../../features/auth/ui/form/RegisterForm.tsx";
 import AuthHero from "../../shared/ui/AuthHero.tsx";
-import MobileLogo from "../../shared/ui/MobileLogo.tsx";
+import MobileLogo from "../../features/auth/ui/MobileLogo.tsx";
 
 const AuthPage = () => {
     const [ activeTab, setActiveTab ] = useState<'login' | 'register'>('login');

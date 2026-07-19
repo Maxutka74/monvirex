@@ -7,21 +7,21 @@ import {
     IoMdNotificationsOutline,
 } from "react-icons/io";
 
-import logo from "../../assets/MonvirexLogo.png";
+import logo from "../../assets/logos/MonvirexLogo.png";
 
 import authApi from "../../features/auth/api/authApi.ts";
 import notificationsApi from "../../features/notifications/api/notificationsApi.ts";
 import profileApi, {
     type Profile,
-} from "../../features/user/api/profileApi.ts";
+} from "../../features/profile/api/profileApi.ts";
 
 import useUserStore, {
     type UserStore,
 } from "../../entities/user/model/userStore.ts";
 
 import MobileMenu from "./MobileMenu.tsx";
-import NotificationDropdown from "./NotificationDropdown.tsx";
-import ProfileDropdown from "./ProfileDropdown.tsx";
+import NotificationDropdown from "./notification/NotificationDropdown.tsx";
+import ProfileDropdown from "./profile/ProfileDropdown.tsx";
 
 const Navbar = () => {
     const navItems = [

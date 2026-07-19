@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import walletApi, {type UserPortfolio} from "../../features/wallet/api/walletApi.ts";
-import assetsApi, {type Asset, type AssetKlines} from "../../features/assets/api/assetsApi.ts";
+import walletApi, {type UserPortfolio} from "../../../features/wallet/api/walletApi.ts";
+import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import { HiOutlineClock } from "react-icons/hi";
 import PortfolioSparkline from "./PortfolioSparkline.tsx";
 import {GoArrowDownRight, GoArrowUpRight} from "react-icons/go";

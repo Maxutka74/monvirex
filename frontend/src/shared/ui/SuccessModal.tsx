@@ -1,4 +1,4 @@
-import SuccessIcon  from '../../assets/SuccessIcon.svg'
+import SuccessIcon  from '../../assets/icons/SuccessIcon.svg'
 import {Link} from "react-router-dom";
 
 type SuccessModalProps = {

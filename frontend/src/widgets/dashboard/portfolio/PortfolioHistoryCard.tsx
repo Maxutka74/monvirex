@@ -1,7 +1,7 @@
 import {BsCircleFill} from "react-icons/bs";
 import { useEffect, useState } from "react";
-import PortfolioHistoryChart from "./PortfolioHistoryChart";
-import walletApi, {type UserSnapshot} from "../../features/wallet/api/walletApi.ts";
+import PortfolioHistoryChart from "./PortfolioHistoryChart.tsx";
+import walletApi, {type UserSnapshot} from "../../../features/wallet/api/walletApi.ts";
 
 const PortfolioHistoryCard = () => {
     const [history, setHistory] = useState<UserSnapshot[]>([]);

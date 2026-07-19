@@ -4,8 +4,8 @@ import {FiEye, FiEyeOff, FiLock, FiMail} from "react-icons/fi";
 import {Link} from "react-router-dom";
 import {MdOutlineCheckBoxOutlineBlank} from "react-icons/md";
 import {GoCheckbox} from "react-icons/go";
-import authHooks from "../model/useAuth.ts"
-import SuccessModal from "../../../shared/ui/SuccessModal.tsx";
+import authHooks from "../../model/useAuth.ts"
+import SuccessModal from "../../../../shared/ui/SuccessModal.tsx";
 import {BiErrorCircle} from "react-icons/bi";
 import {FcGoogle} from "react-icons/fc";
 import { FaTelegram } from "react-icons/fa";

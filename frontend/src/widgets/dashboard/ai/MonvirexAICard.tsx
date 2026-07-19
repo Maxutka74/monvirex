@@ -2,7 +2,7 @@ import { TbHomeCog } from "react-icons/tb";
 import { CgFileDocument } from "react-icons/cg";
 import { PiLightningLight, PiShootingStarLight } from "react-icons/pi";
 
-import logo from "../../assets/MonvirexWhiteLogo.png";
+import logo from "../../../assets/logos/MonvirexWhiteLogo.png";
 
 const MonvirexAICard = () => {
     return (

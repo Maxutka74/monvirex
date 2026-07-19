@@ -1,4 +1,4 @@
-import type { AssetKlines } from "../../features/assets/api/assetsApi.ts";
+import type { AssetKlines } from "../../../features/assets/api/assetsApi.ts";
 import {
     Line,
     LineChart,

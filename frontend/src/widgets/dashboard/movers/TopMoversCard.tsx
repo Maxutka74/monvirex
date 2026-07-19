@@ -4,7 +4,7 @@ import { RiLoaderLine } from "react-icons/ri";
 
 import assetsApi, {
     type Asset,
-} from "../../features/assets/api/assetsApi.ts";
+} from "../../../features/assets/api/assetsApi.ts";
 
 const TopMoversCard = () => {
     const [assets, setAssets] = useState<Asset[]>([]);

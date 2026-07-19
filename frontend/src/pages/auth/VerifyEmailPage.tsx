@@ -1,6 +1,6 @@
-import VerifyEmailForm from "../../features/auth/ui/VerifyEmailForm.tsx";
+import VerifyEmailForm from "../../features/auth/ui/form/VerifyEmailForm.tsx";
 import AuthHero from "../../shared/ui/AuthHero.tsx";
-import MobileLogo from "../../shared/ui/MobileLogo.tsx";
+import MobileLogo from "../../features/auth/ui/MobileLogo.tsx";
 
 const VerifyEmailPage = () => {
 
