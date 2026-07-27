@@ -42,7 +42,7 @@ const getAssets = async (symbols?: string[]): Promise<Assets> => {
 
         return response.data
     } else {
-        const response = await api.get('/crypto/assets/')
+        const response = await api.get('/crypto/assets/?page_size=5')
 
         return response.data
     }
