@@ -19,6 +19,7 @@ class ActivitySummaryService:
             '1d': 1,
             '7d': 7,
             '30d': 30,
+            'all': 365 * 100
         }
 
         if period not in period_days:
