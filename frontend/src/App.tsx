@@ -8,6 +8,7 @@ import ProtectedRoute from "./app/router/ProtectedRoute.tsx";
 import AuthFlowRoute from "./app/router/AuthFlowRoute.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
+import MyAssetsPage from "./pages/myassets/MyAssetsPage.tsx";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                     <Route element={<MainLayout />} >
                         <Route path='/dashboard' element={<DashboardPage />} />
+                        <Route path='/myassets' element={<MyAssetsPage />} />
                     </Route>
                 </Route>
             </Routes>
