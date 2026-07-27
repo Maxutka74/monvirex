@@ -112,7 +112,7 @@ const MyPortfolioCard = () => {
     );
 
     return (
-        <div className="w-full min-h-[400px] rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-5">
+        <div className="relative w-full min-h-[400px] rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-5">
             <div className="flex flex-row items-center gap-2 pb-[20px]">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#429EFF] sm:h-[44px] sm:w-[44px]">
                     <HiOutlineClock
@@ -235,8 +235,13 @@ const MyPortfolioCard = () => {
                                     {formatPrice(item.balance)}
                                 </td>
                             </tr>
-                        ))}
+                            ))}
                         </tbody>
+                        {paginatedPortfolioData.length === 0 && (
+                            <div className='absolute inset-0 flex items-center justify-center'>
+                                <p className="text-[18px] sm:text-xl text-gray-600 text-center">You don’t have any cryptocurrencies in your portfolio yet</p>
+                            </div>
+                        )}
                     </table>
                 </div>
             )}

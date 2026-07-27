@@ -28,7 +28,7 @@ const BalanceOverviewCard = () => {
                 const symmaryData = await walletApi.getActivitySummary(days);
 
                 setBalance(balanceData.balance);
-                setSummary(symmaryData);
+                setSummary(symmaryData.summary);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -129,7 +129,7 @@ const BalanceOverviewCard = () => {
                 </div>
 
                 <div className="flex-1 min-h-[154px] rounded-[20px] sm:rounded-[30px] p-4 sm:p-5 border border-[#DFE1E7] bg-[#FFFFFF]/60">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
                         <div className="flex items-center gap-2">
                             <div className="w-9 h-9 sm:w-[44px] sm:h-[44px] flex justify-center items-center rounded-full bg-[#429EFF]">
                                 <RiMoneyDollarCircleLine
