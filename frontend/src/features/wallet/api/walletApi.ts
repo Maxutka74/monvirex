@@ -44,6 +44,10 @@ export type UserSummary = {
     exchange: string
 }
 
+export type UserSummaryHistory = {
+    summary: UserSummary
+}
+
 export type UserCryptoTransaction = {
     id: string
     asset: string
@@ -90,7 +94,7 @@ const getPortfolioHistory = async (): Promise<UserSnapshotHistoryResponse> => {
     return response.data
 }
 
-const getActivitySummary = async (period: string): Promise<UserSummary> => {
+const getActivitySummary = async (period: string): Promise<UserSummaryHistory> => {
     const response = await api.get(`/payment/activity-summary/?period=${period}`)
     return response.data
 }
