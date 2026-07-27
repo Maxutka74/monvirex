@@ -1,5 +1,5 @@
 import ChangePasswordForm from "../../features/auth/ui/form/ChangePasswordForm.tsx";
-import AuthHero from "../../shared/ui/AuthHero.tsx";
+import AuthHero from "../../features/auth/ui/AuthHero.tsx";
 import MobileLogo from "../../features/auth/ui/MobileLogo.tsx";
 
 
