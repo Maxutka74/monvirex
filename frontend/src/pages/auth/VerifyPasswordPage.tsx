@@ -1,11 +1,9 @@
-import VerifyPasswordForm from "../../features/auth/ui/VerifyPasswordForm.tsx";
-import {useTranslation} from "react-i18next";
-import AuthHero from "../../shared/ui/AuthHero.tsx";
-import MobileLogo from "../../shared/ui/MobileLogo.tsx";
+import VerifyPasswordForm from "../../features/auth/ui/form/VerifyPasswordForm.tsx";
+import AuthHero from "../../features/auth/ui/AuthHero.tsx";
+import MobileLogo from "../../features/auth/ui/MobileLogo.tsx";
 
 
 const VerifyPasswordPage = () => {
-    const { t } = useTranslation();
 
     return (
         <div className="min-h-[100dvh] flex items-center font-['DM_Sans']">
@@ -18,10 +16,10 @@ const VerifyPasswordPage = () => {
                     <div className='flex flex-col justify-center items-center gap-[12px] -mt-12 xl:mt-0'>
                         <h1
                             className='font-medium text-[40px] text-black'>
-                            {t('auth.forgot_password')}
+                            Forgot Password ?
                         </h1>
                         <p className='font-medium text-[16px] text-[#666D80]'>
-                            {t('auth.verify_reset_subtitle')}
+                            Enter the code we sent to your email
                         </p>
                     </div>
                     <div>

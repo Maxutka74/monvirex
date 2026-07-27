@@ -1,12 +1,10 @@
-import ChangePasswordForm from "../../features/auth/ui/ChangePasswordForm.tsx";
-import {useTranslation} from "react-i18next";
-import AuthHero from "../../shared/ui/AuthHero.tsx";
-import MobileLogo from "../../shared/ui/MobileLogo.tsx";
+import ChangePasswordForm from "../../features/auth/ui/form/ChangePasswordForm.tsx";
+import AuthHero from "../../features/auth/ui/AuthHero.tsx";
+import MobileLogo from "../../features/auth/ui/MobileLogo.tsx";
 
 
 
 const ChangePasswordPage = () => {
-    const { t } = useTranslation();
 
     return (
         <div className="min-h-[100dvh] flex items-center font-['DM_Sans']">
@@ -19,11 +17,11 @@ const ChangePasswordPage = () => {
                     <div className='flex flex-col justify-center items-center gap-[12px] -mt-12 xl:mt-0'>
                         <h1
                             className='font-medium  text-[30px] xl:text-[40px] leading-tight text-black'>
-                            {t('auth.change_password_title')}
+                            Create New Password
                         </h1>
                         <p
                             className='font-medium text-[16px] text-[#666D80]'>
-                            {t('auth.change_password_subtitle')}
+                            Your new password must be different from previous passwords
                         </p>
                     </div>
                     <div>
