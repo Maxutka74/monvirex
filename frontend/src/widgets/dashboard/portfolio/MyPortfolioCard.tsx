@@ -42,7 +42,7 @@ const MyPortfolioCard = () => {
                     })
                 );
 
-                const assets = await assetsApi.getAssets(assetList);
+                const assets = await assetsApi.getAssets(undefined, assetList);
 
                 setPortfolio(portfolioHistory.portfolio);
                 setAssets(assets.results);

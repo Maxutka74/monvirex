@@ -1,5 +1,7 @@
 import WalletOverviewCard from "../../widgets/myassets/WalletOverviewCard.tsx";
 import MarketsCard from "../../widgets/myassets/MarketsCard.tsx";
+import BestToBuyChart from "../../widgets/myassets/BestToBuyChart.tsx";
+import AIChart from "../../shared/ui/AIChart.tsx";
 
 
 const MyAssetsPage = () => {
@@ -10,10 +12,17 @@ const MyAssetsPage = () => {
                     <div className="xl:col-span-8">
                         <WalletOverviewCard />
                     </div>
-                </div>
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+                    <div className='xl:col-span-4'>
+                        <BestToBuyChart />
+                    </div>
+
                     <div className="xl:col-span-8">
                         <MarketsCard />
+                    </div>
+
+                    <div className='xl:col-span-4'>
+                        <AIChart />
                     </div>
                 </div>
             </div>

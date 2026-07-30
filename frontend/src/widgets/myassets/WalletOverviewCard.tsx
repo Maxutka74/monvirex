@@ -223,12 +223,12 @@ const WalletOverviewCard = () => {
                                 <div className='flex items-center justify-center'>
                                     <RiLoaderLine
                                     size={42}
-                                    className="text-black animate-spin"
+                                    className="text-[#666D80] animate-spin"
                                     />
                                 </div>):
                                 <>
                                     <div className='flex flex-row items-center justify-between'>
-                                        <h4 className='text-[40px] font-medium'>${allTimeVolume}</h4>
+                                        <h4 className='text-[32px] sm:text-[40px] font-medium'>${allTimeVolume.toFixed(2)}</h4>
                                         <p className='text-[#DF1C41]'>+${currentPeriodVolume} <span className='text-[#6F6F6F]'>{currentDate[days]}</span> </p>
                                     </div>
                                     <div className='w-full h-full'>

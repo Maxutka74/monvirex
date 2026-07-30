@@ -5,6 +5,7 @@ import {GoArrowDownRight, GoArrowUpRight} from "react-icons/go";
 import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import {RiLoaderLine} from "react-icons/ri";
 import api from "../../shared/api/instance.ts";
+import { CgSortAz } from "react-icons/cg";
 
 
 const MarketsCard = () => {
@@ -12,30 +13,94 @@ const MarketsCard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [nextAssetsUrl, setNextAssetsUrl] = useState("");
     const [totalPages, setTotalPages] = useState(1);
+    const [slicer, setSlicer] = useState(0);
+    const [search, setSearch] = useState("");
+    const [debounceSearch, setDebounceSearch] = useState('');
+    const [order, setOrder] = useState('-current_price');
     const [isLoading, setIsLoading] = useState(true);
 
+    const sortOptions = [
+        {
+            label: "Sort",
+            value: "",
+        },
+        {
+            label: "Price",
+            value: "current_price",
+        },
+        {
+            label: "Change",
+            value: "price_change_24h",
+        },
+        {
+            label: "Volume",
+            value: "volume_24h",
+        },
+        {
+            label: "Name",
+            value: "name",
+        }
+    ];
+
     useEffect(() => {
-        const data = async () => {
-            try {
-                setIsLoading(true);
+        if (search.trim().length === 0) {
+            setCurrentPage(1)
+            setSlicer(0)
+            setDebounceSearch('')
 
-                const asset = await assetsApi.getAssets();
+            const data = async () => {
+                try {
+                    setIsLoading(true);
 
-                if (asset.next) {
-                    setNextAssetsUrl(asset.next);
+                    const asset = await assetsApi.getAssets(undefined, undefined, order);
+
+                    setNextAssetsUrl(asset.next ?? "")
+                    setAssets(asset.results);
+
+                    setTotalPages(Math.ceil(asset.count / asset.results.length))
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    setIsLoading(false);
                 }
-                setAssets(asset.results);
+            };
 
-                setTotalPages(asset.count / asset.results.length)
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
+            data();
+        }
+    }, [search, order]);
+
+    useEffect(() => {
+        if (search.length >= 1){
+            const timer = setTimeout(() => setDebounceSearch(search), 500)
+
+            return () => {
+                clearTimeout(timer)
             }
-        };
+        }
 
-        data();
-    }, []);
+    }, [search]);
+
+    useEffect(() => {
+        if(debounceSearch.length >= 1) {
+            const dataSearch = async () => {
+                try {
+                    const asset = await assetsApi.getAssets(debounceSearch);
+
+                    setAssets(asset.results);
+                    setNextAssetsUrl(asset.next ?? "");
+                    setCurrentPage(1);
+                    setTotalPages(Math.ceil(asset.count / asset.results.length));
+                    setSlicer(0)
+
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            dataSearch();
+        }
+
+    }, [debounceSearch]);
 
     const portfolioTableData = assets
         .map((item) => {
@@ -49,7 +114,6 @@ const MarketsCard = () => {
                 value: price,
             };
         })
-        .filter((item) => item !== null);
 
     const formatPrice = (price: number | string) => {
         const value = Number(price);
@@ -63,7 +127,7 @@ const MarketsCard = () => {
         }
 
         if (value > 0) {
-            return `$${value.toFixed(6)}`;
+            return `$${value.toFixed(8)}`;
         }
 
         return "$0.00";
@@ -82,35 +146,62 @@ const MarketsCard = () => {
             return `${(volume / 1_000).toFixed(2)}K`;
         }
 
-        return '0.00K'
+        return volume.toFixed(2);
     }
 
     const nextPageAssets = async () => {
-        if (nextAssetsUrl) {
+        if (nextAssetsUrl && assets.length <= (currentPage * 5)) {
             const next = nextAssetsUrl.indexOf('api/')
 
             const nextAssets = await api.get(nextAssetsUrl.slice((next)+3))
 
-            setAssets([...assets, ...nextAssets.data.results]);
+            setAssets(assets => [...assets, ...nextAssets.data.results]);
             setNextAssetsUrl(nextAssets.data.next)
         }
+
     }
 
-    const paginatedAssets = portfolioTableData.slice(currentPage, (currentPage * (assets.length / 5)))
+    const paginatedAssets = portfolioTableData.slice(slicer, slicer + 5)
+
+    const handleSort = (value: string) => {
+        if(!value) return;
+
+        setOrder((order) =>
+            order === value? `-${value}` :
+                order === `-${value}`? value: value
+        )
+    }
 
     return (
         <div className="relative w-full min-h-[400px] rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-5">
-            <div className="flex flex-row items-center gap-2 pb-[20px]">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#429EFF] sm:h-[44px] sm:w-[44px]">
-                    <HiOutlineClock
-                        size={24}
-                        className="text-[#FFFFFF]"
-                    />
-                </div>
+            <div className="flex flex-row items-center justify-between pb-[20px]">
+                <div className='flex flex-row gap-2 items-center'>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#429EFF] sm:h-[44px] sm:w-[44px]">
+                        <HiOutlineClock
+                            size={24}
+                            className="text-[#FFFFFF]"
+                        />
+                    </div>
 
-                <h4 className="text-[20px] font-medium sm:text-[24px]">
-                    Markets
-                </h4>
+                    <h4 className="text-[20px] font-medium sm:text-[24px]">
+                        Markets
+                    </h4>
+                </div>
+                <div className='flex flex-col items-end sm:flex-row gap-6'>
+                    <input className='w-[80%] sm:w-[240px] h-[46px] outline-none text-[#666D80] border border-[#A4ACB9] p-2 rounded-full' value={search} type="text" onChange={(e) => setSearch(e.target.value)} placeholder='Search by name...'/>
+                    <div className='relative w-[120px] sm:w-[115px] h-[46px] border border-[#A4ACB9] rounded-full text-[#6F6F6F] px-2'>
+                        <select className='absolute w-full appearance-none bg-transparent top-2'>
+                            {sortOptions.map((option) => (
+                                <option key={option.value} value={order} onClick={() => handleSort(option.value)}>
+                                    {option.value === order.replace("-", "")
+                                        ? `${option.label} ${order.startsWith("-") ? "▾" : "▴"}`
+                                        : option.label}
+                                </option>
+                            ))}
+                        </select>
+                        <CgSortAz size={24} className='absolute top-2.5 right-1 pointer-events-none'/>
+                    </div>
+                </div>
             </div>
 
             {isLoading ? (
@@ -166,7 +257,7 @@ const MarketsCard = () => {
                         {paginatedAssets.map((item) => (
                             <tr
                                 key={item.symbol}
-                                className="h-[46px]"
+                                className="h-[56px]"
                             >
                                 <td>
                                     <div className="flex h-[46px] items-center gap-2 font-medium">
@@ -221,44 +312,44 @@ const MarketsCard = () => {
                     </table>
                 </div>
             )}
-
-            {currentPage <= totalPages && (
-                <div className="flex flex-row items-center justify-center gap-4 pt-2 text-[#666D80]">
-                    <FiArrowLeft
-                        size={24}
-                        onClick={() =>
-                            currentPage > 1
-                                ? setCurrentPage(currentPage - 1)
-                                : null
+            <div className="flex flex-row items-center justify-center gap-4 pt-2 text-[#666D80]">
+                <FiArrowLeft
+                    size={24}
+                    onClick={() => {
+                        currentPage > 1
+                            ? setCurrentPage(currentPage => currentPage - 1)
+                            : null;
+                        setSlicer(slicer => slicer-5)
                         }
-                        className={`cursor-pointer ${
-                            currentPage === 1
-                                ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
-                                : ""
-                        }`}
-                    />
+                    }
+                    className={`cursor-pointer ${
+                        currentPage === 1
+                            ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+                            : ""
+                    }`}
+                />
 
-                    <p>
-                        Page {currentPage} of {totalPages}
-                    </p>
+                <p>
+                    Page {currentPage} of {totalPages}
+                </p>
 
-                    <FiArrowRight
-                        size={24}
-                        onClick={() => {
-                            currentPage < totalPages
-                                ? setCurrentPage(currentPage + 1)
-                                : null;
-                            nextPageAssets()
-                        }
-                        }
-                        className={`cursor-pointer ${
-                            currentPage === totalPages
-                                ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
-                                : ""
-                        }`}
-                    />
-                </div>
-            )}
+                <FiArrowRight
+                    size={24}
+                    onClick={() => {
+                        currentPage < totalPages
+                            ? setCurrentPage(currentPage => currentPage + 1)
+                            : null;
+                        nextPageAssets();
+                        setSlicer(slicer => slicer + 5)
+                    }
+                    }
+                    className={`cursor-pointer ${
+                        currentPage === totalPages
+                            ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+                            : ""
+                    }`}
+                />
+            </div>
         </div>
     );
 };

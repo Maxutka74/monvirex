@@ -22,12 +22,11 @@ class AssetListView(ListAPIView):
     serializer_class = AssetListSerializer
     pagination_class = AssetsPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ['symbol', 'name']
+    search_fields = ['^name']
     ordering_fields = [
         'current_price',
         'price_change_24h',
         'volume_24h',
-        'symbol',
         'name',
     ]
 

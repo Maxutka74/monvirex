@@ -10,7 +10,7 @@ const WalletCustomTooltip = ({ active, payload }: TooltipProps<number, string> &
             <div className="mb-3 flex items-center gap-2">
                 <div
                     className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: payload[0].color }}
+                    style={{ backgroundColor: asset.fill }}
                 />
 
                 <span className="font-semibold text-white">

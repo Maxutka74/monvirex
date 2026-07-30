@@ -28,9 +28,9 @@ const TransactionOverviewChart = ({data, currentPeriodVolume}: TransactionOvervi
             ]
 
     return (
-        <div className='w-full flex flex-col sm:flex-row items-center justify-center'>
+        <div className='w-full flex flex-col sm:flex-row items-center justify-center gap-1'>
             <div className='flex-1 w-full'>
-                <ResponsiveContainer width='100%' height={window.innerHeight < 640? 160: 220}>
+                <ResponsiveContainer width='100%' height={window.innerHeight < 640? 160: 260}>
                     <RadialBarChart
                     cx='50%'
                     cy='50%'
@@ -55,9 +55,8 @@ const TransactionOverviewChart = ({data, currentPeriodVolume}: TransactionOvervi
                                         <div className='w-[15px] h-[15px] rounded-full' style={{backgroundColor: item.fill}} />
                                         <h4 className='text-black text-[18px]'>{item.name}</h4>
                                         </div>
-                                        <div className='flex flex-row gap-7'>
-                                            <p className='text-black'>${item.value.toFixed(2)}</p>
-                                            <p style={{color: item.fill}}>{item.percent.toFixed(1)}%</p>
+                                        <div className='flex flex-row'>
+                                            <p className='text-black'>${item.value.toFixed(1)}</p>
                                         </div>
                                     </div>
                             </div>

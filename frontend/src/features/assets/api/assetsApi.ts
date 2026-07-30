@@ -36,13 +36,17 @@ export type AssetKlines = {
 }
 
 
-const getAssets = async (symbols?: string[]): Promise<Assets> => {
-    if (symbols && symbols.length !== 0) {
+const getAssets = async (symbol?: string, symbols?: string[], ordering?: string): Promise<Assets> => {
+    if (symbol) {
+        const response = await api.get(`/crypto/assets/?search=${symbol}`)
+
+        return response.data
+    } else if (symbols && symbols.length !== 0) {
         const response = await api.get(`/crypto/assets/?symbols=${symbols.join(',')}`)
 
         return response.data
     } else {
-        const response = await api.get('/crypto/assets/?page_size=5')
+        const response = await api.get(`/crypto/assets/?ordering=${ordering}&page_size=5`)
 
         return response.data
     }
