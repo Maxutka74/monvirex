@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react";
-import assetsApi, {type Asset} from "../../features/assets/api/assetsApi.ts";
+import assetsApi, {type Asset} from "../../../features/assets/api/assetsApi.ts";
 import { HiOutlineClock } from "react-icons/hi";
 import {GoArrowDownRight, GoArrowUpRight} from "react-icons/go";
 import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import {RiLoaderLine} from "react-icons/ri";
-import api from "../../shared/api/instance.ts";
+import api from "../../../shared/api/instance.ts";
 import { CgSortAz } from "react-icons/cg";
-import TradeConfirmationModal from "./TradeConfirmationModal.tsx";
+import TradeConfirmationModal from "../trading/TradeConfirmationModal.tsx";
 
 type MarketAction = {
     symbol: string;
