@@ -44,15 +44,17 @@ const NotificationDropdown = ({
     }, []);
 
     const notificationRead = async (notification: Notification) => {
+        if (notification.is_read) {
+            setSelectedNotification(notification);
+            return;
+        }
+
         try {
+
             setSelectedNotification({
                 ...notification,
                 is_read: true,
             });
-
-            if (notification.is_read) {
-                return;
-            }
 
             await notificationsApi.markNotificationAsRead(notification.id);
 
