@@ -8,6 +8,10 @@ export type UserTransaction = {
     created_at: string
 }
 
+export type UserTransactionResponse = {
+    transactions: UserTransaction[]
+}
+
 export type UserPayment = {
     amount: string | number
     idempotency_key?: string
@@ -50,12 +54,17 @@ export type UserSummaryHistory = {
 
 export type UserCryptoTransaction = {
     id: string
+    from_asset: string
     asset: string
     transaction_type: string
     crypto_amount: string
     usdt_amount: string
     status: string
     created_at: string
+}
+
+export type UserCryptoTransactionResponse = {
+    transactions: UserCryptoTransaction[]
 }
 
 
@@ -65,7 +74,7 @@ const getBalance = async (): Promise<{ balance: string }> => {
     return response.data
 }
 
-const getTransactions = async (): Promise<UserTransaction[]> => {
+const getTransactions = async (): Promise<UserTransactionResponse> => {
     const response = await api.get('/payment/transactions/')
     return response.data
 }
@@ -99,7 +108,7 @@ const getActivitySummary = async (period: string): Promise<UserSummaryHistory> =
     return response.data
 }
 
-const getCryptoTransactions = async (): Promise<UserCryptoTransaction[]> => {
+const getCryptoTransactions = async (): Promise<UserCryptoTransactionResponse> => {
     const response = await api.get('/payment/crypto_transactions/')
     return response.data
 }

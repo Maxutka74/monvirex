@@ -2,7 +2,7 @@ import api from "../../../shared/api/instance.ts";
 
 export type TradeBuyData = {
     symbol: string,
-    amount: string | number,
+    amount_usdt: string | number,
 }
 
 export type TradeSellData = {
@@ -16,7 +16,7 @@ export type TradeExchangeData = {
     amount_crypto: string | number,
 }
 
-export type TradeResponseBuyAndSell = {
+export type TradeResponseData = {
     transaction_id: string,
     asset: string,
     crypto_amount: string,
@@ -30,31 +30,41 @@ export type TradeResponseBuyAndSell = {
     status: string,
 }
 
-export type TradeResponseExchange = {
-    transaction_id: string,
-    from_asset: string,
-    to_asset: string,
-    amount_from: string,
-    amount_to: string,
-    usdt_equivalent: string,
-    from_holding: {
-        amount: string,
-        average_buy_price: string,
-    },
-    to_holding: {
-        amount: string,
-        average_buy_price: string,
-    },
-    status: string,
+export type TradeResponseBuy = {
+    buy: TradeResponseData
 }
 
-const buyAsset = async (data: TradeBuyData): Promise<TradeResponseBuyAndSell> => {
+export type TradeResponseSell = {
+    sell: TradeResponseData
+}
+
+export type TradeResponseExchange = {
+    exchange: {
+        transaction_id: string,
+        from_asset: string,
+        to_asset: string,
+        amount_from: string,
+        amount_to: string,
+        usdt_equivalent: string,
+        from_holding: {
+            amount: string,
+            average_buy_price: string,
+        },
+        to_holding: {
+            amount: string,
+            average_buy_price: string,
+        },
+        status: string,
+    }
+}
+
+const buyAsset = async (data: TradeBuyData): Promise<TradeResponseBuy> => {
     const response = await api.post('/trade/buy/', data)
 
     return response.data
 }
 
-const sellAsset = async (data: TradeSellData): Promise<TradeResponseBuyAndSell> => {
+const sellAsset = async (data: TradeSellData): Promise<TradeResponseSell> => {
     const response = await api.post('/trade/sell/', data)
 
     return response.data
