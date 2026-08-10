@@ -316,6 +316,7 @@ class TradeService:
 
             transaction_crypto = CryptoTransaction.objects.create(
                 user=user,
+                from_asset=from_asset,
                 asset=to_asset,
                 usdt_amount=amount_to * asset_to.current_price,
                 crypto_amount=amount_crypto,

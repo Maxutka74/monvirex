@@ -7,7 +7,7 @@ type TransactionOverviewChartProps = {
     currentPeriodVolume: number
 }
 
-const TransactionOverviewChart = ({data, currentPeriodVolume}: TransactionOverviewChartProps) => {
+const TransactionOverviewCard = ({data, currentPeriodVolume}: TransactionOverviewChartProps) => {
     const chartData = [
         { name: "Deposit", value: Number(data?.deposit), percent: currentPeriodVolume > 0? Number(data?.deposit) / currentPeriodVolume * 100: 0, fill: "#22C55E" },
         { name: "Withdraw", value: Number(data?.withdraw), percent: currentPeriodVolume > 0? Number(data?.withdraw) / currentPeriodVolume * 100: 0, fill: "#F97316" },
@@ -68,4 +68,4 @@ const TransactionOverviewChart = ({data, currentPeriodVolume}: TransactionOvervi
     )
 }
 
-export default TransactionOverviewChart
+export default TransactionOverviewCard

@@ -4,7 +4,7 @@ from apps.wallet.models import CryptoTransaction, CryptoWallet
 class CryptoWalletService:
     @staticmethod
     def get_portfolio(user):
-        crypto_wallet = CryptoWallet.objects.filter(user=user)
+        crypto_wallet = CryptoWallet.objects.filter(user=user, amount__gt=0)
 
         return crypto_wallet
 

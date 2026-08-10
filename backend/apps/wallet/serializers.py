@@ -44,6 +44,7 @@ class CryptoTransactionHistorySerializer(serializers.ModelSerializer):
         model = CryptoTransaction
         fields = (
             'id',
+            'from_asset',
             'asset',
             'transaction_type',
             'crypto_amount',

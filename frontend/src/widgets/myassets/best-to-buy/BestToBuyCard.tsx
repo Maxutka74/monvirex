@@ -6,7 +6,7 @@ import BestToBuyKlines from "./BestToBuyKlines.tsx";
 import {RiLoaderLine} from "react-icons/ri";
 
 
-const BestToBuyChart = () => {
+const BestToBuyCard = () => {
     const [topBuy, setTopBuy] = useState<Asset>()
     const [topKlines, setTopKlines] = useState<AssetKlines[]>([])
     const [isLoading, setIsLoading] = useState(false)
@@ -85,4 +85,4 @@ const BestToBuyChart = () => {
     )
 }
 
-export default BestToBuyChart
+export default BestToBuyCard

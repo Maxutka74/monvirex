@@ -1,4 +1,4 @@
-import {Cell, Pie, PieChart, Tooltip} from "recharts";
+import {Cell, Pie, PieChart, ResponsiveContainer, Tooltip} from "recharts";
 import WalletCustomTooltip from "./WalletCustomTooltip.tsx";
 
 type SparklineData = {
@@ -34,23 +34,25 @@ const WalletSparkline = ({data, totalValue, COLORS}: WalletSparklineProps) => {
             ]
 
     return (
-        <div className='relative w-[250px] h-[250px] '>
-            <PieChart width={250} height={250} style={{overflow: 'visible'}}>
-                <Pie
-                    data={displayData}
-                    dataKey='value'
-                    nameKey='name'
-                    innerRadius={68}
-                    outerRadius={98}
-                    stroke="#D7E8FF"
-                    strokeOpacity={0.55}
-                >
-                    {clearData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                </Pie>
-                <Tooltip content={<WalletCustomTooltip />} wrapperStyle={{zIndex: 999}}/>
-            </PieChart>
+        <div className='relative w-full aspect-square max-w-[250px] min-w-0'>
+            <ResponsiveContainer width='100%' height='100%'>
+                <PieChart style={{overflow: 'visible'}}>
+                    <Pie
+                        data={displayData}
+                        dataKey='value'
+                        nameKey='name'
+                        innerRadius='58%'
+                        outerRadius='90%'
+                        stroke="#D7E8FF"
+                        strokeOpacity={0.55}
+                    >
+                        {clearData.map((_, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                    </Pie>
+                    <Tooltip content={<WalletCustomTooltip />} wrapperStyle={{zIndex: 999}}/>
+                </PieChart>
+            </ResponsiveContainer>
 
         <div className="
             pointer-events-none

@@ -6,7 +6,12 @@ import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import {RiLoaderLine} from "react-icons/ri";
 import api from "../../shared/api/instance.ts";
 import { CgSortAz } from "react-icons/cg";
+import TradeConfirmationModal from "./TradeConfirmationModal.tsx";
 
+type MarketAction = {
+    symbol: string;
+    value: string;
+};
 
 const MarketsCard = () => {
     const [assets, setAssets] = useState<Asset[]>([]);
@@ -16,30 +21,24 @@ const MarketsCard = () => {
     const [slicer, setSlicer] = useState(0);
     const [search, setSearch] = useState("");
     const [debounceSearch, setDebounceSearch] = useState('');
-    const [order, setOrder] = useState('-current_price');
+    const [order, setOrder] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAsset, setSelectedAsset] = useState<MarketAction | null>(null);
+
     const sortOptions = [
-        {
-            label: "Sort",
-            value: "",
-        },
-        {
-            label: "Price",
-            value: "current_price",
-        },
-        {
-            label: "Change",
-            value: "price_change_24h",
-        },
-        {
-            label: "Volume",
-            value: "volume_24h",
-        },
-        {
-            label: "Name",
-            value: "name",
-        }
+        { label: "Price ↑", value: "current_price" },
+        { label: "Price ↓", value: "-current_price" },
+
+        { label: "Change ↑", value: "price_change_24h" },
+        { label: "Change ↓", value: "-price_change_24h" },
+
+        { label: "Volume ↑", value: "volume_24h" },
+        { label: "Volume ↓", value: "-volume_24h" },
+
+        { label: "Name A-Z", value: "name" },
+        { label: "Name Z-A", value: "-name" },
     ];
 
     useEffect(() => {
@@ -52,7 +51,9 @@ const MarketsCard = () => {
                 try {
                     setIsLoading(true);
 
-                    const asset = await assetsApi.getAssets(undefined, undefined, order);
+                    const ordering = order || '-current_price'
+
+                    const asset = await assetsApi.getAssets(undefined, undefined, ordering);
 
                     setNextAssetsUrl(asset.next ?? "")
                     setAssets(asset.results);
@@ -163,13 +164,9 @@ const MarketsCard = () => {
 
     const paginatedAssets = portfolioTableData.slice(slicer, slicer + 5)
 
-    const handleSort = (value: string) => {
-        if(!value) return;
-
-        setOrder((order) =>
-            order === value? `-${value}` :
-                order === `-${value}`? value: value
-        )
+    const buyAssets = (asset: MarketAction) => {
+        setSelectedAsset(asset);
+        setIsModalOpen(true)
     }
 
     return (
@@ -190,12 +187,15 @@ const MarketsCard = () => {
                 <div className='flex flex-col items-end sm:flex-row gap-6'>
                     <input className='w-[80%] sm:w-[240px] h-[46px] outline-none text-[#666D80] border border-[#A4ACB9] p-2 rounded-full' value={search} type="text" onChange={(e) => setSearch(e.target.value)} placeholder='Search by name...'/>
                     <div className='relative w-[120px] sm:w-[115px] h-[46px] border border-[#A4ACB9] rounded-full text-[#6F6F6F] px-2'>
-                        <select className='absolute w-full appearance-none bg-transparent top-2'>
+                        <select className='absolute w-full appearance-none outline-none bg-transparent top-2'
+                                value={order}
+                                onChange={(e) => {
+                                    setOrder(e.target.value)
+                                }}>
+                            <option value="">Sort</option>
                             {sortOptions.map((option) => (
-                                <option key={option.value} value={order} onClick={() => handleSort(option.value)}>
-                                    {option.value === order.replace("-", "")
-                                        ? `${option.label} ${order.startsWith("-") ? "▾" : "▴"}`
-                                        : option.label}
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
                                 </option>
                             ))}
                         </select>
@@ -267,7 +267,7 @@ const MarketsCard = () => {
                                             className="h-[20px] w-[20px]"
                                         />
 
-                                        {item.symbol.slice(0, 3)}
+                                        {item.symbol.slice(0,-4)}
                                     </div>
                                 </td>
 
@@ -304,7 +304,12 @@ const MarketsCard = () => {
                                 </td>
 
                                 <td className="text-center">
-                                    <button className='w-[57px] h-[42px] text-white font-medium bg-[#429EFF] rounded-full cursor-pointer'>Buy</button>
+                                    <button className='w-[57px] h-[42px] text-white font-medium bg-[#429EFF] rounded-full cursor-pointer' onClick={() => {
+                                        buyAssets({
+                                            symbol: item.symbol.slice(0, -4),
+                                            value: String(item.value),
+                                        })
+                                    }}>Buy</button>
                                 </td>
                             </tr>
                         ))}
@@ -350,6 +355,9 @@ const MarketsCard = () => {
                     }`}
                 />
             </div>
+            {(isModalOpen && selectedAsset) && (
+                <TradeConfirmationModal setIsModalOpen={setIsModalOpen} type='Buy' assetMarketAction={selectedAsset}/>
+            )}
         </div>
     );
 };

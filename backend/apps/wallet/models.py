@@ -111,6 +111,7 @@ class CryptoTransaction(models.Model):
     ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transaction')
+    from_asset = models.CharField(max_length=20, null=True, blank=True)
     asset = models.CharField(max_length=20)
     usdt_amount = models.DecimalField(max_digits=20, decimal_places=10, default=0)
     crypto_amount = models.DecimalField(max_digits=20, decimal_places=10, default=0)

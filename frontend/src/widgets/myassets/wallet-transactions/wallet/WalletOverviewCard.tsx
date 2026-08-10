@@ -9,8 +9,8 @@ import {GrTransaction} from "react-icons/gr";
 import {RiLoaderLine} from "react-icons/ri";
 import {PiBag} from "react-icons/pi";
 import {IoIosArrowDown} from "react-icons/io";
-import TransactionOverviewChart from "./TransactionOverviewChart.tsx";
-
+import TransactionOverviewCard from "./TransactionOverviewCard.tsx";
+import TransactionsModal from "./TransactionsModal.tsx";
 
 type Period = '1d' | '7d' | '30d'
 
@@ -35,6 +35,8 @@ const WalletOverviewCard = () => {
     const [days, setDays] = useState<Period>('7d');
     const [isLoadingAsset, setIsLoadingAsset] = useState(true);
     const [isLoadingTransaction, setIsLoadingTransaction] = useState(true);
+
+    const [openTransactionModal, setOpenTransactionModal] = useState(false);
 
 
     useEffect(() => {
@@ -78,7 +80,7 @@ const WalletOverviewCard = () => {
         0
     )
 
-    const sortPortfolio = portfolio.sort((a, b) => ((Number(b.amount) * Number(b.current_value)) - ((Number(a.amount) * Number(a.current_value)))))
+    const sortPortfolio = [...portfolio].sort((a, b) => (Number(b.current_value)) - Number(a.current_value))
 
     const topAssets = sortPortfolio.slice(0,4).map(
         item => ({
@@ -130,7 +132,7 @@ const WalletOverviewCard = () => {
     return (
         <div className="w-full flex flex-col rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-6 gap-5">
             <div className="flex flex-col lg:flex-row gap-6">
-                <div className="flex-1 rounded-[20px] bg-gradient-to-br from-[#3B82F6] via-[#2563EB] to-[#1D4ED8] px-4 sm:px-5 py-4 sm:py-5 flex flex-col justify-between min-h-[140px] sm:min-h-[154px] gap-4 sm:gap-5">
+                <div className="min-h-[140px] sm:min-h-[154px] flex-1 rounded-[20px] bg-gradient-to-br from-[#3B82F6] via-[#2563EB] to-[#1D4ED8] px-4 sm:px-5 py-4 sm:py-5 flex flex-col justify-between gap-4 sm:gap-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 min-w-0">
                             <div className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-white">
@@ -179,7 +181,7 @@ const WalletOverviewCard = () => {
                             </>
                         }
                     </div>
-                    <div className='w-full h-[42px] sm:h-[52px] flex flex-row justify-center items-center gap-4 bg-black rounded-full cursor-pointer'>
+                    <div className='w-full h-[52px] sm:h-[52px] flex flex-row justify-center items-center gap-4 bg-black rounded-full cursor-pointer' onClick={() => setOpenTransactionModal(transactionsModal => !transactionsModal)}>
                         <GrTransaction className='text-white text-[18px] sm:text-[22px]'/>
                         <button className='text-white sm:text-xl cursor-pointer'>Transactions</button>
                     </div>
@@ -229,10 +231,10 @@ const WalletOverviewCard = () => {
                                 <>
                                     <div className='flex flex-row items-center justify-between'>
                                         <h4 className='text-[32px] sm:text-[40px] font-medium'>${allTimeVolume.toFixed(2)}</h4>
-                                        <p className='text-[#DF1C41]'>+${currentPeriodVolume} <span className='text-[#6F6F6F]'>{currentDate[days]}</span> </p>
+                                        <p className='text-[#DF1C41]'>+${currentPeriodVolume.toFixed(4)} <span className='text-[#6F6F6F]'>{currentDate[days]}</span> </p>
                                     </div>
                                     <div className='w-full h-full'>
-                                        <TransactionOverviewChart data={activitySummary} currentPeriodVolume={currentPeriodVolume}/>
+                                        <TransactionOverviewCard data={activitySummary} currentPeriodVolume={currentPeriodVolume}/>
                                     </div>
                                 </>
                             }
@@ -240,6 +242,7 @@ const WalletOverviewCard = () => {
                     </div>
                 </div>
             </div>
+            {openTransactionModal && <TransactionsModal setOpenTransactionModal={setOpenTransactionModal} />}
         </div>
     )
 }

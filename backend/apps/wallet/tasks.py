@@ -8,6 +8,8 @@ from apps.auth_app.models import User
 from apps.wallet.models import Transaction
 from apps.wallet.services.portfolio_snapshot_service import PortfolioSnapshotService
 
+from apps.wallet.models import CryptoTransaction
+
 logger = logging.getLogger(__name__)
 
 @shared_task
@@ -22,6 +24,22 @@ def expired_pending_transactions():
 
     logger.info(
         "Expired pending transactions cancelled count=%s expired_before=%s",
+        updated_count,
+        expired_before,
+    )
+
+@shared_task
+def expired_pending_crypto_transactions():
+    logger.info("Celery task expired_pending_crypto_transactions started")
+
+    expired_before = now() - timedelta(hours=24)
+
+    updated_count = CryptoTransaction.objects.filter(
+        status='pending', created_at__lt=expired_before
+    ).update(status='cancelled')
+
+    logger.info(
+        "Expired pending crypto transactions cancelled count=%s expired_before=%s",
         updated_count,
         expired_before,
     )
