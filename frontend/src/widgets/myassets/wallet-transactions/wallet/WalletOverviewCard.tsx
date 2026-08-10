@@ -3,14 +3,14 @@ import { HiOutlineChartPie } from "react-icons/hi";
 import walletApi, {
     type UserPortfolio,
     type UserSummary,
-} from "../../features/wallet/api/walletApi.ts";
+} from "../../../../features/wallet/api/walletApi.ts";
 import WalletSparkline from "./WalletSparkline.tsx";
 import {GrTransaction} from "react-icons/gr";
 import {RiLoaderLine} from "react-icons/ri";
 import {PiBag} from "react-icons/pi";
 import {IoIosArrowDown} from "react-icons/io";
-import TransactionOverviewCard from "./TransactionOverviewCard.tsx";
-import TransactionsModal from "./TransactionsModal.tsx";
+import TransactionOverviewCard from "../transactions/TransactionOverviewCard.tsx";
+import TransactionsModal from "../transactions-modal/TransactionsModal.tsx";
 
 type Period = '1d' | '7d' | '30d'
 

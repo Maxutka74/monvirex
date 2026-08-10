@@ -1,4 +1,4 @@
-import type {UserSummary} from "../../features/wallet/api/walletApi.ts";
+import type {UserSummary} from "../../../../features/wallet/api/walletApi.ts";
 import {RadialBar, RadialBarChart, ResponsiveContainer, Tooltip} from "recharts";
 import TransactionCustomTooltip from "./TransactionCustomTooltip.tsx";
 
