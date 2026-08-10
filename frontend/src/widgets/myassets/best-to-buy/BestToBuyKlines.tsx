@@ -1,4 +1,4 @@
-import type {AssetKlines} from "../../features/assets/api/assetsApi.ts";
+import type {AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import {Area, AreaChart, ResponsiveContainer} from "recharts";
 
 

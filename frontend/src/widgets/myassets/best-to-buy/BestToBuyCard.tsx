@@ -1,6 +1,6 @@
 import { TiStarFullOutline } from "react-icons/ti"
 import {useEffect, useState} from "react";
-import assetsApi, {type Asset, type AssetKlines} from "../../features/assets/api/assetsApi.ts";
+import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import { FiArrowUpRight } from "react-icons/fi";
 import BestToBuyKlines from "./BestToBuyKlines.tsx";
 import {RiLoaderLine} from "react-icons/ri";
