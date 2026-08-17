@@ -3,11 +3,15 @@ import api from "../../../shared/api/instance.ts";
 export type TradeBuyData = {
     symbol: string,
     amount_usdt: string | number,
+    interval?: string,
+    type_buy?: string
 }
 
 export type TradeSellData = {
     symbol: string,
     amount_crypto: string | number,
+    interval?: string,
+    type_sell?: string
 }
 
 export type TradeExchangeData = {
