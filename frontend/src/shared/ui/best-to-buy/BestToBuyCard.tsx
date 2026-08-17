@@ -4,11 +4,16 @@ import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/
 import { FiArrowUpRight } from "react-icons/fi";
 import BestToBuyKlines from "./BestToBuyKlines.tsx";
 import {RiLoaderLine} from "react-icons/ri";
+import TradingActions from "../../trade/TradingActions.tsx";
 
+type BestToBuyCardProps = {
+    trade?: boolean
+}
 
-const BestToBuyCard = () => {
+const BestToBuyCard = ({trade}: BestToBuyCardProps) => {
     const [topBuy, setTopBuy] = useState<Asset>()
     const [topKlines, setTopKlines] = useState<AssetKlines[]>([])
+    const [openBuyModal, setOpenBuyModal] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
@@ -40,13 +45,29 @@ const BestToBuyCard = () => {
         data()
     }, [])
 
+    const dataActions = {
+        type: 'Buy',
+        symbol: topBuy?.symbol,
+        name: topBuy?.name,
+        crypto_icon: topBuy?.icon_url,
+        current_price: topBuy?.current_price
+    }
+
+
     return (
         <div className='w-full bg-[#FFFFFF]/60 rounded-[20px] p-5'>
-            <div className='flex flex-row items-center gap-2 mb-5'>
-                <div className='w-[44px] h-[44px] flex items-center justify-center rounded-[10px] bg-green-100'>
-                    <TiStarFullOutline size={24} className='text-green-600' />
+            <div className='flex flex-row items-center justify-between mb-5'>
+                <div className='flex flex-row items-center gap-3'>
+                    <div className='w-[44px] h-[44px] flex items-center justify-center rounded-[10px] bg-green-100'>
+                        <TiStarFullOutline size={24} className='text-green-600' />
+                    </div>
+                    <p className='text-2xl font-medium'>Best to Buy</p>
                 </div>
-                <p className='text-xl font-medium'>Best to Buy</p>
+                    {trade &&
+                    <button className='text-white bg-[#429EFF] px-8 py-2 sm:px-10 sm:py-3 rounded-md cursor-pointer' onClick={() => setOpenBuyModal(true)}>
+                        Buy
+                    </button>
+                    }
             </div>
             {isLoading? (
                 <div className='flex items-center justify-center'>
@@ -81,6 +102,9 @@ const BestToBuyCard = () => {
                     </div>
                 </div>
             }
+            {openBuyModal && (
+                <TradingActions setOpenTradeActionModal={setOpenBuyModal} dataActions={dataActions} />
+            )}
         </div>
     )
 }
