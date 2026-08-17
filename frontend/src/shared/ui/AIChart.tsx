@@ -4,7 +4,7 @@ import ai_robot from "../../assets/images/Ai_Decoration.svg"
 
 const AIChart = () => {
     return (
-        <div className='relative h-[250px] flex flex-row rounded-[20px] text-white bg-linear-to-tr from-[#9F87FF] to-[#429EFF] p-5'>
+        <div className='relative w-full h-[250px] flex flex-row rounded-[20px] text-white bg-linear-to-tr from-[#9F87FF] to-[#429EFF] p-5'>
             <div className="relative z-10 w-full h-full lg:w-[55%] flex flex-col justify-center gap-4">
                 <h3 className='text-[28px] whitespace-nowrap'>Trade smarter with <br/> MONVIREX AI</h3>
                 <p className='xl:whitespace-nowrap'>Automate trades based on user-defined criteria,<br className="hidden sm:block" /> using AI algorithms</p>

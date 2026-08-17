@@ -1,6 +1,6 @@
 import WalletOverviewCard from "../../widgets/myassets/wallet-transactions/wallet/WalletOverviewCard.tsx";
 import MarketsCard from "../../widgets/myassets/markets/MarketsCard.tsx";
-import BestToBuyCard from "../../widgets/myassets/best-to-buy/BestToBuyCard.tsx";
+import BestToBuyCard from "../../shared/ui/best-to-buy/BestToBuyCard.tsx";
 import AIChart from "../../shared/ui/AIChart.tsx";
 import FastActionCard from "../../widgets/myassets/trading/FastActionCard.tsx";
 
