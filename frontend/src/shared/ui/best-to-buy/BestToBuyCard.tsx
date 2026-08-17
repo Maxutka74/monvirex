@@ -4,7 +4,7 @@ import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/
 import { FiArrowUpRight } from "react-icons/fi";
 import BestToBuyKlines from "./BestToBuyKlines.tsx";
 import {RiLoaderLine} from "react-icons/ri";
-import TradingActions from "../../trade/TradingActions.tsx";
+import TradingActions from "../../../widgets/trade/trading-actions/TradingActions.tsx";
 
 type BestToBuyCardProps = {
     trade?: boolean
@@ -46,7 +46,7 @@ const BestToBuyCard = ({trade}: BestToBuyCardProps) => {
     }, [])
 
     const dataActions = {
-        type: 'Buy',
+        type: 'Buy' as const,
         symbol: topBuy?.symbol,
         name: topBuy?.name,
         crypto_icon: topBuy?.icon_url,
