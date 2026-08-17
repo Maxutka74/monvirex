@@ -1,6 +1,7 @@
 import logging
 
 from django.db import transaction
+from django.core.cache import cache
 from rest_framework.exceptions import ValidationError
 
 from apps.assets.models import Asset
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class TradeService:
     @staticmethod
-    def buy(user, symbol, amount_usdt):
+    def buy(user, symbol, amount_usdt, interval = None, type_buy = None):
         logger.info(
             "Buy crypto requested user_id=%s symbol=%s amount_usdt=%s",
             user.id,
@@ -29,7 +30,16 @@ class TradeService:
 
             raise ValidationError({'detail': 'Asset not found'})
 
-        price_asset = asset.current_price
+        if interval and type_buy == 'trade':
+            price_asset = cache.get(f'crypto:realtime:{symbol.lower()}:{interval.lower()}')
+
+            if price_asset is None:
+                raise ValidationError(
+                    {'detail': 'Real time price is not available'}
+                )
+        else:
+            price_asset = asset.current_price
+
         amount_crypto = amount_usdt / price_asset
 
         with transaction.atomic():
@@ -54,9 +64,10 @@ class TradeService:
 
                 raise ValidationError({'detail': 'Insufficient balance'})
 
-            crypto_wallet, created = CryptoWallet.objects.get_or_create(
+            crypto_wallet, created = CryptoWallet.objects.select_for_update().get_or_create(
                 user=user, asset=asset
             )
+
             if created:
                 average_buy_price = price_asset
             else:
@@ -70,6 +81,7 @@ class TradeService:
             crypto_wallet.average_buy_price = average_buy_price
             wallet.save()
             crypto_wallet.save()
+
             transaction_crypto = CryptoTransaction.objects.create(
                 user=user,
                 asset=symbol,
@@ -112,7 +124,7 @@ class TradeService:
         }
 
     @staticmethod
-    def sell(user, symbol, amount_crypto):
+    def sell(user, symbol, amount_crypto, interval = None, type_sell = None):
         logger.info(
             "Sell crypto requested user_id=%s symbol=%s amount_crypto=%s",
             user.id,
@@ -130,7 +142,17 @@ class TradeService:
 
             raise ValidationError({'detail': 'Asset not found'})
 
-        amount_usdt = amount_crypto * asset.current_price
+        if interval and type_sell == 'trade':
+            price_asset = cache.get(f'crypto:realtime:{symbol.lower()}:{interval.lower()}')
+
+            if price_asset is None:
+                raise ValidationError(
+                    {'detail': 'Real time price is not available'}
+                )
+        else:
+            price_asset = asset.current_price
+
+        amount_usdt = amount_crypto * price_asset
 
         with transaction.atomic():
             wallet = Wallet.objects.select_for_update().filter(user=user).first()
@@ -176,13 +198,16 @@ class TradeService:
 
             remaining_amount = crypto_wallet.amount - amount_crypto
 
-            wallet.balance += amount_usdt
-            crypto_wallet.amount = remaining_amount
-            wallet.save()
-            crypto_wallet.save()
+            average_buy_price = crypto_wallet.average_buy_price
 
-            if remaining_amount == 0:
+            wallet.balance += amount_usdt
+            wallet.save()
+
+            if remaining_amount <= 0:
                 crypto_wallet.delete()
+            else:
+                crypto_wallet.amount = remaining_amount
+                crypto_wallet.save()
 
             transaction_crypto = CryptoTransaction.objects.create(
                 user=user,
@@ -219,11 +244,11 @@ class TradeService:
             'asset': asset.symbol,
             'crypto_amount': transaction_crypto.crypto_amount,
             'usdt_amount': transaction_crypto.usdt_amount,
-            'price_at_trade': asset.current_price,
+            'price_at_trade': price_asset,
             'balance_after': wallet.balance,
             'holdings': {
                 'amount': remaining_amount,
-                'average_buy_price': crypto_wallet.average_buy_price,
+                'average_buy_price': average_buy_price,
             },
             'status': transaction_crypto.status,
         }
@@ -309,7 +334,12 @@ class TradeService:
                 ) / (crypto_wallet_to.amount + amount_to)
 
             crypto_wallet_from.amount -= amount_crypto
-            crypto_wallet_from.save()
+
+            if crypto_wallet_from.amount <= 0:
+                crypto_wallet_from.delete()
+            else:
+                crypto_wallet_from.save()
+
             crypto_wallet_to.amount += amount_to
             crypto_wallet_to.average_buy_price = average_buy_price
             crypto_wallet_to.save()

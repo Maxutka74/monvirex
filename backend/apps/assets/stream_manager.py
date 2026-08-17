@@ -2,6 +2,8 @@ import asyncio
 import json
 import logging
 from collections import defaultdict
+from asgiref.sync import sync_to_async
+from django.core.cache import cache
 
 import websockets
 
@@ -54,6 +56,7 @@ class StreamManager:
 
         self.tasks.pop(key, None)
         self.subscribers.pop(key, None)
+        cache.delete(f'crypto:realtime:{symbol.lower():{interval.lower()}}')
 
         logger.info("Binance stream task stopped key=%s", key)
 
@@ -84,6 +87,11 @@ class StreamManager:
                             },
                         }
 
+                        await sync_to_async(cache.set)(
+                            f'crypto:realtime:{symbol.lower()}:{interval.lower()}',
+                            k['c']
+                        )
+
                         deads = []
 
                         for send in self.subscribers[key]:
@@ -98,6 +106,7 @@ class StreamManager:
 
                         for dead in deads:
                             self.subscribers[key].discard(dead)
+
 
             except Exception:
                 logger.exception(
