@@ -28,7 +28,6 @@ const Navbar = () => {
         { label: "Home", path: "/dashboard" },
         { label: "My Assets", path: "/myassets" },
         { label: "Trade", path: "/trade" },
-        { label: "Market", path: "/market" },
         { label: "Admin Panel", path: "/admin-panel" },
     ];
 

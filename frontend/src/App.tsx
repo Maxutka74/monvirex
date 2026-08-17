@@ -9,6 +9,7 @@ import AuthFlowRoute from "./app/router/AuthFlowRoute.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 import MyAssetsPage from "./pages/myassets/MyAssetsPage.tsx";
+import TradePage from "./pages/trade/TradePage.tsx";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
                     <Route element={<MainLayout />} >
                         <Route path='/dashboard' element={<DashboardPage />} />
                         <Route path='/myassets' element={<MyAssetsPage />} />
+                        <Route path='/trade' element={<TradePage /> } />
                     </Route>
                 </Route>
             </Routes>
