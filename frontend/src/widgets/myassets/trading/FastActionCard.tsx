@@ -178,6 +178,8 @@ const FastActionCard = () => {
         setIsModalOpen(true);
     }
 
+    const hasCrypto = walletAssets.find((asset) => asset.asset.slice(0,-4) === exchangeFromAsset?.value)
+
     return (
         <div className='w-full bg-white rounded-[20px] p-5'>
             <div className='flex flex-row items-center gap-3 mb-3'>
@@ -238,7 +240,7 @@ const FastActionCard = () => {
                                         isSearchable={false} options={userOpinionAssets} maxMenuHeight={200}
                                         value={exchangeToAsset} onChange={(option) => setExchangeToAsset(option)}/>
                             </div>
-                            <p className='text-sm'>Available: <span className='text-[#429EFF]'>{Number(exchangeToAsset?.amount).toFixed(4)} {exchangeToAsset?.value}</span></p>
+                            <p className='text-sm'>Available: <span className='text-[#429EFF]'>{String(exchangeToAsset?.amount).slice(0,-4)} {exchangeToAsset?.value}</span></p>
                         </div>
                         <div className='w-[44px] h-[44px] flex items-center justify-center bg-gray-100 rounded-full shrink-0'>
                             <LuArrowRightLeft size={24} />
@@ -250,7 +252,7 @@ const FastActionCard = () => {
                                         isSearchable={false} options={optionAssets} onMenuScrollToBottom={scrollMoreOptions} maxMenuHeight={200}
                                         value={exchangeFromAsset} onChange={(option) => setExchangeFromAsset(option)}/>
                             </div>
-                            <p className='text-sm'> {exchangeFromAsset?.value === exchangeToAsset?.value ? `You have ${exchangeFromAsset?.value}`: `You don't have ${exchangeFromAsset?.value}`}</p>
+                            <p className='text-sm'> {hasCrypto ? `You have ${exchangeFromAsset?.value}`: `You don't have ${exchangeFromAsset?.value}`}</p>
                         </div>
                     </div>
                 )}
@@ -289,7 +291,7 @@ const FastActionCard = () => {
                 }
                 {(actions === 'Sell' || actions === 'Exchange') &&
                     <p className='text-sm text-[#6F6F6F]'>Enter the amount of {actions === 'Sell' ? sellAsset?.value: actions === 'Exchange' && exchangeToAsset?.value} you want to {actions === 'Sell' ? 'sell': 'exchange'}. <span className='text-[#429EFF]'>
-                        Available: {actions === 'Sell' ? Number(sellAsset?.amount).toFixed(6): actions === 'Exchange' && Number(exchangeToAsset?.amount).toFixed(6)}
+                        Available: {actions === 'Sell' ? String(sellAsset?.amount).slice(0,-4): actions === 'Exchange' && String(exchangeToAsset?.amount).slice(0, -4)}
                         </span></p>
                 }
             </div>

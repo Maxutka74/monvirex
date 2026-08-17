@@ -1,6 +1,6 @@
-import success_image from '../../../assets/images/Success_Payment.svg'
+import success_image from '../../assets/images/Success_Payment.svg'
 import {useNavigate} from "react-router-dom";
-import type {PaymentSuccess} from "./TradeConfirmationModal.tsx";
+import type {PaymentSuccess} from "../../widgets/myassets/trading/TradeConfirmationModal.tsx";
 
 const SuccessPaymentModal = ({type, receiveAmount, receiveCurrency}: PaymentSuccess) => {
     const navigate = useNavigate()
