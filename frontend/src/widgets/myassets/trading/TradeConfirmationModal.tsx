@@ -5,7 +5,7 @@ import walletApi from "../../../features/wallet/api/walletApi.ts";
 import type {SelectOption} from "./FastActionCard.tsx";
 import tradeApi from "../../../features/trade/api/tradeApi.ts";
 import {BiErrorCircle} from "react-icons/bi";
-import SuccessPaymentModal from "./SuccessPaymentModal.tsx";
+import SuccessPaymentModal from "../../../shared/ui/SuccessPaymentModal.tsx";
 
 type TradeConfirmationModalProps = {
     setIsModalOpen: React.Dispatch<SetStateAction<boolean>>;
@@ -53,12 +53,6 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
 
     const confirmAction = async () => {
         const currentAmount = Number(amount)
-
-        if (Number.isNaN(currentAmount)) {
-            setIsError(true);
-            setErrorMessage('Only numbers are allowed')
-            return;
-        }
 
         if (currentAmount <= 0) {
             setIsError(true);
@@ -145,7 +139,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
 
     return (
         <>
-            <div className='fixed inset-0 z-50 w-full h-full flex justify-center items-center backdrop-blur-sm p-5'>
+            <div className='fixed inset-0 z-50 w-full h-full flex justify-center items-center bg-black/40 backdrop-blur-sm p-5'>
                 <div className='w-[500px] bg-white rounded-[20px] p-5'>
                     <div className='w-full'>
                         <div className='w-full flex items-center justify-end'>
@@ -169,20 +163,21 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                                 </div>
                             }
                             <div className='relative flex flex-row items-center border border-gray-100 rounded-[10px]'>
-                                <input value={amount} type='number' className='w-full text-xl outline-none p-3' onChange={(e) => setAmount(e.target.value)} onClick={() => setIsError(false)}/>
+                                <input value={amount} type='number' className='w-full text-xl outline-none p-3 [&::-webkit-inner-spin-button]:appearance-none'
+                                       onChange={(e) => setAmount(e.target.value)} onClick={() => setIsError(false)}/>
                             </div>
                             <div className='flex flex-row items-center justify-between'>
-                                <p className='text-gray-500'>Available: {type === 'Buy' ? balance: type === 'Sell' ? Number(sellAsset?.amount).toFixed(4): Number(exchangeFromAsset?.amount).toFixed(4)} <span>{type === 'Buy' ? 'USDT': type === 'Sell'? sellAsset?.value: exchangeFromAsset?.value}</span></p>
-                                <button className='w-[40px] h-[40px] text-sm text-[#429EFF] cursor-pointer' onClick={() => setAmount(type === 'Buy' ? String(balance): type === 'Sell' ? Number(sellAsset?.amount).toFixed(4): Number(exchangeFromAsset?.amount).toFixed(4))}>MAX</button>
+                                <p className='text-gray-500'>Available: {type === 'Buy' ? balance: type === 'Sell' ? String(sellAsset?.amount).slice(0,-4): String(exchangeFromAsset?.amount).slice(0,-4)} <span>{type === 'Buy' ? 'USDT': type === 'Sell'? sellAsset?.value: exchangeFromAsset?.value}</span></p>
+                                <button className='w-[40px] h-[40px] text-sm text-[#429EFF] cursor-pointer' onClick={() => setAmount(type === 'Buy' ? String(balance): type === 'Sell' ? String(sellAsset?.amount).slice(0,-4): String(exchangeFromAsset?.amount).slice(0,-4))}>MAX</button>
                             </div>
                         </div>
                         <div className='w-full border border-gray-200 bg-gray-100 p-3 rounded-[10px] mb-3'>
                             <div className='flex flex-row items-center justify-between mb-3'>
                                 <p>You Receive (Estimated)</p>
                                 <p className='text-[18px] text-right font-medium'>{
-                                    (type === 'Buy'? (Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)).toFixed(6):
-                                    type === 'Sell'? (Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6):
-                                        ((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)).toFixed(6)
+                                    (type === 'Buy'? (Number((Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)).toFixed(6)) > 0 ? (Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)).toFixed(6): 0):
+                                    type === 'Sell'? Number(Number(Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6)) > 0 ? (Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6): 0:
+                                        Number(Number((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)).toFixed(6)) > 0 ? ((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)).toFixed(6): 0
                                     )}
                                     <span> {type === 'Buy' ?  buyAsset?.value: type === 'Sell' ? 'USDT': exchangeToAsset?.value}</span></p>
                             </div>
@@ -193,7 +188,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                             <div className='w-full h-px mb-3 bg-gray-200' />
                             <div className='flex flex-row items-center justify-between'>
                                 <span>Total</span>
-                                <p className='text-[18px] font-medium'>{type === 'Sell'? (Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6): amount} <span>USDT</span></p>
+                                <p className='text-[18px] font-medium'>{type === 'Buy' ? amount:  type === 'Sell'? Number((Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6)) > 0 ? (Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6): 0 : Number(amount) > 0 ? (Number(amount) * Number(exchangeFromAsset?.currentPrice)).toFixed(2): 0} <span>USDT</span></p>
                             </div>
                         </div>
                         <div className='flex flex-row items-center gap-2 text-sm text-gray-500 mb-5'>

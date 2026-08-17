@@ -4,7 +4,7 @@ import {type SetStateAction, useEffect, useState} from "react";
 import { IoMdArrowDown } from "react-icons/io";
 import walletApi from "../../../features/wallet/api/walletApi.ts";
 import tradeApi from "../../../features/trade/api/tradeApi.ts";
-import SuccessPaymentModal from "../../myassets/trading/SuccessPaymentModal.tsx";
+import SuccessPaymentModal from "../../../shared/ui/SuccessPaymentModal.tsx";
 import {AiOutlineDollarCircle} from "react-icons/ai";
 import {LuHandCoins} from "react-icons/lu";
 import {BiErrorCircle} from "react-icons/bi";
@@ -142,7 +142,8 @@ const TradingActions = ({setOpenTradeActionModal, dataActions}: TradingActionsPr
                         }
                         <div className='relative'>
                             <input value={amount} type="number" className='w-full h-16 outline-none border border-gray-300 rounded-lg p-4 text-xl
-                                [&::-webkit-inner-spin-button]:appearance-none' onChange={(e) => setAmount(e.target.value)}/>
+                                [&::-webkit-inner-spin-button]:appearance-none' onChange={(e) => setAmount(e.target.value)}
+                                onClick={() => {setIsError(false); setErrorMessage('')}}/>
                             <div className='absolute top-4 right-4 flex flex-row items-center gap-4'>
                                 <span className='text-[18px]'>{dataActions.type === 'Buy' ? 'USDT': dataActions.name}</span>
                                 <button className='text-[#429EFF] border border-gray-200 px-2 py-1 rounded-lg cursor-pointer' onClick={() => setAmount(dataActions.type === 'Buy'? balance: dataActions.current_amount.slice(0,8))}>MAX</button>
