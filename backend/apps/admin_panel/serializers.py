@@ -63,12 +63,6 @@ class AdminUserCryptoTransactionAllSerializer(serializers.ModelSerializer):
         )
 
 
-class AdminAssetToggleActiveSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Asset
-        fields = ('symbol', 'is_active')
-
-
 class AdminStatsSerializer(serializers.Serializer):
     total_users = serializers.IntegerField(read_only=True)
     total_wallet_balance = serializers.DecimalField(

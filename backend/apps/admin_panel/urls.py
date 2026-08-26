@@ -1,7 +1,6 @@
 from django.urls import path
 
 from apps.admin_panel.views import (
-    AdminAssetToggleActiveView,
     AdminStatsView,
     AdminSyncAssetView,
     AdminUserCryptoTransactionsAllView,
@@ -28,11 +27,6 @@ urlpatterns = [
         'crypto-transactions/',
         AdminUserCryptoTransactionsAllView.as_view(),
         name='user-crypto-transactions',
-    ),
-    path(
-        'assets/<str:symbol>/toggle-active/',
-        AdminAssetToggleActiveView.as_view(),
-        name='asset-toggle_active',
     ),
     path('assets/sync/', AdminSyncAssetView.as_view(), name='asset-sync'),
     path('stats/', AdminStatsView.as_view(), name='stats'),

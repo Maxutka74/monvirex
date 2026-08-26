@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from apps.admin_panel.pagination import AdminPagination
 from apps.admin_panel.permissions import IsAdminUser
 from apps.admin_panel.serializers import (
-    AdminAssetToggleActiveSerializer,
     AdminStatsSerializer,
     AdminUserCryptoTransactionAllSerializer,
     AdminUserDetailSerializer,
@@ -22,9 +21,8 @@ class AdminUserListView(APIView):
 
     def get(self, request):
         search = request.query_params.get('search')
-        is_active = request.query_params.get('is_active')
 
-        users = AdminPanelServices.get_users(search, bool(is_active))
+        users = AdminPanelServices.get_users(search)
 
         paginator = self.pagination_classes()
         page = paginator.paginate_queryset(users, request, view=self)
@@ -61,7 +59,8 @@ class AdminUserTransactionsAllView(APIView):
     pagination_classes = AdminPagination
 
     def get(self, request):
-        data = AdminPanelServices.transaction_user_all()
+        search = request.query_params.get('search')
+        data = AdminPanelServices.transaction_user_all(search)
 
         paginator = self.pagination_classes()
         page = paginator.paginate_queryset(data, request, view=self)
@@ -76,7 +75,8 @@ class AdminUserCryptoTransactionsAllView(APIView):
     pagination_classes = AdminPagination
 
     def get(self, request):
-        data = AdminPanelServices.crypto_transaction_user_all()
+        search = request.query_params.get('search')
+        data = AdminPanelServices.crypto_transaction_user_all(search)
 
         paginator = self.pagination_classes()
         page = paginator.paginate_queryset(data, request, view=self)
@@ -84,18 +84,6 @@ class AdminUserCryptoTransactionsAllView(APIView):
         serializer = AdminUserCryptoTransactionAllSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
-
-
-class AdminAssetToggleActiveView(APIView):
-    permission_classes = (IsAdminUser,)
-
-    def patch(self, request, symbol):
-        data = AdminPanelServices.toggle_asset_active(symbol)
-
-        serializer = AdminAssetToggleActiveSerializer(data)
-
-        return Response(serializer.data)
-
 
 class AdminSyncAssetView(APIView):
     permission_classes = (IsAdminUser,)

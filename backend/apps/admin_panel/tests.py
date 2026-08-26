@@ -219,24 +219,6 @@ class AdminApiTest(APITestCase):
         self.assertEqual(response.data['results'][0]['id'], str(second_transaction.id))
         self.assertEqual(response.data['results'][1]['id'], str(first_transaction.id))
 
-    def test_asset_toggle(self):
-        refresh = RefreshToken.for_user(self.user_admin)
-        self.client.cookies['access_token'] = str(refresh.access_token)
-
-        response_one = self.client.patch(
-            '/api/admin-panel/assets/BTCUSDT/toggle-active/'
-        )
-
-        self.assertEqual(response_one.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_one.data['is_active'], False)
-
-        response_two = self.client.patch(
-            '/api/admin-panel/assets/BTCUSDT/toggle-active/'
-        )
-
-        self.assertEqual(response_two.status_code, status.HTTP_200_OK)
-        self.assertEqual(response_two.data['is_active'], True)
-
     @patch('apps.admin_panel.services.admin_services.sync_assets_task')
     def test_asset_sync(self, mock_sync_assets_task):
         refresh = RefreshToken.for_user(self.user_admin)

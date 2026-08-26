@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from django.db.models import Sum
+from django.db.models import Q
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
@@ -20,19 +21,18 @@ logger = logging.getLogger(__name__)
 
 class AdminPanelServices:
     @staticmethod
-    def get_users(search=None, is_active=None):
+    def get_users(search=None):
         logger.info(
-            "Admin requested users list search=%s is_active=%s",
-            search,
-            is_active,
+            "Admin requested users list search=%s",
+            search
         )
         users = User.objects.all().order_by('-date_joined')
 
         if search:
-            users = users.filter(email__icontains=search)
-
-        if is_active:
-            users = users.filter(is_active=is_active)
+            if search.isdigit():
+                users = users.filter(id=search)
+            else:
+                users = users.filter(email__icontains=search)
 
         return users
 
@@ -90,33 +90,23 @@ class AdminPanelServices:
         }
 
     @staticmethod
-    def transaction_user_all():
+    def transaction_user_all(search=None):
         logger.info("Admin requested all fiat transactions")
 
-        all_users_transactions = []
         transactions = (
-            Transaction.objects.select_related('user').all().order_by('-created_at')
+            Transaction.objects.select_related('user')
+            .all()
+            .order_by('-created_at')
         )
 
-        for transaction in transactions:
-            all_users_transactions.append(
-                {
-                    'id': transaction.id,
-                    'user_email': transaction.user.email,
-                    'transaction_type': transaction.transaction_type,
-                    'amount': transaction.amount,
-                    'status': transaction.status,
-                    'created_at': transaction.created_at,
-                }
-            )
+        if search:
+            transactions = transactions.filter(Q(id__icontains=search) | Q(user__email__icontains=search))
 
-        return all_users_transactions
+        return transactions
 
     @staticmethod
-    def crypto_transaction_user_all():
+    def crypto_transaction_user_all(search=None):
         logger.info("Admin requested all crypto transactions")
-
-        all_users_crypto_transactions = []
 
         crypto_transactions = (
             CryptoTransaction.objects.select_related('user')
@@ -124,46 +114,10 @@ class AdminPanelServices:
             .order_by('-created_at')
         )
 
-        for crypto_transaction in crypto_transactions:
-            all_users_crypto_transactions.append(
-                {
-                    'id': crypto_transaction.id,
-                    'user_email': crypto_transaction.user.email,
-                    'asset': crypto_transaction.asset,
-                    'transaction_type': crypto_transaction.transaction_type,
-                    'crypto_amount': crypto_transaction.crypto_amount,
-                    'usdt_amount': crypto_transaction.usdt_amount,
-                    'status': crypto_transaction.status,
-                    'created_at': crypto_transaction.created_at,
-                }
-            )
+        if search:
+            crypto_transactions = crypto_transactions.filter(Q(id__icontains=search) | Q(user__email__icontains=search))
 
-        return all_users_crypto_transactions
-
-    @staticmethod
-    def toggle_asset_active(symbol):
-        symbol = symbol.strip().upper()
-
-        logger.info("Admin requested asset active toggle symbol=%s", symbol)
-
-        asset = Asset.objects.filter(symbol=symbol).first()
-
-        if not asset:
-            logger.warning("Admin tried to toggle non-existing asset symbol=%s", symbol)
-            raise ValidationError('Asset does not exist')
-
-        old_status = asset.is_active
-        asset.is_active = not asset.is_active
-        asset.save()
-
-        logger.warning(
-            "Admin changed asset active status symbol=%s old_status=%s new_status=%s",
-            asset.symbol,
-            old_status,
-            asset.is_active,
-        )
-
-        return {'symbol': asset.symbol, 'is_active': asset.is_active}
+        return crypto_transactions
 
     @staticmethod
     def sync_asset():
