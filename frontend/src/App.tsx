@@ -10,6 +10,8 @@ import MainLayout from "./app/layouts/MainLayout.tsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
 import MyAssetsPage from "./pages/myassets/MyAssetsPage.tsx";
 import TradePage from "./pages/trade/TradePage.tsx";
+import AdminPanelPage from "./pages/admin-panel/AdminPanelPage.tsx";
+import StaffRoute from "./app/router/StaffRoute.tsx";
 
 function App() {
 
@@ -32,6 +34,9 @@ function App() {
                         <Route path='/dashboard' element={<DashboardPage />} />
                         <Route path='/myassets' element={<MyAssetsPage />} />
                         <Route path='/trade' element={<TradePage /> } />
+                        <Route element={<StaffRoute />}>
+                            <Route path='/admin-panel' element={<AdminPanelPage />} />
+                        </Route>
                     </Route>
                 </Route>
             </Routes>

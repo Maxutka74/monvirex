@@ -28,7 +28,6 @@ const Navbar = () => {
         { label: "Home", path: "/dashboard" },
         { label: "My Assets", path: "/myassets" },
         { label: "Trade", path: "/trade" },
-        { label: "Admin Panel", path: "/admin-panel" },
     ];
 
     const navigate = useNavigate();
@@ -43,6 +42,12 @@ const Navbar = () => {
     const email = useUserStore(
         (state: UserStore | null) => state?.user?.email
     );
+
+    const isStaff = useUserStore((state) => state.isStaff)
+
+    if (isStaff) {
+        navItems.push({ label: "Admin Panel", path: "/admin-panel" },)
+    }
 
     const logoutFunc = async () => {
         try {

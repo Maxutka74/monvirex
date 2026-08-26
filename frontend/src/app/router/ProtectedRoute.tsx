@@ -6,7 +6,6 @@ import {useEffect} from "react";
 const ProtectedRoute = () => {
     const isAuth = useUserStore((state) => (state.isAuth))
     const isLoading = useUserStore((state) => (state.isLoading))
-
     const checkAuth = useUserStore((state) => state.checkAuth);
 
     useEffect(() => {

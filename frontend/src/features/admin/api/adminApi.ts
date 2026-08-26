@@ -73,7 +73,17 @@ export type AdminPanelStats = {
 }
 
 
-const getAdminUsers = async (): Promise<AdminPanelUsersPaginate> => {
+const getAdminUsers = async (page?: number, search?: string): Promise<AdminPanelUsersPaginate> => {
+    if (page && !search) {
+        const response = await api.get(`/admin-panel/users/?page=${page}`)
+
+        return response.data
+    }
+    if (search) {
+        const response = await api.get(`/admin-panel/users/?page=${page}&search=${search}`)
+
+        return response.data
+    }
     const response = await api.get('/admin-panel/users/')
 
     return response.data
@@ -91,20 +101,36 @@ const toggleAdminUserActive = async (userId: number): Promise<AdminPanelToggleUs
     return response.data
 }
 
-const getAdminTransactions = async (): Promise<AdminPanelTransactionsPaginate> => {
+const getAdminTransactions = async (page?: number, search?: string): Promise<AdminPanelTransactionsPaginate> => {
+    if (page && !search) {
+        const response = await api.get(`/admin-panel/transactions/?page=${page}`)
+
+        return response.data
+    }
+    if (search) {
+        const response = await api.get(`/admin-panel/transactions/?page=${page}&search=${search}`)
+
+        return response.data
+    }
+
     const response = await api.get('/admin-panel/transactions/')
 
     return response.data
 }
 
-const getAdminCryptoTransactions = async (): Promise<AdminPanelCryptoTransactionsPaginate> => {
+const getAdminCryptoTransactions = async (page?: number, search?: string): Promise<AdminPanelCryptoTransactionsPaginate> => {
+    if (page && !search) {
+        const response = await api.get(`/admin-panel/crypto-transactions/?page=${page}`)
+
+        return response.data
+    }
+    if (search) {
+        const response = await api.get(`/admin-panel/crypto-transactions/?page=${page}&search=${search}`)
+
+        return response.data
+    }
+
     const response = await api.get('/admin-panel/crypto-transactions/')
-
-    return response.data
-}
-
-const toggleAdminAssetActive = async (symbol: string): Promise<{symbol: string, is_active: boolean}> => {
-    const response = await api.patch(`/admin-panel/assets/${symbol}/toggle-active/`)
 
     return response.data
 }
@@ -126,7 +152,6 @@ export default {
     toggleAdminUserActive,
     getAdminTransactions,
     getAdminCryptoTransactions,
-    toggleAdminAssetActive,
     syncAssets,
     getAdminStats
 }
