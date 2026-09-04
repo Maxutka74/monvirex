@@ -32,7 +32,6 @@ const useUserStore = create<UserStore>((set) => (
             try {
                 const response = await api.get('/auth/me/')
 
-                console.log(response)
                 set({
                     user: response.data,
                     isAuth: true,

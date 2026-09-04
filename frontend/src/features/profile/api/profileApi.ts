@@ -17,6 +17,16 @@ export type UpdateAvatar = {
     'avatar': File
 }
 
+type UpdatePassword = {
+    old_password: string,
+    new_password: string,
+    new_password_confirm: string
+}
+
+type DeleteProfile = {
+    'password': string
+}
+
 const getProfile = async (): Promise<ProfileResponse> => {
     const response = await api.get('/auth/profile/')
 
@@ -33,11 +43,7 @@ const updateAvatar = async (data: UpdateAvatar): Promise<{avatar: string}> => {
     const formData = new FormData()
     formData.append('avatar', data.avatar)
 
-    const response = await api.patch('/auth/profile/avatar/', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        }
-    })
+    const response = await api.patch('/auth/profile/avatar/', formData)
 
     return response.data
 }
@@ -46,8 +52,13 @@ const deleteAvatar = async (): Promise<void> => {
     await api.delete('/auth/profile/avatar/')
 }
 
-const deleteProfile = async (): Promise<void> => {
-    await api.post('/auth/profile/delete/')
+const changePassword = async (data: UpdatePassword): Promise<void> => {
+    await api.post('/auth/profile/change-password/', data)
+
+}
+
+const deleteProfile = async (data: DeleteProfile): Promise<void> => {
+    await api.post('/auth/profile/delete/', data)
 }
 
 export default {
@@ -55,5 +66,6 @@ export default {
     updateProfile,
     updateAvatar,
     deleteAvatar,
+    changePassword,
     deleteProfile,
 }

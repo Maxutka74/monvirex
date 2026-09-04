@@ -2,13 +2,15 @@ import {BiUser} from "react-icons/bi";
 import { IoMoonOutline } from "react-icons/io5";
 import { LiaToggleOffSolid, LiaToggleOnSolid } from "react-icons/lia";
 import { RiLogoutCircleRLine } from "react-icons/ri";
-import {useState} from "react";
+import {type SetStateAction, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 type ProfileDropdownProps = {
     firstName: string;
     lastName: string;
     email: string;
     logoutFunc: () => void | Promise<void>
+    setIsProfileDropdownOpen: React.Dispatch<SetStateAction<boolean>>
 }
 
 const ProfileDropdown = ({
@@ -16,7 +18,9 @@ const ProfileDropdown = ({
                              lastName,
                              email,
                              logoutFunc,
+                             setIsProfileDropdownOpen
                          }: ProfileDropdownProps) => {
+    const navigate = useNavigate();
     const [changeTheme, setChangeTheme] = useState(false);
 
     return (
@@ -42,7 +46,9 @@ const ProfileDropdown = ({
             <div className="w-full h-px bg-[#E5E7EB]" />
 
             <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 cursor-pointer">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
+                    setIsProfileDropdownOpen(false); navigate('/profile');
+                }}>
                     <BiUser size={28} />
                     <span>Profile</span>
                 </div>

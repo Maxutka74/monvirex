@@ -11,9 +11,6 @@ import logo from "../../assets/logos/MonvirexLogo.png";
 
 import authApi from "../../features/auth/api/authApi.ts";
 import notificationsApi from "../../features/notifications/api/notificationsApi.ts";
-import profileApi, {
-    type Profile,
-} from "../../features/profile/api/profileApi.ts";
 
 import useUserStore, {
     type UserStore,
@@ -22,8 +19,11 @@ import useUserStore, {
 import MobileMenu from "./MobileMenu.tsx";
 import NotificationDropdown from "./notification/NotificationDropdown.tsx";
 import ProfileDropdown from "./profile/ProfileDropdown.tsx";
+import profileStore from "../../entities/profile/profileStore.tsx";
 
 const Navbar = () => {
+    const API_URL = 'http://localhost:8000'
+
     const navItems = [
         { label: "Home", path: "/dashboard" },
         { label: "My Assets", path: "/myassets" },
@@ -33,7 +33,6 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [profileData, setProfileData] = useState<Profile | null>(null);
     const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [isNotificationsDropdownOpen, setIsNotificationsDropdownOpen] =
@@ -42,6 +41,10 @@ const Navbar = () => {
     const email = useUserStore(
         (state: UserStore | null) => state?.user?.email
     );
+
+    const profile = profileStore((state) => state.profile)
+
+    const refreshProfile = profileStore((state) => state.refreshProfile)
 
     const isStaff = useUserStore((state) => state.isStaff)
 
@@ -59,15 +62,19 @@ const Navbar = () => {
     };
 
     useEffect(() => {
+        if (!email) return
+
+        refreshProfile(email)
+    }, [email]);
+
+    useEffect(() => {
         const navbarData = async () => {
             if (!email) return;
 
             try {
-                const data = await profileApi.getProfile();
                 const unReadNotificationData =
                     await notificationsApi.getUnreadCount();
 
-                setProfileData(data[email]);
                 setUnreadNotifications(unReadNotificationData.unread_count);
             } catch (error) {
                 console.error(error);
@@ -76,6 +83,14 @@ const Navbar = () => {
 
         navbarData();
     }, [email]);
+
+    const avatar = profile?.avatar
+
+    const avatarSrc = avatar
+        ? avatar.startsWith('http')
+            ? avatar
+            : `${API_URL}${avatar}`
+        : undefined
 
     return (
         <header className="relative flex h-[80px] w-full items-center justify-between overflow-visible bg-transparent px-4 md:px-6 xl:h-[96px] xl:px-8">
@@ -155,13 +170,14 @@ const Navbar = () => {
                     }}
                 >
                     <img
-                        src={profileData?.avatar}
+                        src={avatarSrc}
                         alt=""
                         className="
                             w-[40px]
                             h-[40px]
                             xl:w-[42px]
                             xl:h-[42px]
+                            rounded-full
                         "
                     />
 
@@ -188,10 +204,11 @@ const Navbar = () => {
                         "
                     >
                         <ProfileDropdown
-                            firstName={profileData?.first_name || ""}
-                            lastName={profileData?.last_name || ""}
+                            firstName={profile?.first_name || ""}
+                            lastName={profile?.last_name || ""}
                             email={email || ""}
                             logoutFunc={logoutFunc}
+                            setIsProfileDropdownOpen={setIsProfileDropdownOpen}
                         />
                     </div>
                 )}

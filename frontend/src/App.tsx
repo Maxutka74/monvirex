@@ -12,6 +12,7 @@ import MyAssetsPage from "./pages/myassets/MyAssetsPage.tsx";
 import TradePage from "./pages/trade/TradePage.tsx";
 import AdminPanelPage from "./pages/admin-panel/AdminPanelPage.tsx";
 import StaffRoute from "./app/router/StaffRoute.tsx";
+import ProfilePage from "./pages/profile/ProfilePage.tsx";
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
                         <Route element={<StaffRoute />}>
                             <Route path='/admin-panel' element={<AdminPanelPage />} />
                         </Route>
+                        <Route path='/profile' element={<ProfilePage />} />
                     </Route>
                 </Route>
             </Routes>
