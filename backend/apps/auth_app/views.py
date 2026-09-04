@@ -311,9 +311,9 @@ class ProfileDeleteView(APIView):
             user=request.user, password=serializer.validated_data['password']
         )
 
-        response = Response({}, status=status.HTTP_204_NO_CONTENT)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
 
-        return response
+        return delete_auth_cookies(response)
 
 
 class PortfolioAvatarView(APIView):
@@ -338,7 +338,7 @@ class PortfolioAvatarView(APIView):
     def delete(self, request):
         ProfileService.delete_profile_avatar(user=request.user)
 
-        response = Response({}, status=status.HTTP_204_NO_CONTENT)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
 
         return response
 

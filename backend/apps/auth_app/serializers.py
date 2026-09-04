@@ -98,13 +98,12 @@ class ConfirmResetPasswordSerializer(serializers.Serializer):
 class ChangePasswordSerializer(serializers.Serializer):
     reset_verify_id = serializers.CharField(required=True, min_length=36, max_length=36)
     password = serializers.CharField(
-        min_length=8, write_only=True, required=True, style={'input_type': 'password'}
+        min_length=8, write_only=True, required=True
     )
     password_confirm = serializers.CharField(
         min_length=8,
         write_only=True,
         required=True,
-        style={'input_type': 'confirm_password'},
     )
 
     def validate(self, data):
@@ -150,10 +149,11 @@ class ProfileChangeUsernameSerializer(serializers.Serializer):
         first_name = data.get('first_name')
         last_name = data.get('last_name')
 
-        if len(first_name) < 1 or len(last_name) < 1:
-            raise serializers.ValidationError(
-                {'detail': 'First name and last name cannot be empty'}
-            )
+        if len(first_name) < 2 or len(first_name) > 50:
+            raise serializers.ValidationError({'details': "First name must be between 2 and 50 characters"})
+
+        if len(last_name) < 2 or len(last_name) > 50:
+            raise serializers.ValidationError({'details': "Last name must be between 2 and 50 characters"})
 
         return data
 
@@ -171,7 +171,6 @@ class ProfileAvatarSerializer(serializers.Serializer):
         ALLOWED_TYPES = [
             'image/jpeg',
             'image/png',
-            'image/jpg',
             'image/webp',
         ]
 
@@ -193,13 +192,11 @@ class ProfileAvatarSerializer(serializers.Serializer):
 class ProfileChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True, min_length=8, write_only=True)
     new_password = serializers.CharField(
-        min_length=8, write_only=True, required=True, style={'input_type': 'password'}
-    )
+        min_length=8, write_only=True, required=True)
     new_password_confirm = serializers.CharField(
         min_length=8,
         write_only=True,
         required=True,
-        style={'input_type': 'confirm_password'},
     )
 
     def validate(self, data):
@@ -209,4 +206,10 @@ class ProfileChangePasswordSerializer(serializers.Serializer):
         if new_password != new_password_confirm:
             raise serializers.ValidationError({'detail': 'Passwords do not match'})
 
+        try:
+            validate_password(new_password)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError({'password': list(e.messages)})
+
         return data
+
