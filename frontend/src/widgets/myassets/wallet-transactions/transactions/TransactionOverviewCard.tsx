@@ -1,6 +1,8 @@
 import type {UserSummary} from "../../../../features/wallet/api/walletApi.ts";
 import {RadialBar, RadialBarChart, ResponsiveContainer, Tooltip} from "recharts";
 import TransactionCustomTooltip from "./TransactionCustomTooltip.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../../../entities/theme/themeStore.tsx";
 
 type TransactionOverviewChartProps = {
     data: UserSummary | null,
@@ -8,6 +10,8 @@ type TransactionOverviewChartProps = {
 }
 
 const TransactionOverviewCard = ({data, currentPeriodVolume}: TransactionOverviewChartProps) => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const chartData = [
         { name: "Deposit", value: Number(data?.deposit), percent: currentPeriodVolume > 0? Number(data?.deposit) / currentPeriodVolume * 100: 0, fill: "#22C55E" },
         { name: "Withdraw", value: Number(data?.withdraw), percent: currentPeriodVolume > 0? Number(data?.withdraw) / currentPeriodVolume * 100: 0, fill: "#F97316" },
@@ -53,10 +57,22 @@ const TransactionOverviewCard = ({data, currentPeriodVolume}: TransactionOvervie
                                 <div className='flex flex-row justify-between'>
                                         <div className='flex flex-row items-center justify-center gap-3'>
                                         <div className='w-[15px] h-[15px] rounded-full' style={{backgroundColor: item.fill}} />
-                                        <h4 className='text-black text-[18px]'>{item.name}</h4>
+                                        <h4 className={`text-[18px] ${
+                                            theme === 'dark'
+                                                ? 'text-white'
+                                                : 'text-black'
+                                        }`}>
+                                            {item.name}
+                                        </h4>
                                         </div>
                                         <div className='flex flex-row'>
-                                            <p className='text-black'>${item.value.toFixed(1)}</p>
+                                            <p className={`${
+                                                theme === 'dark'
+                                                    ? 'text-white'
+                                                    : 'text-black'
+                                            }`}>
+                                                ${item.value.toFixed(1)}
+                                            </p>
                                         </div>
                                     </div>
                             </div>

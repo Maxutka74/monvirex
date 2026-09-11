@@ -7,6 +7,8 @@ import {RiLoaderLine} from "react-icons/ri";
 import api from "../../../shared/api/instance.ts";
 import { CgSortAz } from "react-icons/cg";
 import TradeConfirmationModal from "../trading/TradeConfirmationModal.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 type MarketAction = {
     symbol: string;
@@ -14,6 +16,8 @@ type MarketAction = {
 };
 
 const MarketsCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [assets, setAssets] = useState<Asset[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [nextAssetsUrl, setNextAssetsUrl] = useState("");
@@ -170,10 +174,18 @@ const MarketsCard = () => {
     }
 
     return (
-        <div className="relative w-full min-h-[400px] rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-5">
+        <div className={`relative w-full min-h-[400px] rounded-[30px] p-4 sm:p-5 ${
+            theme === 'dark'
+                ? 'bg-black/60 border border-[#0B4EA2] text-white shadow-[0_0_25px_rgba(0,102,255,0.08)]'
+                : 'bg-[#FFFFFF]/60'
+        }`}>
             <div className="flex flex-row items-center justify-between pb-[20px]">
                 <div className='flex flex-row gap-2 items-center'>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#429EFF] sm:h-[44px] sm:w-[44px]">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-full sm:h-[44px] sm:w-[44px] ${
+                        theme === 'dark'
+                            ? 'bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.35)]'
+                            : 'bg-[#429EFF]'
+                    }`}>
                         <HiOutlineClock
                             size={24}
                             className="text-[#FFFFFF]"
@@ -185,21 +197,47 @@ const MarketsCard = () => {
                     </h4>
                 </div>
                 <div className='flex flex-col items-end sm:flex-row gap-6'>
-                    <input className='w-[80%] sm:w-[240px] h-[46px] outline-none text-[#666D80] border border-[#A4ACB9] p-2 rounded-full' value={search} type="text" onChange={(e) => setSearch(e.target.value)} placeholder='Search by name...'/>
-                    <div className='relative w-[120px] sm:w-[115px] h-[46px] border border-[#A4ACB9] rounded-full text-[#6F6F6F] px-2'>
-                        <select className='absolute w-full appearance-none outline-none bg-transparent top-2'
+                    <input className={`w-[80%] sm:w-[240px] h-[46px] outline-none p-2 rounded-full ${
+                        theme === 'dark'
+                            ? 'bg-[#071329] text-white placeholder:text-[#60718D] border border-[#164B86] focus:border-[#1597FF]'
+                            : 'text-[#666D80] border border-[#A4ACB9]'
+                    }`} value={search} type="text" onChange={(e) => setSearch(e.target.value)} placeholder='Search by name...'/>
+                    <div className={`relative w-[120px] sm:w-[115px] h-[46px] rounded-full px-3 ${
+                        theme === 'dark'
+                            ? 'bg-[#071329] border border-[#164B86] text-[#A8B8D0]'
+                            : 'border border-[#A4ACB9] text-[#6F6F6F]'
+                    }`}>
+                        <select
+                            className={`absolute w-full appearance-none outline-none bg-transparent top-2.5 ${
+                                theme === 'dark'
+                                    ? 'text-[#A8B8D0]'
+                                    : 'text-[#6F6F6F]'
+                            }`}
                                 value={order}
                                 onChange={(e) => {
                                     setOrder(e.target.value)
                                 }}>
-                            <option value="">Sort</option>
+                            <option
+                                value=""
+                                className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}
+                            >
+                                Sort
+                            </option>
                             {sortOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
+                                <option
+                                    key={option.value}
+                                    value={option.value}
+                                    className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}
+                                >
                                     {option.label}
                                 </option>
                             ))}
                         </select>
-                        <CgSortAz size={24} className='absolute top-2.5 right-1 pointer-events-none'/>
+                        <CgSortAz size={24} className={`absolute top-2.5 right-1 pointer-events-none ${
+                            theme === 'dark'
+                                ? 'text-[#1597FF]'
+                                : 'text-[#6F6F6F]'
+                        }`}/>
                     </div>
                 </div>
             </div>
@@ -208,14 +246,22 @@ const MarketsCard = () => {
                 <div className="flex h-[240px] w-full items-center justify-center">
                     <RiLoaderLine
                         size={48}
-                        className="animate-spin text-[#666D80]"
+                        className={`animate-spin ${
+                            theme === 'dark'
+                                ? 'text-[#1597FF]'
+                                : 'text-[#666D80]'
+                        }`}
                     />
                 </div>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="min-w-[760px] w-full">
                         <thead>
-                        <tr className="h-[31px] w-full font-medium text-[#666D80]">
+                        <tr className={`h-[31px] w-full font-medium ${
+                            theme === 'dark'
+                                ? 'text-[#7184A3]'
+                                : 'text-[#666D80]'
+                        }`}>
                             <th
                                 scope="col"
                                 className="h-[26px] w-1/5 text-left"
@@ -257,7 +303,11 @@ const MarketsCard = () => {
                         {paginatedAssets.map((item) => (
                             <tr
                                 key={item.symbol}
-                                className="h-[56px]"
+                                className={`h-[56px] ${
+                                    theme === 'dark'
+                                        ? 'border-t border-[#102747]/80'
+                                        : ''
+                                }`}
                             >
                                 <td>
                                     <div className="flex h-[46px] items-center gap-2 font-medium">
@@ -304,7 +354,11 @@ const MarketsCard = () => {
                                 </td>
 
                                 <td className="text-center">
-                                    <button className='w-[57px] h-[42px] text-white font-medium bg-[#429EFF] rounded-full cursor-pointer' onClick={() => {
+                                    <button className={`w-[57px] h-[42px] text-white font-medium rounded-full cursor-pointer ${
+                                        theme === 'dark'
+                                            ? 'bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.25)] hover:bg-[#269FFF]'
+                                            : 'bg-[#429EFF]'
+                                    }`} onClick={() => {
                                         buyAssets({
                                             symbol: item.symbol.slice(0, -4),
                                             value: String(item.value),
@@ -317,7 +371,13 @@ const MarketsCard = () => {
                     </table>
                 </div>
             )}
-            <div className="flex flex-row items-center justify-center gap-4 pt-2 text-[#666D80]">
+            <div
+                className={`flex flex-row items-center justify-center gap-4 pt-2 ${
+                    theme === 'dark'
+                        ? 'text-[#7184A3]'
+                        : 'text-[#666D80]'
+                }`}
+            >
                 <FiArrowLeft
                     size={24}
                     onClick={() => {
@@ -329,8 +389,12 @@ const MarketsCard = () => {
                     }
                     className={`cursor-pointer ${
                         currentPage === 1
-                            ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
-                            : ""
+                            ? theme === 'dark'
+                                ? "pointer-events-none cursor-not-allowed text-[#263650]"
+                                : "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+                            : theme === 'dark'
+                                ? "text-[#1597FF] hover:text-[#5DB8FF]"
+                                : ""
                     }`}
                 />
 
@@ -350,8 +414,12 @@ const MarketsCard = () => {
                     }
                     className={`cursor-pointer ${
                         currentPage === totalPages
-                            ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
-                            : ""
+                            ? theme === 'dark'
+                                ? "pointer-events-none cursor-not-allowed text-[#263650]"
+                                : "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+                            : theme === 'dark'
+                                ? "text-[#1597FF] hover:text-[#5DB8FF]"
+                                : ""
                     }`}
                 />
             </div>
