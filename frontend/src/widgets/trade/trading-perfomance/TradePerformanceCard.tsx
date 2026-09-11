@@ -4,7 +4,9 @@ import {useEffect, useState} from "react";
 import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import api from "../../../shared/api/instance.ts";
 import TradePerformanceChart from "./TradePerformanceChart.tsx";
-import {useMarketOverviewStore, useTradeStore} from "../../../entities/trade/model/tradeStore.ts";
+import {useMarketOverviewStore, useTradeStore} from "../../../entities/trade/tradeStore.ts";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 
 export type IntervalOption = {
@@ -34,6 +36,8 @@ const INTERVAL_OPTIONS = [
 const LIMIT = 50
 
 const TradePerformanceCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [assets, setAssets] = useState<Asset[]>([])
     const [nextPage, setNextPage] = useState<string | null>('')
     const [interval, setInterval] = useState<IntervalOption | null>({ value: '5m', label: '5 minutes' })
@@ -175,28 +179,86 @@ const TradePerformanceCard = () => {
         }
     }
 
+    const getSelectClassNames = () => ({
+        control: () => `h-[40px] border-none outline-none shadow-none ${
+            theme === 'dark'
+                ? '!bg-[#071329] !text-white'
+                : ''
+        }`,
+
+        menu: () =>
+            theme === 'dark'
+                ? '!bg-[#071329] !border !border-[#164B86] !rounded-[10px] overflow-hidden'
+                : '',
+
+        menuList: () =>
+            theme === 'dark'
+                ? '!bg-[#071329] !p-1'
+                : '',
+
+        option: (state: any) =>
+            theme === 'dark'
+                ? `!bg-[#071329] !text-[#A8B8D0] cursor-pointer ${
+                    state.isFocused
+                        ? '!bg-[#0B2A52] !text-white'
+                        : ''
+                } ${
+                    state.isSelected
+                        ? '!bg-[#1597FF] !text-white'
+                        : ''
+                }`
+                : '',
+
+        singleValue: () =>
+            theme === 'dark'
+                ? '!text-[#A8B8D0]'
+                : '',
+
+        input: () =>
+            theme === 'dark'
+                ? '!text-white'
+                : '',
+
+        placeholder: () =>
+            theme === 'dark'
+                ? '!text-[#60718D]'
+                : '',
+    });
+
     return (
-        <div className='w-full h-full flex flex-col rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-6 gap-5'>
+        <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 gap-5 ${
+            theme === 'dark'
+                ? 'bg-black/60 border border-[#123A70] text-white shadow-[0_0_25px_rgba(0,102,255,0.08)]'
+                : 'bg-[#FFFFFF]/60'
+        }`}>
             <div className='flex flex-col gap-4 xl:flex-row justify-between'>
                 <div className='flex flex-row gap-3 items-center'>
-                    <div className="w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-full shrink-0">
+                    <div className={`w-[44px] h-[44px] flex items-center justify-center text-white rounded-full shrink-0 ${
+                        theme === 'dark'
+                            ? 'bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.3)]'
+                            : 'bg-[#429EFF]'
+                    }`}>
                         <RiBarChartLine size={24} />
                     </div>
                     <h3 className='text-2xl font-medium'>Trading Performance</h3>
                 </div>
                 <div className='flex flex-row gap-3'>
                     <div className='w-[150px]'>
-                        <Select className = 'w-full' classNames={{control: () => 'h-[40px] border-none outline-none shadow-none'}}
+                        <Select className = 'w-full' classNames={getSelectClassNames()}
                                 isSearchable={false} options={optionAssets} onMenuScrollToBottom={scrollMoreOptions} maxMenuHeight={200}
                                 value={currentAsset ?? optionAssets[0]} onChange={(option) => {setCurrentAsset(option);}}/>
                     </div>
                     <div className='w-[150px]'>
-                        <Select className = 'w-full' classNames={{control: () => 'h-[40px] border-none outline-none shadow-none'}}
+                        <Select className = 'w-full' classNames={getSelectClassNames()}
                                 isSearchable={false} options={INTERVAL_OPTIONS} maxMenuHeight={200} value={interval}
                                 onChange={(option) => setInterval(option)}
                                 />
                     </div>
-                    <div className='w-[150px] h-[40px] flex flex-row items-center bg-white border border-[#CCCCCC] rounded-[4px] px-2'>
+                    <div className={`w-[150px] h-[40px] flex flex-row items-center rounded-[4px] px-2 ${
+                        theme === 'dark'
+                            ? 'bg-[#071329] border border-[#164B86] text-[#A8B8D0]'
+                            : 'bg-white border border-[#CCCCCC]'
+                    }`}>
                         <span>50</span>
                     </div>
                 </div>
@@ -207,7 +269,7 @@ const TradePerformanceCard = () => {
                         <div className='flex flex-col gap-3 md:flex-row justify-between'>
                             <div className='flex flex-row items-center gap-2 font-medium'>
                                 <span className='text-4xl'>${Number(chartKlines.slice(-1)[0].close).toFixed(3)}</span>
-                                <span className='text-xl text-[#429EFF]'>${((Number(chartKlines.slice(-1)[0].close)) - Number(chartKlines.slice(0)[0].close)).toFixed(2)}</span>
+                                <span className={theme === 'dark' ? 'text-xl text-[#1597FF]' : 'text-xl text-[#429EFF]'}>${((Number(chartKlines.slice(-1)[0].close)) - Number(chartKlines.slice(0)[0].close)).toFixed(2)}</span>
                             </div>
                             <div className='flex flex-row items-center gap-3 font-medium'>
                                 <span>O <span className='text-[#429EFF]'>{Number(chartKlines.slice(-1)[0].open).toFixed(3)}</span></span>

@@ -19,6 +19,8 @@ const WalletActionModal = ({
                                setWalletActionModal,
                                onClose,
                            }: WalletActionModalProps) => {
+    const theme = localStorage.getItem('CHANGE_THEME');
+
     const [amountDeposit, setAmountDeposit] = useState("0");
     const [amountWithdraw, setAmountWithdraw] = useState("0");
     const [isLoading, setIsLoading] = useState(false);
@@ -138,20 +140,32 @@ const WalletActionModal = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 backdrop-blur-sm">
-            <div className="max-h-[95vh] w-full max-w-[500px] overflow-y-auto rounded-[24px] bg-white p-4 sm:p-5">
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-3 backdrop-blur-sm ${
+            theme === "dark" ? "bg-black/70" : "bg-black/40"
+        }`}>
+            <div className={`max-h-[95vh] w-full max-w-[500px] overflow-y-auto rounded-[24px] p-4 sm:p-5 ${
+                theme === "dark"
+                    ? "bg-[#020817] border border-[#123A70] shadow-[0_0_35px_rgba(21,151,255,0.15)] text-white"
+                    : "bg-white"
+            }`}>
                 {isLoading ? (
                     <div className="flex h-[350px] items-center justify-center">
                         <RiLoaderLine
                             size={52}
-                            className="animate-spin text-[#666D80]"
+                            className={`animate-spin ${
+                                theme === "dark" ? "text-[#1597FF]" : "text-[#666D80]"
+                            }`}
                         />
                     </div>
                 ) : (
                     <>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#429EFF] sm:h-[54px] sm:w-[54px]">
+                                <div className={`flex h-[46px] w-[46px] items-center justify-center rounded-full sm:h-[54px] sm:w-[54px] ${
+                                    theme === "dark"
+                                        ? "bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.3)]"
+                                        : "bg-[#429EFF]"
+                                }`}>
                                     <LuWallet
                                         size={24}
                                         className="text-white"
@@ -163,7 +177,9 @@ const WalletActionModal = ({
                                         USDT Wallet
                                     </h4>
 
-                                    <p className="text-sm text-[#666D80]">
+                                    <p className={`text-sm ${
+                                        theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"
+                                    }`}>
                                         Manage your balance
                                     </p>
                                 </div>
@@ -171,9 +187,13 @@ const WalletActionModal = ({
 
                             <button
                                 onClick={onClose}
-                                className="flex h-[40px] w-[40px] items-center justify-center rounded-full border border-[#DFE1E7] sm:h-[44px] sm:w-[44px]"
+                                className={`flex h-[40px] w-[40px] items-center justify-center rounded-full sm:h-[44px] sm:w-[44px] cursor-pointer ${
+                                    theme === "dark"
+                                        ? "border border-[#164B86] text-[#A8B8D0] hover:bg-[#0B1D38] hover:text-white"
+                                        : "border border-[#DFE1E7]"
+                                }`}
                             >
-                                <IoMdClose size={18} />
+                                <IoMdClose size={24} />
                             </button>
                         </div>
 
@@ -184,10 +204,14 @@ const WalletActionModal = ({
                                     setAmountDeposit("0");
                                     setError(null);
                                 }}
-                                className={`h-[46px] flex-1 rounded-full ${
+                                className={`h-[46px] flex-1 rounded-full cursor-pointer ${
                                     walletActionModal === "deposit"
-                                        ? "bg-[#429EFF] text-white"
-                                        : ""
+                                        ? theme === "dark"
+                                            ? "bg-[#1597FF] text-white shadow-[0_0_15px_rgba(21,151,255,0.25)]"
+                                            : "bg-[#429EFF] text-white"
+                                        : theme === "dark"
+                                            ? "bg-[#071329] border border-[#164B86] text-[#A8B8D0]"
+                                            : ""
                                 }`}
                             >
                                 Deposit
@@ -199,10 +223,14 @@ const WalletActionModal = ({
                                     setAmountWithdraw("0");
                                     setError(null);
                                 }}
-                                className={`h-[46px] flex-1 rounded-full ${
+                                className={`h-[46px] flex-1 rounded-full cursor-pointer ${
                                     walletActionModal === "withdraw"
-                                        ? "bg-[#429EFF] text-white"
-                                        : ""
+                                        ? theme === "dark"
+                                            ? "bg-[#1597FF] text-white shadow-[0_0_15px_rgba(21,151,255,0.25)]"
+                                            : "bg-[#429EFF] text-white"
+                                        : theme === "dark"
+                                            ? "bg-[#071329] border border-[#164B86] text-[#A8B8D0]"
+                                            : ""
                                 }`}
                             >
                                 Withdraw
@@ -211,13 +239,21 @@ const WalletActionModal = ({
 
                         {walletActionModal === "deposit" && (
                             <>
-                                <div className="mt-5 flex w-full flex-col gap-2 rounded-[20px] border border-[#DFE1E7] p-4">
-                                    <p className="text-[#666D80]">
+                                <div className={`mt-5 flex w-full flex-col gap-2 rounded-[20px] border p-4 ${
+                                    theme === "dark"
+                                        ? "border-[#123A70] bg-[#071329]"
+                                        : "border-[#DFE1E7]"
+                                }`}>
+                                    <p className={theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"}>
                                         Current Balance
                                     </p>
 
                                     <div className="flex items-center gap-3">
-                                        <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#429EFF]">
+                                        <div className={`flex h-[44px] w-[44px] items-center justify-center rounded-full ${
+                                            theme === "dark"
+                                                ? "bg-[#1597FF] shadow-[0_0_12px_rgba(21,151,255,0.25)]"
+                                                : "bg-[#429EFF]"
+                                        }`}>
                                             <FiDollarSign
                                                 size={24}
                                                 className="text-white"
@@ -228,9 +264,9 @@ const WalletActionModal = ({
                                             {balance}
                                         </h4>
 
-                                        <span className="text-[#666D80]">
-                                        USDT
-                                    </span>
+                                        <span className={theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"}>
+                                            USDT
+                                        </span>
                                     </div>
                                 </div>
 
@@ -238,7 +274,11 @@ const WalletActionModal = ({
                                     <p>Amount</p>
 
                                     {error && (
-                                        <div className="flex items-center gap-2 rounded-md bg-[#FFF0F3] p-3">
+                                        <div className={`flex items-center gap-2 rounded-md p-3 ${
+                                            theme === "dark"
+                                                ? "bg-[#2A0D18] border border-[#6B1830]"
+                                                : "bg-[#FFF0F3]"
+                                        }`}>
                                             <BiErrorCircle
                                                 size={16}
                                                 className="text-[#DF1C41]"
@@ -250,7 +290,11 @@ const WalletActionModal = ({
                                         </div>
                                     )}
 
-                                    <div className="relative h-[60px] w-full rounded-[20px] border border-[#DFE1E7]">
+                                    <div className={`relative h-[60px] w-full rounded-[20px] border ${
+                                        theme === "dark"
+                                            ? "border-[#164B86] bg-[#071329]"
+                                            : "border-[#DFE1E7]"
+                                    }`}>
                                         <input
                                             value={amountDeposit}
                                             type="text"
@@ -259,7 +303,11 @@ const WalletActionModal = ({
                                                 setAmountDeposit(e.target.value);
                                                 setError(null);
                                             }}
-                                            className="h-full w-full rounded-[20px] px-4 pr-16 outline-none"
+                                            className={`h-full w-full rounded-[20px] px-4 pr-16 outline-none ${
+                                                theme === "dark"
+                                                    ? "bg-transparent text-white placeholder:text-[#60718D]"
+                                                    : ""
+                                            }`}
                                         />
 
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#666D80]">
@@ -275,7 +323,11 @@ const WalletActionModal = ({
                                 <button
                                     onClick={handleDeposit}
                                     disabled={isLoading}
-                                    className="mt-5 h-[52px] w-full rounded-full bg-[#429EFF] text-white"
+                                    className={`mt-5 h-[52px] w-full rounded-full text-white cursor-pointer ${
+                                        theme === "dark"
+                                            ? "bg-[#1597FF] shadow-[0_0_18px_rgba(21,151,255,0.25)] hover:bg-[#269FFF]"
+                                            : "bg-[#429EFF]"
+                                    }`}
                                 >
                                     Continue to Deposit
                                 </button>
@@ -284,13 +336,21 @@ const WalletActionModal = ({
 
                         {walletActionModal === "withdraw" && (
                             <>
-                                <div className="mt-5 flex w-full flex-col gap-2 rounded-[20px] border border-[#DFE1E7] p-4">
-                                    <p className="text-[#666D80]">
+                                <div className={`mt-5 flex w-full flex-col gap-2 rounded-[20px] border p-4 ${
+                                    theme === "dark"
+                                        ? "border-[#123A70] bg-[#071329]"
+                                        : "border-[#DFE1E7]"
+                                }`}>
+                                    <p className={theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"}>
                                         Available Balance
                                     </p>
 
                                     <div className="flex items-center gap-3">
-                                        <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#429EFF]">
+                                        <div className={`flex h-[44px] w-[44px] items-center justify-center rounded-full ${
+                                            theme === "dark"
+                                                ? "bg-[#1597FF] shadow-[0_0_12px_rgba(21,151,255,0.25)]"
+                                                : "bg-[#429EFF]"
+                                        }`}>
                                             <FiDollarSign
                                                 size={24}
                                                 className="text-white"
@@ -301,9 +361,9 @@ const WalletActionModal = ({
                                             {balance}
                                         </h4>
 
-                                        <span className="text-[#666D80]">
-                                        USDT
-                                    </span>
+                                        <span className={theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"}>
+                                            USDT
+                                        </span>
                                     </div>
                                 </div>
 
@@ -311,7 +371,11 @@ const WalletActionModal = ({
                                     <p>Amount</p>
 
                                     {error && (
-                                        <div className="flex items-center gap-2 rounded-md bg-[#FFF0F3] p-3">
+                                        <div className={`flex items-center gap-2 rounded-md p-3 ${
+                                            theme === "dark"
+                                                ? "bg-[#2A0D18] border border-[#6B1830]"
+                                                : "bg-[#FFF0F3]"
+                                        }`}>
                                             <BiErrorCircle
                                                 size={16}
                                                 className="text-[#DF1C41]"
@@ -323,7 +387,11 @@ const WalletActionModal = ({
                                         </div>
                                     )}
 
-                                    <div className="relative h-[60px] w-full rounded-[20px] border border-[#DFE1E7]">
+                                    <div className={`relative h-[60px] w-full rounded-[20px] border ${
+                                        theme === "dark"
+                                            ? "border-[#164B86] bg-[#071329]"
+                                            : "border-[#DFE1E7]"
+                                    }`}>
                                         <input
                                             value={amountWithdraw}
                                             type="text"
@@ -332,27 +400,37 @@ const WalletActionModal = ({
                                                 setAmountWithdraw(e.target.value);
                                                 setError(null);
                                             }}
-                                            className="h-full w-full rounded-[20px] px-4 pr-24 outline-none"
+                                            className={`h-full w-full rounded-[20px] px-4 pr-24 outline-none ${
+                                                theme === "dark"
+                                                    ? "bg-transparent text-white placeholder:text-[#60718D]"
+                                                    : ""
+                                            }`}
                                         />
 
-                                        <span className="absolute right-16 top-1/2 -translate-y-1/2 text-[#666D80]">
-                                        USDT
-                                    </span>
+                                        <span className={`absolute right-14 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-[#7184A3]' : 'text-[#666D80]'} `}>
+                                            USDT
+                                        </span>
 
-                                        <div className="absolute right-12 top-1/2 h-5 w-px -translate-y-1/2 bg-[#DFE1E7]" />
+                                        <div className={`absolute right-12 top-1/2 h-5 w-px -translate-y-1/2 ${
+                                            theme === "dark" ? "bg-[#164B86]" : "bg-[#DFE1E7]"
+                                        }`} />
 
                                         <button
                                             onClick={() => {
                                                 setAmountWithdraw(maxWithdraw);
                                                 setError(null);
                                             }}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#429EFF]"
+                                            className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${
+                                                theme === "dark" ? "text-[#1597FF]" : "text-[#429EFF]"
+                                            }`}
                                         >
                                             Max
                                         </button>
                                     </div>
 
-                                    <div className="space-y-1 text-sm text-[#666D80]">
+                                    <div className={`space-y-1 text-sm ${
+                                        theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"
+                                    }`}>
                                         <p>
                                             Available to withdraw: {maxWithdraw} USDT
                                         </p>
@@ -370,7 +448,11 @@ const WalletActionModal = ({
                                 <button
                                     onClick={handleWithdraw}
                                     disabled={isLoading}
-                                    className="mt-5 h-[52px] w-full rounded-full bg-[#429EFF] text-white"
+                                    className={`mt-5 h-[52px] w-full rounded-full text-white cursor-pointer ${
+                                        theme === "dark"
+                                            ? "bg-[#1597FF] shadow-[0_0_18px_rgba(21,151,255,0.25)] hover:bg-[#269FFF]"
+                                            : "bg-[#429EFF]"
+                                    }`}
                                 >
                                     Confirm Withdrawal
                                 </button>

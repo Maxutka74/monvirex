@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import type {AssetKlines} from "../../../features/assets/api/assetsApi.ts";
+import type {AssetKlines} from "../../features/assets/api/assetsApi.ts";
 
 export type CurrentOption = {
     symbol: string;

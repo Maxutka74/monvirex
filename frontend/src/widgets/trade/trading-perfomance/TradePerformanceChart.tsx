@@ -1,6 +1,8 @@
 import ReactECharts from 'echarts-for-react';
 import type {AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import type {IntervalOption} from "./TradePerformanceCard.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 type TradePerformanceChartProps = {
     klines: AssetKlines[]
@@ -8,6 +10,7 @@ type TradePerformanceChartProps = {
 }
 
 const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) => {
+    const theme = useStore(themeStore, (state) => state.theme);
 
     const candleData = klines.map((kline) => [
         Number(kline.open),
@@ -75,8 +78,21 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
     const option = {
         tooltip: {
             trigger: 'axis',
+
+            backgroundColor: theme === 'dark' ? '#020817' : '#FFFFFF',
+            borderColor: theme === 'dark' ? '#164B86' : '#DFE1E7',
+            textStyle: {
+                color: theme === 'dark' ? '#FFFFFF' : '#000000',
+            },
+
             axisPointer: {
-                type: 'cross'
+                type: 'cross',
+                lineStyle: {
+                    color: theme === 'dark' ? '#164B86' : '#CCCCCC',
+                },
+                crossStyle: {
+                    color: theme === 'dark' ? '#164B86' : '#CCCCCC',
+                },
             },
 
             formatter: (params: any) => {
@@ -87,40 +103,46 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
 
                 return `
                     <div class="min-w-[180px] flex flex-col gap-2">
-                        <div class="text-black font-medium">
+                        <div class="${theme === 'dark' ? 'text-white' : 'text-black'} font-medium">
                             ${Intl.DateTimeFormat('en-US', {
-                                day: '2-digit',
-                                month: 'short',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            }).format(new Date(date))}
+                                    day: '2-digit',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                }).format(new Date(date))}
                         </div>
-            
+                
                         <div class="flex justify-between gap-6">
-                            <span class="text-gray-500">Open:</span>
+                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Open:</span>
                             <b class="text-blue-500">${kline.open.slice(0,-6)}</b>
                         </div>
-            
+                
                         <div class="flex justify-between gap-6">
-                            <span class="text-gray-500">High:</span>
+                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">High:</span>
                             <b class="text-orange-500">${kline.high.slice(0,-6)}</b>
                         </div>
-            
+                
                         <div class="flex justify-between gap-6">
-                            <span class="text-gray-500">Low:</span>
+                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Low:</span>
                             <b class="text-blue-500">${kline.low.slice(0,-6)}</b>
                         </div>
-            
+                
                         <div class="flex justify-between gap-6">
-                            <span class="text-gray-500">Close:</span>
+                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Close:</span>
                             <b class="${isUp ? 'text-green-500' : 'text-red-500'}">
                                 ${kline.close.slice(0,-6)}
                             </b>
                         </div>
-            
-                        <div class="border-t border-gray-100 pt-2 flex justify-between gap-6">
-                            <span class="text-gray-500">Volume:</span>
-                            <b class="text-gray-900">${kline.volume.slice(0,-2)}</b>
+                
+                        <div class="border-t ${
+                                    theme === 'dark'
+                                        ? 'border-[#164B86]'
+                                        : 'border-gray-100'
+                                } pt-2 flex justify-between gap-6">
+                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Volume:</span>
+                            <b class="${theme === 'dark' ? 'text-white' : 'text-gray-900'}">
+                                ${kline.volume.slice(0,-2)}
+                            </b>
                         </div>
                     </div>
                 `
@@ -131,17 +153,50 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
             type: 'category',
             data: xAxisData,
             boundaryGap: true,
+
+            axisLine: {
+                lineStyle: {
+                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
+                },
+            },
+
+            axisTick: {
+                lineStyle: {
+                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
+                },
+            },
+
+            axisLabel: {
+                color: theme === 'dark' ? '#7184A3' : '#666666',
+            },
         },
 
         yAxis: {
             type: 'value',
             scale: true,
             position: 'right',
-        },
 
-        axisLabel: {
-            hideOverflow: true,
-            interval: 'auto'
+            axisLine: {
+                lineStyle: {
+                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
+                },
+            },
+
+            axisTick: {
+                lineStyle: {
+                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
+                },
+            },
+
+            axisLabel: {
+                color: theme === 'dark' ? '#7184A3' : '#666666',
+            },
+
+            splitLine: {
+                lineStyle: {
+                    color: theme === 'dark' ? '#102747' : '#EEEEEE',
+                },
+            },
         },
 
         grid: {
