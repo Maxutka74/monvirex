@@ -5,9 +5,13 @@ import {LuWallet} from "react-icons/lu";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { AiOutlineDollarCircle } from "react-icons/ai";
 import {ChartPie, Layers3, LayoutDashboard, ReceiptText, RefreshCw} from "lucide-react";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 
 const PlatformOverviewCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [informationUserAll, setInformationUserAll] = useState<AdminPanelStats>()
     const [updateLoading, setUpdateLoading] = useState<boolean>(false)
 
@@ -37,7 +41,11 @@ const PlatformOverviewCard = () => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-6">
+        <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 ${
+            theme === 'dark'
+                ? 'bg-black/60 border border-[#123A70] text-white shadow-[0_0_25px_rgba(21,151,255,0.08)]'
+                : 'bg-[#FFFFFF]/60'
+        }`}>
             <div className='flex flex-row items-center justify-between mb-5'>
                 <div className='flex flex-row items-center gap-4'>
                     <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md shrink-0'>
@@ -45,14 +53,20 @@ const PlatformOverviewCard = () => {
                     </div>
                     <div className='flex flex-col justify-center font-medium'>
                         <h3 className='text-xl sm:text-2xl'>Platform Overview</h3>
-                        <p className='text-xs sm:text-sm text-gray-400'>Key metrics and statistics</p>
+                        <p className={`text-xs sm:text-sm ${
+                            theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
+                        }`}>Key metrics and statistics</p>
                     </div>
                 </div>
                 <button className='w-[155px] sm:w-[150px] flex flex-row items-center gap-3 text-white bg-[#429EFF] px-3 py-2 rounded-md cursor-pointer text-sm sm:text-[16px]' onClick={() => updateAsset()}><span className={`${updateLoading && 'animate-spin'}`}><RefreshCw size={20} /></span> Sync Assets</button>
             </div>
             <div>
                 <div className='flex flex-col md:flex-row items-center gap-4 mb-3'>
-                    <div className='w-full flex-1 flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                    <div className={`w-full flex-1 flex flex-row items-center gap-4 rounded-md p-4 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329]'
+                            : 'border border-gray-100'
+                    }`}>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                             <FiUsers size={22} />
                         </div>
@@ -61,7 +75,11 @@ const PlatformOverviewCard = () => {
                             <span>{informationUserAll?.total_users}</span>
                         </div>
                     </div>
-                    <div className='w-full flex-1 flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                    <div className={`w-full flex-1 flex flex-row items-center gap-4 rounded-md p-4 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329]'
+                            : 'border border-gray-100'
+                    }`}>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                             <LuWallet size={22} />
                         </div>
@@ -72,7 +90,11 @@ const PlatformOverviewCard = () => {
                     </div>
                 </div>
                 <div className='flex flex-col md:flex-row items-center gap-4 mb-3'>
-                    <div className='w-full flex-1 flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                    <div className={`w-full flex-1 flex flex-row items-center gap-4 rounded-md p-4 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329]'
+                            : 'border border-gray-100'
+                    }`}>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                             <ReceiptText size={22} />
                         </div>
@@ -81,7 +103,11 @@ const PlatformOverviewCard = () => {
                             <span>{informationUserAll?.total_transactions_24h}</span>
                         </div>
                     </div>
-                    <div className='w-full flex-1 flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                    <div className={`w-full flex-1 flex flex-row items-center gap-4 rounded-md p-4 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329]'
+                            : 'border border-gray-100'
+                    }`}>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                             <LiaExchangeAltSolid size={22} />
                         </div>
@@ -92,7 +118,11 @@ const PlatformOverviewCard = () => {
                     </div>
                 </div>
                 <div className='flex flex-col md:flex-row items-center gap-4 mb-3'>
-                    <div className='w-full flex-1 flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                    <div className={`w-full flex-1 flex flex-row items-center gap-4 rounded-md p-4 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329]'
+                            : 'border border-gray-100'
+                    }`}>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                             <AiOutlineDollarCircle size={22} />
                         </div>
@@ -101,7 +131,11 @@ const PlatformOverviewCard = () => {
                             <span>{informationUserAll?.total_crypto_value.slice(0,-4)} <span className='text-sm'>USDT</span></span>
                         </div>
                     </div>
-                    <div className='w-full flex-1 flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                    <div className={`w-full flex-1 flex flex-row items-center gap-4 rounded-md p-4 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329]'
+                            : 'border border-gray-100'
+                    }`}>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                             <ChartPie size={22} />
                         </div>
@@ -111,7 +145,11 @@ const PlatformOverviewCard = () => {
                         </div>
                     </div>
                 </div>
-                <div className='flex flex-row items-center gap-4 border border-gray-100 rounded-md p-4'>
+                <div className={`flex flex-row items-center gap-4 rounded-md p-4 ${
+                    theme === 'dark'
+                        ? 'border border-[#164B86] bg-[#071329]'
+                        : 'border border-gray-100'
+                }`}>
                     <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
                         <Layers3 size={22} />
                     </div>

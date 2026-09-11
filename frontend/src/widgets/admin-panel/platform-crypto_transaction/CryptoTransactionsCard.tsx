@@ -5,9 +5,13 @@ import adminApi, {
 import {BsArrowRight} from "react-icons/bs";
 import {LiaExchangeAltSolid} from "react-icons/lia";
 import TotalCryptoTransactionsModal from "./TotalCryptoTransactionsModal.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 
 const CryptoTransactionsCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [cryptoTransactions, setCryptoTransactions] = useState<AdminPanelCryptoTransactions[]>([]);
     const [cryptoTransactionsModalOpen, setCryptoTransactionsModalOpen] = useState(false);
     const [allPages, setAllPages] = useState(0);
@@ -44,7 +48,11 @@ const CryptoTransactionsCard = () => {
     }))
 
     return (
-        <div className="w-full h-full flex flex-col rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-6">
+        <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 ${
+            theme === 'dark'
+                ? 'bg-black/60 border border-[#123A70] text-white shadow-[0_0_25px_rgba(21,151,255,0.08)]'
+                : 'bg-[#FFFFFF]/60'
+        }`}>
             <div className='flex flex-col sm:flex-row justify-between gap-5 mb-5'>
                 <div className='flex flex-row items-center gap-4'>
                     <div
@@ -53,19 +61,37 @@ const CryptoTransactionsCard = () => {
                     </div>
                     <div className='flex flex-col justify-center font-medium'>
                         <h3 className='text-xl sm:text-2xl'>Recent Crypto Transactions</h3>
-                        <p className='text-xs sm:text-sm text-gray-400'>Latest crypto transactions</p>
+                        <p className={`text-xs sm:text-sm ${
+                            theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
+                        }`}>
+                            Latest crypto transactions
+                        </p>
                     </div>
                 </div>
                 <div
-                    className='max-w-[260px] w-full flex flex-row items-center justify-between cursor-pointer border border-gray-300 px-4 py-2 rounded-lg font-medium' onClick={() => setCryptoTransactionsModalOpen(true)}>
+                    className={`max-w-[260px] w-full flex flex-row items-center justify-between cursor-pointer px-4 py-2 rounded-lg font-medium ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] bg-[#071329] text-[#A8B8D0] hover:bg-[#0B2A52] hover:text-white'
+                            : 'border border-gray-300'
+                    }`}
+                    onClick={() => setCryptoTransactionsModalOpen(true)}
+                >
                     <span>View all crypto transactions</span>
                     <BsArrowRight size={20}/>
                 </div>
             </div>
-            <div className='w-full overflow-x-auto border border-gray-200 rounded-lg'>
+            <div className={`w-full overflow-x-auto rounded-lg ${
+                theme === 'dark'
+                    ? 'border border-[#164B86]'
+                    : 'border border-gray-200'
+            }`}>
                 <table className='w-[1100px] lg:w-full'>
                     <thead>
-                        <tr className='h-[60px] bg-gray-300/60'>
+                    <tr className={`h-[60px] ${
+                        theme === 'dark'
+                            ? 'bg-[#0B2A52] text-[#A8B8D0]'
+                            : 'bg-gray-300/60'
+                    }`}>
                             <th className='px-4 py-3'>ID</th>
                             <th>Email</th>
                             <th className='px-4 py-3'>Asset</th>
@@ -78,12 +104,23 @@ const CryptoTransactionsCard = () => {
                     </thead>
                     <tbody>
                     {tableFormatingData.map((transaction) => (
-                        <tr className='h-[60px] border-t border-gray-200' key={transaction.id}>
+                        <tr
+                            className={`h-[60px] border-t ${
+                                theme === 'dark'
+                                    ? 'border-[#123A70]'
+                                    : 'border-gray-200'
+                            }`}
+                            key={transaction.id}
+                        >
                             <td className='max-w-[80px] px-4'>{transaction.id}</td>
                             <td className='text-center'>{transaction.email}</td>
                             <td className='text-center'>{transaction.asset}</td>
                             <td className='flex justify-center pt-5'>
-                                <div className='text-sm flex justify-center rounded-full text-blue-500 bg-blue-100 px-4'>
+                                <div className={`text-sm flex justify-center rounded-full px-4 ${
+                                    theme === 'dark'
+                                        ? 'text-[#1597FF] bg-[#0B2A52] border border-[#164B86]'
+                                        : 'text-blue-500 bg-blue-100'
+                                }`}>
                                     {transaction.type}
                                 </div>
                             </td>
@@ -91,9 +128,20 @@ const CryptoTransactionsCard = () => {
                             <td className='text-center'>{transaction.amount} USDT</td>
                             <td className='flex justify-center pt-5'>
                                 <div
-                                    className={`w-[80px] text-sm flex justify-center rounded-full ${transaction.status === 'Completed' ? 'text-green-500 bg-green-100'
-                                        : transaction.status === 'Cancelled' ? 'text-red-500 bg-red-100'
-                                            : 'text-purple-500 bg-purple-100'}`}>
+                                    className={`w-[80px] text-sm flex justify-center rounded-full ${
+                                        transaction.status === 'Completed'
+                                            ? theme === 'dark'
+                                                ? 'text-[#40C4AA] bg-[#0B2E28] border border-[#176B59]'
+                                                : 'text-green-500 bg-green-100'
+                                            : transaction.status === 'Cancelled'
+                                                ? theme === 'dark'
+                                                    ? 'text-[#DF1C41] bg-[#2A0D18] border border-[#7A1F35]'
+                                                    : 'text-red-500 bg-red-100'
+                                                : theme === 'dark'
+                                                    ? 'text-[#A78BFA] bg-[#211A3A] border border-[#4C3A78]'
+                                                    : 'text-purple-500 bg-purple-100'
+                                    }`}
+                                >
                                     {transaction.status}
                                 </div>
                             </td>

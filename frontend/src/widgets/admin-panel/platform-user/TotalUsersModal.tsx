@@ -5,6 +5,8 @@ import adminApi, {type AdminPanelToggleUser} from "../../../features/admin/api/a
 import {MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight} from "react-icons/md";
 import {VscSearch} from "react-icons/vsc";
 import UserDetailsModal from "./UserDetailsModal.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 type userFormatData = {
     id: string,
@@ -23,6 +25,8 @@ type TotalUsersModalProps = {
 }
 
 const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPages}: TotalUsersModalProps) => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [totalUserAll, setTotalUserAll] = useState<userFormatData[]>(tableFormatingData);
     const [searchInput, setSearchInput] = useState("");
     const [searchTotal, setSearchTotal] = useState<number | null>(null);
@@ -145,7 +149,11 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-5'>
-            <div className='max-w-[900px] overflow-y-auto w-full bg-white rounded-[20px] p-4'>
+            <div className={`max-w-[900px] overflow-y-auto w-full rounded-[20px] p-4 ${
+                theme === 'dark'
+                    ? 'bg-[#020817] border border-[#123A70] text-white shadow-[0_0_35px_rgba(21,151,255,0.15)]'
+                    : 'bg-white'
+            }`}>
                 <div className='flex flex-row justify-between gap-5 mb-5'>
                     <div className='flex flex-row items-center gap-4'>
                         <div className='w-[44px] h-[44px] flex items-center justify-center text-white bg-[#429EFF] rounded-md'>
@@ -153,19 +161,42 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
                         </div>
                         <div className='flex flex-col justify-center font-medium'>
                             <h3 className='text-xl sm:text-2xl'>All Users</h3>
-                            <p className='text-xs sm:text-sm text-gray-400'>List of user accounts</p>
+                            <p className={`text-xs sm:text-sm ${
+                                theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
+                            }`}>
+                                List of user accounts
+                            </p>
                         </div>
                     </div>
-                    <button className='flex h-[40px] w-[40px] items-center justify-center rounded-full border border-[#DFE1E7] sm:h-[48px] sm:w-[48px] cursor-pointer shrink-0' onClick={() => setUsersModalOpen(false)}><CgClose size={24}/></button>
+                    <button className={`flex h-[40px] w-[40px] items-center justify-center rounded-full sm:h-[48px] sm:w-[48px] cursor-pointer shrink-0 ${
+                        theme === 'dark'
+                            ? 'border border-[#164B86] text-[#7184A3] hover:bg-[#0B1D38] hover:text-white'
+                            : 'border border-[#DFE1E7]'
+                    }`} onClick={() => setUsersModalOpen(false)}><CgClose size={24}/></button>
                 </div>
                 <div className='relative max-w-[400px]'>
-                    <VscSearch size={20} className='absolute top-3 left-2.5' />
-                    <input value={searchInput} className='w-full h-[44px] outline-none border border-gray-200 rounded-lg px-10 py-3 mb-5' type="text" placeholder='Search users by id or email...' onChange={(e) => setSearchInput(e.target.value)}/>
+                    <VscSearch
+                        size={20}
+                        className={theme === 'dark' ? 'absolute top-3 left-2.5 text-[#7184A3]' : 'absolute top-3 left-2.5'}
+                    />
+                    <input value={searchInput} className={`w-full h-[44px] outline-none rounded-lg px-10 py-3 mb-5 ${
+                        theme === 'dark'
+                            ? 'bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]'
+                            : 'border border-gray-200'
+                    }`} type="text" placeholder='Search users by id or email...' onChange={(e) => setSearchInput(e.target.value)}/>
                 </div>
-                <div className='w-full overflow-x-auto border border-gray-200 rounded-lg'>
+                <div className={`w-full overflow-x-auto rounded-lg ${
+                    theme === 'dark'
+                        ? 'border border-[#164B86]'
+                        : 'border border-gray-200'
+                }`}>
                     <table className='w-full min-w-[800px]'>
                         <thead>
-                            <tr className='h-[60px] bg-gray-300/60'>
+                        <tr className={`h-[60px] ${
+                            theme === 'dark'
+                                ? 'bg-[#0B2A52] text-[#A8B8D0]'
+                                : 'bg-gray-300/60'
+                        }`}>
                                 <th className='px-2'>ID</th>
                                 <th className='text-left'>Name</th>
                                 <th className='text-left'>Email</th>
@@ -175,12 +206,23 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
                         </thead>
                         <tbody>
                         {paginatedPages.map((user) => (
-                            <tr className='h-[60px] border-t border-gray-200 cursor-pointer hover:bg-gray-100' key={user.id} onClick={() => userId(Number(user.id))}>
+                            <tr className={`h-[60px] border-t cursor-pointer ${
+                                theme === 'dark'
+                                    ? 'border-[#123A70] hover:bg-[#0B2A52]'
+                                    : 'border-gray-200 hover:bg-gray-100'
+                            }`} key={user.id} onClick={() => userId(Number(user.id))}>
                                 <td className='text-center'>{user.id}</td>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td className='flex justify-center py-5'>
-                                    <button className={`w-[60px] text-sm flex justify-center rounded-full ${user.status === 'Active' ?  'text-green-500 bg-green-100': 'text-red-500 bg-red-100'} cursor-pointer`}
+                                    <button className={`w-[60px] text-sm flex justify-center rounded-full ${user.status === 'Active'
+                                        ? theme === 'dark'
+                                            ? 'text-[#40C4AA] bg-[#0B2E28] border border-[#176B59]'
+                                            : 'text-green-500 bg-green-100'
+                                        : theme === 'dark'
+                                            ? 'text-[#DF1C41] bg-[#2A0D18] border border-[#7A1F35]'
+                                            : 'text-red-500 bg-red-100'
+                                    } cursor-pointer`}
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 banUserModal(Number(user.id))
@@ -198,17 +240,43 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
                 <div className='flex flex-col md:flex-row items-center justify-between mt-4'>
                     <p className='font-medium mb-3'>Showing page {totalPage === 0 ? currentPage: currentPage+1} of {totalPage}</p>
                     <div className='flex flex-row items-center gap-2'>
-                        <button className={`w-[36px] h-[36px] flex justify-center items-center border border-gray-200 rounded-md cursor-pointer ${currentPage + 1 === 1 && 'pointer-events-none cursor-not-allowed'}`} onClick={() => {
-                            if (!searchInput) {paginatedUsers(currentPage)} setCurrentPage(currentPage => currentPage - 1);
-                        }}><MdOutlineKeyboardArrowLeft size={23} /></button>
+                        <button
+                            className={`w-[36px] h-[36px] flex justify-center items-center rounded-md cursor-pointer ${
+                                theme === 'dark'
+                                    ? 'border border-[#164B86] bg-[#071329] text-[#A8B8D0] hover:bg-[#0B2A52]'
+                                    : 'border border-gray-200'
+                            } ${
+                                currentPage + 1 === 1 && 'pointer-events-none cursor-not-allowed'
+                            }`}
+                            onClick={() => {
+                                if (!searchInput) {
+                                    paginatedUsers(currentPage)
+                                }
+                                setCurrentPage(currentPage => currentPage - 1);
+                            }}
+                        >
+                            <MdOutlineKeyboardArrowLeft size={23} />
+                        </button>
 
-                        <div className='flex sm:hidden w-[36px] h-[36px] justify-center items-center border border-gray-200 bg-[#429EFF] text-white font-medium rounded-md'>
+                        <div className={`flex sm:hidden w-[36px] h-[36px] justify-center items-center text-white font-medium rounded-md ${
+                            theme === 'dark'
+                                ? 'border border-[#1597FF] bg-[#1597FF]'
+                                : 'border border-gray-200 bg-[#429EFF]'
+                        }`}>
                             {currentPage + 1}
                         </div>
 
                         <div className='hidden sm:flex flex-row items-center gap-3'>
                             {pagesToDisplay().map((item, index) => (
-                                <button key={`${item} - ${index}`} className={`w-[36px] h-[36px] flex justify-center items-center border border-gray-200 font-medium rounded-md cursor-pointer ${typeof item === 'number' ? currentPage === item - 1 && 'bg-[#429EFF] text-white': 'pointer-events-none cursor-not-allowed'}
+                                <button key={`${item} - ${index}`} className={`w-[36px] h-[36px] flex justify-center items-center font-medium rounded-md cursor-pointer ${
+                                    typeof item === 'number'
+                                        ? currentPage === item - 1
+                                            ? 'bg-[#429EFF] text-white border border-[#429EFF]'
+                                            : theme === 'dark'
+                                                ? 'border border-[#164B86] bg-[#071329] text-[#A8B8D0] hover:bg-[#0B2A52]'
+                                                : 'border border-gray-200'
+                                        : 'pointer-events-none cursor-not-allowed'
+                                }
                                  `}
                                     onClick={() => {
                                         if (typeof item === 'number') {
@@ -221,7 +289,24 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
                                 }}>{item}</button>
                             ))}
                         </div>
-                        <button className={`w-[36px] h-[36px] flex justify-center items-center border border-gray-200 rounded-md cursor-pointer ${(currentPage + 1 === totalPage || totalPage === 0) && 'pointer-events-none cursor-not-allowed'}`} onClick={() => {if (!searchInput) {paginatedUsers(currentPage + 2)} setCurrentPage(currentPage => currentPage + 1)}}><MdOutlineKeyboardArrowRight size={23} /></button>
+                        <button
+                            className={`w-[36px] h-[36px] flex justify-center items-center rounded-md cursor-pointer ${
+                                theme === 'dark'
+                                    ? 'border border-[#164B86] bg-[#071329] text-[#A8B8D0] hover:bg-[#0B2A52]'
+                                    : 'border border-gray-200'
+                            } ${
+                                (currentPage + 1 === totalPage || totalPage === 0) &&
+                                'pointer-events-none cursor-not-allowed'
+                            }`}
+                            onClick={() => {
+                                if (!searchInput) {
+                                    paginatedUsers(currentPage + 2)
+                                }
+                                setCurrentPage(currentPage => currentPage + 1)
+                            }}
+                        >
+                            <MdOutlineKeyboardArrowRight size={23} />
+                        </button>
                     </div>
                 </div>
             </div>
