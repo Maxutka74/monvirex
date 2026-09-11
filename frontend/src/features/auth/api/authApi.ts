@@ -1,5 +1,6 @@
 import api from '../../../shared/api/instance.ts'
 import type {User} from "../../../entities/user/types/user.ts";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 export type RegisterData = {
     first_name: string,
@@ -41,7 +42,6 @@ export type TelegramLoginData = {
     hash: string
 }
 
-
 const register = async (data: RegisterData): Promise<{reg_id: string, email: string, expires_at: number}> => {
     const response = await api.post('/auth/register/', data)
 
@@ -73,6 +73,7 @@ const login = async (data: LoginData): Promise<User> => {
 const logout = async (): Promise<void> => {
     await api.post('/auth/logout/')
 
+    themeStore.getState().setTheme('white')
 }
 
 const resetPassword = async (email: string): Promise<{reset_id: string, email: string, expires_at: number}> => {
