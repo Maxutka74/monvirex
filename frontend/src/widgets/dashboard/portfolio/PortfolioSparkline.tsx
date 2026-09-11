@@ -15,6 +15,7 @@ const PortfolioSparkline = ({
                                 data,
                                 isPositive,
                             }: PortfolioSparklineProps) => {
+
     const chartData = data.map((item) => ({
         time: item.time,
         price: Number(item.close),
@@ -62,7 +63,7 @@ const PortfolioSparkline = ({
                         type="linear"
                         dataKey="price"
                         strokeWidth={1.5}
-                        stroke={isPositive ? "#22C55E" : "#DC2626"}
+                        stroke={isPositive ? "#40C4AA" : "#DF1C41"}
                         dot={false}
                     />
                 </LineChart>

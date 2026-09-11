@@ -5,8 +5,12 @@ import { RiLoaderLine } from "react-icons/ri";
 import assetsApi, {
     type Asset,
 } from "../../../features/assets/api/assetsApi.ts";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 const TopMoversCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [assets, setAssets] = useState<Asset[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -47,7 +51,11 @@ const TopMoversCard = () => {
     };
 
     return (
-        <div className="w-full h-full min-h-[400px] xl:min-h-[500px] flex flex-col gap-5 rounded-[30px] bg-[#FFFFFF]/60 p-4 lg:p-6">
+        <div className={`
+                w-full h-full min-h-[400px] xl:min-h-[500px]
+                flex flex-col gap-5 rounded-[30px] p-4 lg:p-6
+                ${theme === "dark" ? "border border-[#0B4EA2] bg-black/60 text-white" : "bg-[#FFFFFF]/60"}
+            `}>
             <div className="flex items-center gap-2">
                 <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#429EFF]">
                     <IoStatsChartSharp
@@ -66,7 +74,10 @@ const TopMoversCard = () => {
                     <div className="flex flex-1 items-center justify-center">
                         <RiLoaderLine
                             size={36}
-                            className="animate-spin text-[#666D80]"
+                            className={`
+                                animate-spin
+                                ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                            `}
                         />
                     </div>
                 ) : (
@@ -74,7 +85,11 @@ const TopMoversCard = () => {
                         {assets.map((asset) => (
                             <li key={asset.symbol}>
                                 <div className="grid grid-cols-[50px_minmax(0,1fr)_70px_80px] items-center gap-2 sm:gap-4 lg:grid-cols-[60px_minmax(0,1fr)_80px_100px]">
-                                    <div className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#DFE1E7] sm:h-[60px] sm:w-[60px]">
+                                    <div className={`
+                                        flex h-[50px] w-[50px] items-center justify-center
+                                        rounded-full sm:h-[60px] sm:w-[60px]
+                                        ${theme === "dark" ? "bg-black" : "bg-[#DFE1E7]"}
+                                    `}>
                                         <img
                                             className="h-[24px] w-[24px] sm:h-[30px] sm:w-[30px]"
                                             src={asset.icon_url}

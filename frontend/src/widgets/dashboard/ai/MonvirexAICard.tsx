@@ -3,8 +3,12 @@ import { CgFileDocument } from "react-icons/cg";
 import { PiLightningLight, PiShootingStarLight } from "react-icons/pi";
 
 import logo from "../../../assets/logos/MonvirexWhiteLogo.png";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 const MonvirexAICard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     return (
         <div className="
             w-full min-h-[400px]
@@ -40,14 +44,14 @@ const MonvirexAICard = () => {
                 gap-3
             ">
                 <div className="flex-1 min-w-0">
-                    <div className="
-                        h-full
-                        flex flex-col
-                        justify-center items-center
-                        gap-5
-                        rounded-[20px]
-                        bg-white
-                    ">
+                    <div className={`
+                            h-full
+                            flex flex-col
+                            justify-center items-center
+                            gap-5
+                            rounded-[20px]
+                            ${theme === "dark" ? "bg-black/80 text-white" : "bg-white"}
+                        `}>
                         <div className="
                             flex flex-row
                             items-center gap-3
@@ -93,14 +97,14 @@ const MonvirexAICard = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <div className="
-                        h-full
-                        flex flex-col
-                        justify-center items-center
-                        gap-5
-                        rounded-[20px]
-                        bg-white
-                    ">
+                    <div className={`
+                            h-full
+                            flex flex-col
+                            justify-center items-center
+                            gap-5
+                            rounded-[20px]
+                            ${theme === "dark" ? "bg-black/80 text-white" : "bg-white"}
+                        `}>
                         <div className="
                             flex flex-row
                             items-center gap-3
@@ -132,12 +136,11 @@ const MonvirexAICard = () => {
                             </h5>
                         </div>
 
-                        <p className="
+                        <p className={`
                             px-4 pb-5
-                            text-[12px]
-                            sm:text-base
-                            text-[#6F6F6F]
-                        ">
+                            text-[12px] sm:text-base
+                            ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#6F6F6F]"}
+                        `}>
                             Review your assets and
                             suggest smarter allocation
                             based on risk and trends.
@@ -151,40 +154,46 @@ const MonvirexAICard = () => {
                 items-center justify-center
                 gap-2
             ">
-                <div className="
-                    relative flex-1
-                    h-[48px]
-                    flex items-center
-                    rounded-full
-                    bg-white
-                    text-[#666D80]
-                ">
+                <div className={`
+                        relative flex-1
+                        h-[48px]
+                        flex items-center
+                        rounded-full
+                        ${theme === "dark"
+                            ? "bg-black/80 text-white"
+                            : "bg-white text-[#666D80]"
+                        }
+                    `}>
                     <PiLightningLight
                         size={22}
                         className="absolute left-3"
                     />
 
                     <input
-                        className="
+                        className={`
                             w-full h-[48px]
                             rounded-full
                             pl-[44px]
                             outline-none
-                        "
+                            ${theme === "dark"
+                                ? "bg-transparent text-white placeholder:text-[#818898]"
+                                : "bg-transparent text-black"
+                            }
+                        `}
                         type="text"
                         placeholder="Search with AI"
                     />
                 </div>
 
-                <button className="
-                    w-[92px] h-[48px]
-                    flex flex-row
-                    items-center gap-2
-                    rounded-full
-                    bg-white
-                    p-1
-                    cursor-pointer
-                ">
+                <button className={`
+                        w-[92px] h-[48px]
+                        flex flex-row
+                        items-center gap-2
+                        rounded-full
+                        p-1
+                        cursor-pointer
+                        ${theme === "dark" ? "bg-black/80" : "bg-white"}
+                    `}>
                     <div className="
                         w-[40px] h-[40px]
                         flex items-center justify-center

@@ -9,12 +9,16 @@ import {
 } from "recharts";
 
 import type { UserSnapshot } from "../../../features/wallet/api/walletApi.ts";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 type Props = {
     history: UserSnapshot[];
 };
 
 const PortfolioHistoryChart = ({ history }: Props) => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const chartData = history.map((data) => ({
         date: new Date(data.created_at).getDate(),
         totalValue: Number(data.total_value),
@@ -37,27 +41,45 @@ const PortfolioHistoryChart = ({ history }: Props) => {
                         <CartesianGrid
                             strokeDasharray="6 6"
                             vertical={false}
-                            stroke="#D6DCE5"
+                            stroke={theme === "dark" ? "#252525" : "#D6DCE5"}
                         />
 
                         <XAxis
                             dataKey="date"
                             axisLine={false}
                             tickLine={false}
+                            tick={{
+                                fill: theme === "dark" ? "#A7B0C3" : "#666D80",
+                            }}
                         />
 
                         <YAxis
                             axisLine={false}
                             tickLine={false}
                             tickFormatter={(value) => `$${value}`}
+                            tick={{
+                                fill: theme === "dark" ? "#A7B0C3" : "#666D80",
+                            }}
                         />
 
-                        <Tooltip />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: theme === "dark" ? "#000000" : "#FFFFFF",
+                                border: `1px solid ${
+                                    theme === "dark" ? "#263452" : "#D6DCE5"
+                                }`,
+                                borderRadius: "12px",
+                                color: theme === "dark" ? "#FFFFFF" : "#000000",
+                            }}
+                            labelStyle={{
+                                color: theme === "dark" ? "#A7B0C3" : "#666D80",
+                            }}
+                        />
 
                         <Line
                             dataKey="walletBalance"
                             type="monotone"
-                            stroke="#9CA3AF"
+                            stroke={theme === "dark" ? "#6B7280" : "#9CA3AF"}
                             strokeWidth={3}
                             dot={false}
                         />
@@ -72,7 +94,12 @@ const PortfolioHistoryChart = ({ history }: Props) => {
                     </LineChart>
                 </ResponsiveContainer>
                 : <div className='w-full h-full flex items-center justify-center'>
-                    <p className="text-[18px] sm:text-xl text-gray-600 text-center">The chart will appear after your first transaction</p>
+                    <p className={`
+                        text-[18px] sm:text-xl text-center
+                        ${theme === "dark" ? "text-[#A7B0C3]" : "text-gray-600"}
+                    `}>
+                        The chart will appear after your first transaction
+                    </p>
                 </div>
             }
         </div>

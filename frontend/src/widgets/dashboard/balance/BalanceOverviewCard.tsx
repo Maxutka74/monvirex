@@ -8,9 +8,13 @@ import {RiLoaderLine, RiMoneyDollarCircleLine} from "react-icons/ri";
 import {FiArrowUpRight} from "react-icons/fi";
 import PortfolioHistoryCard from "../portfolio/PortfolioHistoryCard.tsx";
 import WalletActionModal from "../../../features/wallet/ui/WalletActionModal.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 
 const BalanceOverviewCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [balance, setBalance] = useState("0.000");
     const [summary, setSummary] = useState<UserSummary | null>(null);
     const [days, setDays] = useState("7d");
@@ -65,13 +69,16 @@ const BalanceOverviewCard = () => {
     };
 
     return (
-        <div className="w-full flex flex-col rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-6 gap-5">
+        <div className={`
+                w-full flex flex-col rounded-[30px] p-4 sm:p-6 gap-5
+                ${theme === "dark" ? "border border-[#0B4EA2] bg-black/60 text-white" : "bg-[#FFFFFF]/60"}
+            `}>
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-1 rounded-[20px] bg-[#429EFF] px-4 sm:px-5 py-4 sm:py-5 flex flex-col justify-between min-h-[140px] sm:min-h-[154px] gap-4 sm:gap-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 min-w-0">
                             <div className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-white">
-                                <IoCardOutline className="text-[18px] sm:text-[24px]" />
+                                <IoCardOutline className="text-[18px] sm:text-[24px] text-black" />
                             </div>
 
                             <h4 className="text-lg sm:text-2xl text-white font-medium">
@@ -81,19 +88,27 @@ const BalanceOverviewCard = () => {
 
                         <div className="relative w-[90px] sm:w-[110px] h-[36px] sm:h-[46px] shrink-0">
                             <select
-                                className="w-full h-full rounded-full border border-white bg-transparent appearance-none pl-3 pr-8 sm:pr-10 text-sm sm:text-base text-white"
+                                className={`
+                                    w-full h-full rounded-full border border-white
+                                    appearance-none pl-3 pr-8 sm:pr-10
+                                    text-sm sm:text-base
+                                    ${theme === "dark"
+                                        ? "bg-black/40 text-white"
+                                        : "bg-transparent text-white"
+                                    }
+                                `}
                                 value={days}
                                 onChange={(e) => setDays(e.target.value)}
                             >
-                                <option value="1d" className="text-black">
+                                <option value="1d" className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}>
                                     Day
                                 </option>
 
-                                <option value="7d" className="text-black">
+                                <option value="7d" className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}>
                                     Week
                                 </option>
 
-                                <option value="30d" className="text-black">
+                                <option value="30d" className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}>
                                     Month
                                 </option>
                             </select>
@@ -128,7 +143,14 @@ const BalanceOverviewCard = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-[154px] rounded-[20px] sm:rounded-[30px] p-4 sm:p-5 border border-[#DFE1E7] bg-[#FFFFFF]/60">
+                <div className={`
+                        flex-1 min-h-[154px] rounded-[20px] sm:rounded-[30px]
+                        p-4 sm:p-5 border
+                        ${theme === "dark"
+                                        ? "border-[#263452] bg-black/40"
+                                        : "border-[#DFE1E7] bg-[#FFFFFF]/60"
+                                    }
+                    `}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
                         <div className="flex items-center gap-2">
                             <div className="w-9 h-9 sm:w-[44px] sm:h-[44px] flex justify-center items-center rounded-full bg-[#429EFF]">
@@ -143,7 +165,14 @@ const BalanceOverviewCard = () => {
                             </h5>
                         </div>
 
-                        <div className="flex items-center justify-between border border-[#429EFF] rounded-xl px-3 py-2 gap-2 w-full sm:w-auto">
+                        <div className={`
+                                flex items-center justify-between border rounded-xl
+                                px-3 py-2 gap-2 w-full sm:w-auto
+                                ${theme === "dark"
+                                    ? "border-[#429EFF] bg-black text-white"
+                                    : "border-[#429EFF]"
+                                }
+                            `}>
                             <div className="flex items-center gap-2">
                                 <RiMoneyDollarCircleLine size={24} />
 
@@ -157,7 +186,10 @@ const BalanceOverviewCard = () => {
                                 {isLoading ? (
                                     <RiLoaderLine
                                         size={18}
-                                        className="text-black animate-spin"
+                                        className={`
+                                            animate-spin
+                                            ${theme === "dark" ? "text-white" : "text-black"}
+                                        `}
                                     />
                                 ) : (
                                     balance
@@ -168,7 +200,15 @@ const BalanceOverviewCard = () => {
 
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div
-                            className="w-full sm:flex-1 h-[44px] flex items-center justify-center gap-2 bg-black rounded-full text-white font-medium cursor-pointer"
+                            className={`
+                                w-full sm:flex-1 h-[44px]
+                                flex items-center justify-center gap-2
+                                rounded-full text-white font-medium cursor-pointer
+                                ${theme === "dark"
+                                    ? "bg-[#111827] border border-[#429EFF] shadow-[0_0_10px_rgba(66,158,255,0.2)]"
+                                    : "bg-black"
+                                }
+                            `}
                             onClick={() => depositModalAction()}
                         >
                             <button className="text-[14px] cursor-pointer">

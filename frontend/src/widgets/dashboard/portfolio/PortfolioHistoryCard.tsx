@@ -2,8 +2,12 @@ import {BsCircleFill} from "react-icons/bs";
 import { useEffect, useState } from "react";
 import PortfolioHistoryChart from "./PortfolioHistoryChart.tsx";
 import walletApi, {type UserSnapshot} from "../../../features/wallet/api/walletApi.ts";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 const PortfolioHistoryCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [history, setHistory] = useState<UserSnapshot[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -63,23 +67,39 @@ const PortfolioHistoryCard = () => {
     return (
         <div className="flex flex-col lg:flex-row h-full gap-5">
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-[200px] lg:shrink-0">
-                <h5 className="text-[18px] sm:text-[20px] font-medium lg:mb-0">
+                <h5 className={`
+                    text-[18px] sm:text-[20px] font-medium lg:mb-0
+                    ${theme === "dark" ? "text-white" : "text-black"}
+                `}>
                     Portfolio History
                 </h5>
 
-                <div className="w-full sm:flex-1 lg:w-[200px] h-[117px] border border-[#DFE1E7] rounded-xl p-3">
+                <div className={`
+                        w-full sm:flex-1 lg:w-[200px] h-[117px]
+                        border rounded-xl p-3
+                        ${theme === "dark"
+                                        ? "border-[#263452] bg-black/30"
+                                        : "border-[#DFE1E7]"
+                                    }
+                    `}>
                     <div className="flex items-center gap-3">
                         <BsCircleFill
                             size={24}
                             className="text-[#429EFF]"
                         />
 
-                        <p className="font-medium text-[#666D80]">
+                        <p className={`
+                            font-medium
+                            ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                        `}>
                             Total Value
                         </p>
                     </div>
 
-                    <h5 className="text-[28px] font-medium">
+                    <h5 className={`
+                        text-[28px] font-medium
+                        ${theme === "dark" ? "text-white" : "text-black"}
+                    `}>
                         {lastSnapshot
                             ? `$${Number(
                                 lastSnapshot.total_value
@@ -87,7 +107,10 @@ const PortfolioHistoryCard = () => {
                             : "$0.00"}
                     </h5>
 
-                    <p className="text-[15px] text-[#666D80]">
+                    <p className={`
+                        text-[15px]
+                        ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                    `}>
                         <span className="text-blue-500">
                             {Number(totalValue) > 0
                                 ? `+${totalValue}%`
@@ -97,16 +120,29 @@ const PortfolioHistoryCard = () => {
                     </p>
                 </div>
 
-                <div className="w-full sm:flex-1 lg:w-[200px] h-[117px] border border-[#DFE1E7] rounded-xl p-3 text-[#666D80]">
+                <div className={`
+                        w-full sm:flex-1 lg:w-[200px] h-[117px]
+                        border rounded-xl p-3
+                        ${theme === "dark"
+                                        ? "border-[#263452] bg-black/30 text-[#A7B0C3]"
+                                        : "border-[#DFE1E7] text-[#666D80]"
+                                    }
+                    `}>
                     <div className="flex items-center gap-3">
                         <BsCircleFill size={24} />
 
-                        <p className="font-medium text-[#666D80]">
+                        <p className={`
+                            font-medium
+                            ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                        `}>
                             Wallet Balance
                         </p>
                     </div>
 
-                    <h5 className="text-[28px] font-medium text-black">
+                    <h5 className={`
+                        text-[28px] font-medium
+                        ${theme === "dark" ? "text-white" : "text-black"}
+                    `}>
                         {lastSnapshot
                             ? `$${Number(
                                 lastSnapshot.wallet_balance
@@ -114,7 +150,10 @@ const PortfolioHistoryCard = () => {
                             : "$0.00"}
                     </h5>
 
-                    <p className="text-[15px]">
+                    <p className={`
+                        text-[15px]
+                        ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                    `}>
                         <span>
                             {Number(totalBalance) > 0
                                 ? `+${totalBalance}%`

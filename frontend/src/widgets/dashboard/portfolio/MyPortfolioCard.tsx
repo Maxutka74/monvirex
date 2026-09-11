@@ -6,9 +6,13 @@ import PortfolioSparkline from "./PortfolioSparkline.tsx";
 import {GoArrowDownRight, GoArrowUpRight} from "react-icons/go";
 import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import {RiLoaderLine} from "react-icons/ri";
+import {useStore} from "zustand/react";
+import themeStore from "../../../entities/theme/themeStore.tsx";
 
 
 const MyPortfolioCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const [portfolio, setPortfolio] = useState<UserPortfolio[]>([]);
     const [assets, setAssets] = useState<Asset[]>([]);
     const [klinesBySymbol, setKlinesBySymbol] = useState<
@@ -112,7 +116,10 @@ const MyPortfolioCard = () => {
     );
 
     return (
-        <div className="relative w-full min-h-[400px] rounded-[30px] bg-[#FFFFFF]/60 p-4 sm:p-5">
+        <div className={`
+                relative w-full min-h-[400px] rounded-[30px] p-4 sm:p-5
+                ${theme === "dark" ? "border border-[#0B4EA2] bg-black/60 text-white" : "bg-[#FFFFFF]/60 text-black"}
+            `}>
             <div className="flex flex-row items-center gap-2 pb-[20px]">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#429EFF] sm:h-[44px] sm:w-[44px]">
                     <HiOutlineClock
@@ -121,7 +128,10 @@ const MyPortfolioCard = () => {
                     />
                 </div>
 
-                <h4 className="text-[20px] font-medium sm:text-[24px]">
+                <h4 className={`
+                    text-[20px] font-medium sm:text-[24px]
+                    ${theme === "dark" ? "text-white" : "text-black"}
+                `}>
                     My Portfolio
                 </h4>
             </div>
@@ -130,14 +140,19 @@ const MyPortfolioCard = () => {
                 <div className="flex h-[240px] w-full items-center justify-center">
                     <RiLoaderLine
                         size={48}
-                        className="animate-spin text-[#666D80]"
+                        className={`animate-spin ${
+                            theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"
+                        }`}
                     />
                 </div>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="min-w-[760px] w-full">
                         <thead>
-                        <tr className="h-[31px] w-full font-medium text-[#666D80]">
+                        <tr className={`
+                                h-[31px] w-full font-medium
+                                ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                            `}>
                             <th
                                 scope="col"
                                 className="h-[26px] w-1/5 text-left"
@@ -239,7 +254,12 @@ const MyPortfolioCard = () => {
                         </tbody>
                         {paginatedPortfolioData.length === 0 && (
                             <div className='absolute inset-0 flex items-center justify-center'>
-                                <p className="text-[18px] sm:text-xl text-gray-600 text-center">You don’t have any cryptocurrencies in your portfolio yet</p>
+                                <p className={`
+                                    text-[18px] text-center sm:text-xl
+                                    ${theme === "dark" ? "text-[#A7B0C3]" : "text-gray-600"}
+                                `}>
+                                    You don’t have any cryptocurrencies in your portfolio yet
+                                </p>
                             </div>
                         )}
                     </table>
@@ -247,7 +267,10 @@ const MyPortfolioCard = () => {
             )}
 
             {currentPage <= totalPages && (
-                <div className="flex flex-row items-center justify-center gap-4 pt-2 text-[#666D80]">
+                <div className={`
+                        flex flex-row items-center justify-center gap-4 pt-2
+                        ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+                    `}>
                     <FiArrowLeft
                         size={24}
                         onClick={() =>
@@ -257,7 +280,9 @@ const MyPortfolioCard = () => {
                         }
                         className={`cursor-pointer ${
                             currentPage === 1
-                                ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+                                ? `pointer-events-none cursor-not-allowed ${
+                                    theme === "dark" ? "text-[#3A4355]" : "text-[#CBD5E1]"
+                                }`
                                 : ""
                         }`}
                     />
@@ -274,8 +299,10 @@ const MyPortfolioCard = () => {
                                 : null
                         }
                         className={`cursor-pointer ${
-                            currentPage === totalPages
-                                ? "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+                            currentPage === 1
+                                ? `pointer-events-none cursor-not-allowed ${
+                                    theme === "dark" ? "text-[#3A4355]" : "text-[#CBD5E1]"
+                                }`
                                 : ""
                         }`}
                     />
