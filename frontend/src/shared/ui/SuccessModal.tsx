@@ -9,6 +9,7 @@ type SuccessModalProps = {
 }
 
 const SuccessModal = ({ title, message, link, buttonName }: SuccessModalProps) => {
+
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm grid place-items-center z-10">
             <div className="w-full max-w-[420px] h-[360px] flex flex-col items-center rounded-[20px] bg-white">
