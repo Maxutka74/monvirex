@@ -2,9 +2,15 @@ import { Outlet } from "react-router-dom";
 
 import Navbar from "../../widgets/navbar/Navbar.tsx";
 
-import bgImage from "../../assets/images/Dashboard.png";
+import bgWhiteImage from "../../assets/images/Dashboard.png";
+import bgBlackImage from "../../assets/images/BlackBackground.png";
+import {useStore} from "zustand/react";
+import themeStore from "../../entities/theme/themeStore.tsx";
+
 
 const MainLayout = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     return (
         <div
             className="
@@ -14,7 +20,7 @@ const MainLayout = () => {
                 bg-no-repeat
             "
             style={{
-                backgroundImage: `url(${bgImage})`,
+                backgroundImage: theme === 'dark' ? `url(${bgBlackImage})`: `url(${bgWhiteImage})`,
             }}
         >
             <Navbar />
