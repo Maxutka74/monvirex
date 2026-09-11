@@ -12,6 +12,8 @@ import DeleteAccountModal from "./DeleteAccountModal.tsx";
 import {FiEye, FiEyeOff} from "react-icons/fi";
 import SuccessMessage from "./SuccessMessage.tsx";
 import axios from "axios";
+import {useStore} from "zustand/react";
+import themeStore from "../../entities/theme/themeStore.tsx";
 
 type FormErrors = {
     avatar?: string | null;
@@ -31,6 +33,8 @@ type Toast = {
 }
 
 const ProfileCard = () => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     const API_URL = 'http://localhost:8000'
     const email = userStore((state) => state?.user?.email)
     const profile = profileStore((state) => state?.profile)
@@ -231,19 +235,33 @@ const ProfileCard = () => {
         : undefined
 
     return (
-        <div className='relative w-full h-full bg-[#FFFFFF]/40 rounded-[20px] p-5'>
+        <div className={`relative w-full h-full rounded-[20px] p-5 ${
+            theme === 'dark'
+                ? 'bg-[#020817]/40 text-white'
+                : 'bg-[#FFFFFF]/40'
+        }`}>
             <div className='mb-5'>
                 <h3 className='text-[24px] font-medium'>Profile Setting</h3>
-                <p className='text-[#6F6F6F]'>Manage your profile information and account settings</p>
+                <p className={`${
+                    theme === 'dark' ? 'text-[#7184A3]' : 'text-[#6F6F6F]'
+                }`}>
+                    Manage your profile information and account settings
+                </p>
             </div>
 
             <div>
-                <div className='w-full border border-[#DFE1E7] bg-white rounded-[20px] mb-5 p-5'>
+                <div className={`w-full rounded-[20px] mb-5 p-5 border ${
+                    theme === 'dark'
+                        ? 'bg-[#020817] border-[#123A70]'
+                        : 'bg-white border-[#DFE1E7]'
+                }`}>
                     <div className='flex flex-col mb-6'>
                         <div className='flex flex-col lg:flex-row gap-3'>
                             <div className='max-w-[380px] w-full'>
                                 <h4 className='text-[22px] font-medium'>Profile</h4>
-                                <p className='text-[#6F6F6F]'>Update your profile<br/> information</p>
+                                <p className={theme === 'dark' ? 'text-[#7184A3]' : 'text-[#6F6F6F]'}>
+                                    Update your profile<br/> information
+                                </p>
                             </div>
                             <div className='flex-1 flex flex-col gap-5'>
                                 <div className='flex flex-col'>
@@ -263,14 +281,22 @@ const ProfileCard = () => {
                                     </div>
                                     <div className='flex flex-col sm:flex-row sm:items-center gap-5'>
                                         <img className='w-[64px] h-[64px] rounded-full' src={avatarSrc} alt="avatar_user"/>
-                                        <button className='max-w-[120px] h-10 flex flex-row items-center justify-center gap-3 px-4 text-gray-600 border border-gray-300 rounded-full cursor-pointer' onClick={() => fileInputRef.current?.click()}><GoPencil /> Change</button>
+                                        <button className={`max-w-[120px] h-10 flex flex-row items-center justify-center gap-3 px-4 rounded-full cursor-pointer ${
+                                            theme === 'dark'
+                                                ? 'text-[#A8B8D0] border-[#164B86] bg-[#071329] hover:bg-[#0B2A52]'
+                                                : 'text-gray-600 border-gray-300'
+                                        }`} onClick={() => fileInputRef.current?.click()}><GoPencil /> Change</button>
                                         <input ref={fileInputRef} type="file" className='hidden' onChange={handleAvatarChange} onClick={() => (
                                             setError((error) => ({
                                                 ...error,
                                                 avatar: null
                                             }))
                                         )}/>
-                                        <button className='max-w-[115px] h-10 flex flex-row items-center justify-center gap-3 px-4 text-red-500 border border-red-300 rounded-full cursor-pointer' onClick={() => {
+                                        <button className={`max-w-[115px] h-10 flex flex-row items-center justify-center gap-3 px-4 rounded-full cursor-pointer ${
+                                            theme === 'dark'
+                                                ? 'text-[#DF1C41] border-[#7A1F35] bg-[#2A0D18] hover:bg-[#3A1020]'
+                                                : 'text-red-500 border-red-300'
+                                        }`} onClick={() => {
                                             setError((error) => ({
                                                 ...error,
                                                 avatar: null
@@ -294,7 +320,11 @@ const ProfileCard = () => {
                                         }
                                         <div className='relative'>
                                             <CiUser className='absolute top-3 left-3 text-2xl' />
-                                            <input value={firstName} className='w-full h-12 outline-none border border-gray-100 rounded-full px-12' type="text" onChange={(e) => setFirstName(e.target.value)} onClick={() => (
+                                            <input value={firstName} className={`w-full h-12 outline-none rounded-full px-12 ${
+                                                theme === 'dark'
+                                                    ? 'bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]'
+                                                    : 'border border-gray-100'
+                                            }`} type="text" onChange={(e) => setFirstName(e.target.value)} onClick={() => (
                                                 setError(error => ({
                                                     ...error,
                                                     first_name: null
@@ -315,7 +345,11 @@ const ProfileCard = () => {
                                         }
                                         <div className='relative'>
                                             <CiUser className='absolute top-3 left-3 text-2xl' />
-                                            <input value={lastName} className='w-full h-12 outline-none border border-gray-100 rounded-full px-12' type="text" onChange={(e) => setLastName(e.target.value)} onClick={() => (
+                                            <input value={lastName} className={`w-full h-12 outline-none rounded-full px-12 ${
+                                                theme === 'dark'
+                                                    ? 'bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]'
+                                                    : 'border border-gray-100'
+                                            }`} type="text" onChange={(e) => setLastName(e.target.value)} onClick={() => (
                                                 setError(error => ({
                                                     ...error,
                                                     last_name: null
@@ -329,7 +363,11 @@ const ProfileCard = () => {
                                         <span className='font-medium'>Email</span>
                                         <div className='relative'>
                                             <PiEnvelopeSimpleLight  className='absolute top-3 left-3 text-2xl' />
-                                            <p className='w-full h-12 outline-none bg-gray-100 border border-gray-100 rounded-full px-12 pt-2.75'>{email}</p>
+                                            <p className={`w-full h-12 outline-none rounded-full px-12 pt-2.75 ${
+                                                theme === 'dark'
+                                                    ? 'bg-[#071329] border border-[#164B86] text-[#A8B8D0]'
+                                                    : 'bg-gray-100 border border-gray-100'
+                                            }`}>{email}</p>
                                         </div>
                                     </div>
                                     <div className='flex-1 flex'>
@@ -347,7 +385,11 @@ const ProfileCard = () => {
                         </div>
                     </div>
                 </div>
-                <div className='w-full border border-[#DFE1E7] bg-white rounded-[20px] mb-5 p-5'>
+                <div className={`w-full rounded-[20px] mb-5 p-5 border ${
+                    theme === 'dark'
+                        ? 'bg-[#020817] border-[#123A70]'
+                        : 'bg-white border-[#DFE1E7]'
+                }`}>
                     <div className='flex flex-col lg:flex-row gap-3 mb-6'>
                         <div className='max-w-[380px] w-full'>
                             <h4 className='text-[22px] font-medium'>Password</h4>
@@ -368,7 +410,11 @@ const ProfileCard = () => {
                                     }
                                     <div className='relative'>
                                         <GoLock  className='absolute top-3 left-3 text-2xl' />
-                                        <input className='w-full h-12 outline-none border border-gray-100 rounded-full px-12' onChange={(e) => setOldPassword(e.target.value)} onClick={() => setError(
+                                        <input className={`w-full h-12 outline-none rounded-full px-12 ${
+                                            theme === 'dark'
+                                                ? 'bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]'
+                                                : 'border border-gray-100'
+                                        }`} onChange={(e) => setOldPassword(e.target.value)} onClick={() => setError(
                                             {...error,
                                             currentPassword: null}
                                         )} type={`${showCurrentPassword ? 'text': 'password'}`} placeholder='Enter current password'/>
@@ -398,7 +444,11 @@ const ProfileCard = () => {
                                     }
                                     <div className='relative'>
                                         <GoLock className='absolute top-3 left-3 text-2xl' />
-                                        <input className='w-full h-12 outline-none border border-gray-100 rounded-full px-12' onChange={(e) => setNewPassword(e.target.value)} onClick={() => setError(
+                                        <input className={`w-full h-12 outline-none rounded-full px-12 ${
+                                            theme === 'dark'
+                                                ? 'bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]'
+                                                : 'border border-gray-100'
+                                        }`} onChange={(e) => setNewPassword(e.target.value)} onClick={() => setError(
                                             {...error,
                                             password: null
                                             }
@@ -429,19 +479,27 @@ const ProfileCard = () => {
                                     }
                                     <div className='relative'>
                                         <GoLock  className='absolute top-3 left-3 text-2xl' />
-                                        <input className='w-full h-12 outline-none border border-gray-100 rounded-full px-12' onChange={(e) => setConfirmNewPassword(e.target.value)} onClick={() => setError(
+                                        <input className={`w-full h-12 outline-none rounded-full px-12 ${
+                                            theme === 'dark'
+                                                ? 'bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]'
+                                                : 'border border-gray-100'
+                                        }`} onChange={(e) => setConfirmNewPassword(e.target.value)} onClick={() => setError(
                                             {...error,
                                             confirmPassword: null
                                             }
                                         )} type={`${showConfirmPassword ? 'text': 'password'}`} placeholder='Enter confirm new password'/>
                                         {showConfirmPassword ?
                                             <FiEye size={24}
-                                                   className="absolute top-3 right-5 text-gray-400 cursor-pointer"
+                                                   className={`absolute top-3 right-5 cursor-pointer ${
+                                                       theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
+                                                   }`}
                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             />
                                             :
                                             <FiEyeOff size={24}
-                                                      className="absolute top-3 right-5 text-gray-400 cursor-pointer"
+                                                      className={`absolute top-3 right-5 cursor-pointer ${
+                                                          theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
+                                                      }`}
                                                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             />
                                         }
@@ -454,13 +512,23 @@ const ProfileCard = () => {
                         <button className='max-w-[200px] w-full h-10 sm:h-12 flex flex-row items-center justify-center gap-3 text-white bg-[#429EFF] rounded-full cursor-pointer' onClick={() => changePassword()}><GoLock size={20} /> Change Password</button>
                     </div>
                 </div>
-                <div className='w-full border border-[#DFE1E7] bg-white rounded-[20px] mb-5 p-5'>
+                <div className={`w-full rounded-[20px] mb-5 p-5 border ${
+                    theme === 'dark'
+                        ? 'bg-[#020817] border-[#123A70]'
+                        : 'bg-white border-[#DFE1E7]'
+                }`}>
                     <div className='flex flex-col md:flex-row md:items-center justify-between gap-3'>
                         <div className='max-w-[380px] w-full'>
                             <h4 className='text-[22px] font-medium'>Danger Zone</h4>
-                            <p className='text-[#6F6F6F]'>Permanently delete your account <br/> and all of your data</p>
+                            <p className={theme === 'dark' ? 'text-[#7184A3]' : 'text-[#6F6F6F]'}>
+                                Permanently delete your account <br/> and all of your data
+                            </p>
                         </div>
-                        <button className='max-w-[200px] w-full h-10 sm:h-12 flex flex-row items-center justify-center gap-3 text-red-500 bg-red-100/50 border border-red-400 rounded-full cursor-pointer' onClick={() => setDeleteModalOpen(true)}><LuUserRoundX size={20}/> Delete Account</button>
+                        <button className={`max-w-[200px] w-full h-10 sm:h-12 flex flex-row items-center justify-center gap-3 rounded-full cursor-pointer ${
+                            theme === 'dark'
+                                ? 'text-[#DF1C41] bg-[#2A0D18] border border-[#7A1F35] hover:bg-[#3A1020]'
+                                : 'text-red-500 bg-red-100/50 border border-red-400'
+                        }`} onClick={() => setDeleteModalOpen(true)}><LuUserRoundX size={20}/> Delete Account</button>
                     </div>
                 </div>
             </div>
