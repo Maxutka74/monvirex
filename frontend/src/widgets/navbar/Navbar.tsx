@@ -20,6 +20,8 @@ import MobileMenu from "./MobileMenu.tsx";
 import NotificationDropdown from "./notification/NotificationDropdown.tsx";
 import ProfileDropdown from "./profile/ProfileDropdown.tsx";
 import profileStore from "../../entities/profile/profileStore.tsx";
+import {useStore} from "zustand/react";
+import themeStore from "../../entities/theme/themeStore.tsx";
 
 const Navbar = () => {
     const API_URL = 'http://localhost:8000'
@@ -31,6 +33,8 @@ const Navbar = () => {
     ];
 
     const navigate = useNavigate();
+    const theme = useStore(themeStore, (state) => state.theme);
+
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
@@ -93,7 +97,11 @@ const Navbar = () => {
         : undefined
 
     return (
-        <header className="relative flex h-[80px] w-full items-center justify-between overflow-visible bg-transparent px-4 md:px-6 xl:h-[96px] xl:px-8">
+        <header className={`
+                relative flex h-[80px] w-full items-center justify-between
+                overflow-visible px-4 md:px-6 xl:h-[96px] xl:px-8
+                ${theme === "dark" ? "bg-transparent text-white" : "bg-transparent text-black"}
+            `}>
             <div className="flex items-center gap-3">
                 <button
                     className="xl:hidden"
@@ -116,7 +124,10 @@ const Navbar = () => {
                     alt="Monvirex Logo"
                 />
 
-                <h1 className="hidden text-[36px] font-medium xl:block">
+                <h1 className={`
+                        hidden text-[36px] font-medium xl:block
+                        ${theme === "dark" ? "text-white" : "text-black"}
+                    `}>
                     MONVIREX
                 </h1>
             </div>
@@ -126,13 +137,19 @@ const Navbar = () => {
                     <NavLink
                         key={navItem.path}
                         to={navItem.path}
-                        className={({ isActive }) =>
-                            `h-[44px] px-5 flex items-center justify-center rounded-full font-medium transition-colors ${
-                                isActive
-                                    ? "bg-white text-[#429EFF]"
-                                    : "text-black hover:text-[#429EFF]"
-                            }`
-                        }
+                        className={({ isActive }) => `
+                                flex h-[44px] items-center justify-center rounded-full
+                                px-5 font-medium transition-all duration-200
+                                ${
+                                    theme === "dark"
+                                        ? isActive
+                                            ? "border border-[#429EFF] bg-[#071532]/90 text-white shadow-[0_0_12px_rgba(66,158,255,0.55)]"
+                                            : "text-white/80 hover:text-[#429EFF]"
+                                        : isActive
+                                            ? "bg-white text-[#429EFF]"
+                                            : "text-black hover:text-[#429EFF]"
+                                }
+                            `}
                     >
                         {navItem.label}
                     </NavLink>
@@ -140,12 +157,30 @@ const Navbar = () => {
             </nav>
 
             <div className="flex items-center gap-4 xl:gap-3">
-                <button className="flex h-[42px] items-center justify-center whitespace-nowrap rounded-full bg-[#429EFF] px-4 text-[15px] text-white cursor-pointer xl:h-[44px] xl:w-[100px] xl:px-5">
+                <button className={`
+                        flex h-[42px] cursor-pointer items-center justify-center
+                        whitespace-nowrap rounded-full px-4 text-[15px] text-white
+                        transition-all duration-200 xl:h-[44px] xl:w-[100px] xl:px-5
+                        ${
+                            theme === "dark"
+                                ? "bg-[#1683ff] shadow-[0_0_16px_rgba(22,131,255,0.35)] hover:bg-[#3695ff]"
+                                : "bg-[#429EFF]"
+                        }
+                    `}>
                     Buy & Sell
                 </button>
 
                 <button
-                    className="relative flex h-[50px] w-[50px] items-center justify-center rounded-full bg-white shadow cursor-pointer xl:bg-transparent"
+                    className={`
+                        relative flex h-[50px] w-[50px] cursor-pointer items-center
+                        justify-center rounded-full shadow transition-all
+                        xl:bg-transparent
+                        ${
+                            theme === "dark"
+                                ? "bg-[#101d3b] text-white shadow-[0_0_12px_rgba(66,158,255,0.15)]"
+                                : "bg-white text-black"
+                        }
+                    `}
                     onClick={() => {
                         setIsNotificationsDropdownOpen(
                             !isNotificationsDropdownOpen
@@ -154,7 +189,12 @@ const Navbar = () => {
                         setIsProfileDropdownOpen(false);
                     }}
                 >
-                    <span className="absolute -top-1 -right-1 flex h-[20px] w-[20px] items-center justify-center rounded-full bg-[#DF1C41] text-[12px] text-white">
+                    <span className="
+                            absolute -top-1 -right-1 flex h-[20px] w-[20px]
+                            items-center justify-center rounded-full
+                            bg-[#DF1C41] text-[12px] text-white
+                            shadow-[0_0_8px_rgba(223,28,65,0.45)]
+                        ">
                         {unreadNotifications}
                     </span>
 
@@ -183,9 +223,17 @@ const Navbar = () => {
 
                     <div className="hidden xl:block">
                         {isProfileDropdownOpen ? (
-                            <IoIosArrowDown className="size-[18px]" />
+                            <IoIosArrowDown className={`
+                                    size-[18px]
+                                    ${theme === "dark" ? "text-white/80" : "text-black"}
+                                `}
+                            />
                         ) : (
-                            <IoIosArrowUp className="size-[18px]" />
+                            <IoIosArrowUp className={`
+                                    size-[18px]
+                                    ${theme === "dark" ? "text-white/80" : "text-black"}
+                                `}
+                            />
                         )}
                     </div>
                 </button>

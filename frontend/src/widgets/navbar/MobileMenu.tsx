@@ -1,4 +1,6 @@
 import { NavLink } from "react-router-dom";
+import {useStore} from "zustand/react";
+import themeStore from "../../entities/theme/themeStore.tsx";
 
 type NavItem = {
     label: string;
@@ -11,9 +13,11 @@ type MobileMenuProps = {
 };
 
 const MobileMenu = ({ navItems, onClose }: MobileMenuProps) => {
+    const theme = useStore(themeStore, (state) => state.theme);
+
     return (
         <div
-            className="
+            className={`
                 absolute
                 top-[80px]
                 left-3
@@ -21,11 +25,15 @@ const MobileMenu = ({ navItems, onClose }: MobileMenuProps) => {
                 z-20
                 overflow-hidden
                 rounded-[24px]
-                bg-white
                 py-3
                 shadow-lg
                 xl:hidden
-            "
+                ${
+                    theme === 'dark'
+                        ? 'bg-[#020817] border border-[#123A70] shadow-[0_0_25px_rgba(21,151,255,0.12)]'
+                        : 'bg-white'
+                }
+            `}
         >
             {navItems.map((item) => (
                 <NavLink
@@ -34,19 +42,21 @@ const MobileMenu = ({ navItems, onClose }: MobileMenuProps) => {
                     onClick={onClose}
                     className={({ isActive }) =>
                         isActive
-                            ? "mx-3 mb-2 flex items-center justify-between rounded-full bg-[#429EFF] px-5 py-4 font-medium text-white"
-                            : "flex items-center justify-between border-b border-gray-100 px-6 py-5 last:border-b-0"
+                            ? `mx-3 mt-1 mb-2 flex items-center justify-between rounded-full px-5 py-4 font-medium text-white ${
+                                theme === 'dark'
+                                    ? 'bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.2)]'
+                                    : 'bg-[#429EFF]'
+                            }`
+                            : `flex items-center justify-between border-t border-b px-6 py-5 first:border-t-0 last:border-b-0 ${
+                                theme === 'dark'
+                                    ? 'border-[#123A70] text-[#A8B8D0] hover:bg-[#071329]'
+                                    : 'border-gray-100'
+                            }`
                     }
                 >
-                    {({ isActive }) => (
+                    {() => (
                         <>
                             <span>{item.label}</span>
-
-                            {isActive && (
-                                <span className="text-xl font-medium">
-                                    →
-                                </span>
-                            )}
                         </>
                     )}
                 </NavLink>
