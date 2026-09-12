@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/trade/', include('apps.trades.urls')),
     path('api/notifications/', include('apps.notifications.urls')),
     path('api/admin-panel/', include('apps.admin_panel.urls')),
+    path('api/ai/', include('apps.ai.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path(
         'api/docs/',
