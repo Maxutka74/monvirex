@@ -387,7 +387,7 @@ class NotificationIntegrationTest(TestCase):
         self.assertEqual(notification.first().notification_type, 'withdraw')
         self.assertEqual(
             notification.first().message,
-            'Your withdrawal of 100 USD has been successfully processed.',
+            'Your withdrawal of 100 USDT has been successfully processed.',
         )
         self.assertEqual(notification.first().user, self.user_one)
 
@@ -399,7 +399,7 @@ class NotificationIntegrationTest(TestCase):
         self.assertEqual(notification.count(), 1)
         self.assertEqual(notification.first().notification_type, 'buy')
         self.assertEqual(
-            notification.first().message, 'You bought 0.1 BTCUSDT for 5000 USD.'
+            notification.first().message, 'You bought 0.10000000 BTCUSDT for 5000 USD.'
         )
         self.assertEqual(notification.first().user, self.user_one)
 
@@ -414,7 +414,7 @@ class NotificationIntegrationTest(TestCase):
         self.assertEqual(notification.count(), 2)
         self.assertEqual(notification.first().notification_type, 'sell')
         self.assertEqual(
-            notification.first().message, 'You sold 0.001 BTCUSDT for 50.0 USD.'
+            notification.first().message, 'You sold 0.00100000 BTCUSDT for 50.00 USD.'
         )
         self.assertEqual(notification.first().user, self.user_one)
 
@@ -435,6 +435,6 @@ class NotificationIntegrationTest(TestCase):
         self.assertEqual(notification.first().notification_type, 'exchange')
         self.assertEqual(
             notification.first().message,
-            'You exchanged 0.001 BTCUSDT to 0.005 ETHUSDT.',
+            'You exchanged 0.00100000 BTCUSDT to 0.00500000 ETHUSDT.',
         )
         self.assertEqual(notification.first().user, self.user_one)

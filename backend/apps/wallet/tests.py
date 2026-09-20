@@ -135,7 +135,7 @@ class WalletServiceTest(TestCase):
 
         self.assertIn('transaction_id', response)
 
-        self.assertEqual(response['balance_after'], '50.00')
+        self.assertEqual(response['balance_after'], '48.50')
 
         self.assertEqual(response['status'], 'completed')
 
@@ -474,7 +474,7 @@ class WalletServiceApiTest(APITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.data['amount'][0],
-            'Ensure this value is greater than or equal to 0.01.',
+            'Ensure this value is greater than or equal to 10.',
         )
 
     def test_deposit_unauthorized_api(self):

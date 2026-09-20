@@ -759,7 +759,8 @@ class ProfileServiceApiTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data['detail'][0], 'First name and last name cannot be empty'
+            response.data['details'][0], 'First name must be between '
+                                                '2 and 50 characters'
         )
 
     def test_update_profile_empty_last_name(self):
@@ -772,7 +773,7 @@ class ProfileServiceApiTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data['detail'][0], 'First name and last name cannot be empty'
+            response.data['details'][0], 'Last name must be between 2 and 50 characters'
         )
 
     def test_upload_avatar_success(self):
@@ -801,7 +802,7 @@ class ProfileServiceApiTest(TestCase):
         self.assertEqual(
             response.data['detail'][0],
             "Avatar type must be one of "
-            "['image/jpeg', 'image/png', 'image/jpg', 'image/webp']",
+            "['image/jpeg', 'image/png', 'image/webp']",
         )
 
     def test_delete_avatar_success(self):
