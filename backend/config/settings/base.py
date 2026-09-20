@@ -142,7 +142,10 @@ REST_FRAMEWORK = {
         'login': '5/min',
         'reset_password': '3/min',
         'trade': '20/min',
-        'deposit': '10/min'
+        'deposit': '10/min',
+        'gemini_model': '10/min',
+        'market_gemini': '10/min',
+        'portfolio_gemini': '10/min'
     }
 }
 
@@ -205,5 +208,7 @@ STRIPE_SUCCESS_URL = config(
     'STRIPE_SUCCESS_URL', default='http://localhost:5173/success/'
 )
 STRIPE_CANCEL_URL = config('STRIPE_CANCEL_URL', default='http://localhost:5173/cancel/')
+
+GEMINI_API_KEY=config('GEMINI_API_KEY')
 
 ASGI_APPLICATION = 'config.asgi.application'
