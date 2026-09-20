@@ -18,3 +18,12 @@ class TradeThrottle(UserRateThrottle):
 
 class DepositThrottle(UserRateThrottle):
     scope = 'deposit'
+
+class GeminiModelThrottle(UserRateThrottle):
+    scope = 'gemini_model'
+
+class MarketGeminiThrottle(UserRateThrottle):
+    scope = 'market_gemini'
+
+class PortfolioGeminiThrottle(UserRateThrottle):
+    scope = 'portfolio_gemini'
