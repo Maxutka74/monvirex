@@ -1,8 +1,7 @@
 import logging
 
-from rest_framework.exceptions import ValidationError
-
 from django.db.models.functions import Abs
+from rest_framework.exceptions import ValidationError
 
 from apps.assets.models import Asset
 

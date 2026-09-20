@@ -2,10 +2,10 @@ import asyncio
 import json
 import logging
 from collections import defaultdict
-from asgiref.sync import sync_to_async
-from django.core.cache import cache
 
 import websockets
+from asgiref.sync import sync_to_async
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 

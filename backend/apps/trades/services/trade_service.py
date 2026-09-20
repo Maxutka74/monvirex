@@ -1,7 +1,7 @@
 import logging
 
-from django.db import transaction
 from django.core.cache import cache
+from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
 from apps.assets.models import Asset
@@ -31,7 +31,8 @@ class TradeService:
             raise ValidationError({'detail': 'Asset not found'})
 
         if interval and type_buy == 'trade':
-            price_asset = cache.get(f'crypto:realtime:{symbol.lower()}:{interval.lower()}')
+            price_asset = cache.get(f'crypto:realtime:{symbol.lower()}'
+                                    f':{interval.lower()}')
 
             if price_asset is None:
                 raise ValidationError(
@@ -42,7 +43,7 @@ class TradeService:
 
         amount_crypto = amount_usdt / price_asset
 
-        with transaction.atomic():
+        with ((transaction.atomic())):
             wallet = Wallet.objects.select_for_update().filter(user=user).first()
             if not wallet:
                 logger.warning(
@@ -64,7 +65,8 @@ class TradeService:
 
                 raise ValidationError({'detail': 'Insufficient balance'})
 
-            crypto_wallet, created = CryptoWallet.objects.select_for_update().get_or_create(
+            crypto_wallet, created = CryptoWallet.objects.select_for_update(
+            ).get_or_create(
                 user=user, asset=asset
             )
 
@@ -106,7 +108,8 @@ class TradeService:
             user=user,
             notification_type='buy',
             title='Crypto purchase completed',
-            message=f'You bought {round(amount_crypto, 8)} {asset.symbol} for {round(amount_usdt, 2)} USD.',
+            message=f'You bought {round(amount_crypto, 8)} {asset.symbol}'
+                    f' for {round(amount_usdt, 2)} USD.',
         )
 
         return {
@@ -143,7 +146,8 @@ class TradeService:
             raise ValidationError({'detail': 'Asset not found'})
 
         if interval and type_sell == 'trade':
-            price_asset = cache.get(f'crypto:realtime:{symbol.lower()}:{interval.lower()}')
+            price_asset = cache.get(f'crypto:realtime:{symbol.lower()}:'
+                                    f'{interval.lower()}')
 
             if price_asset is None:
                 raise ValidationError(

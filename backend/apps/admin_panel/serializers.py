@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from apps.assets.models import Asset
 from apps.auth_app.models import User
 from apps.wallet.models import CryptoTransaction, Transaction
 

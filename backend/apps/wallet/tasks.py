@@ -5,10 +5,8 @@ from celery import shared_task
 from django.utils.timezone import now
 
 from apps.auth_app.models import User
-from apps.wallet.models import Transaction
+from apps.wallet.models import CryptoTransaction, Transaction
 from apps.wallet.services.portfolio_snapshot_service import PortfolioSnapshotService
-
-from apps.wallet.models import CryptoTransaction
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,10 @@
 import datetime
 import logging
 
-from django.db.models import Sum
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from apps.assets.models import Asset
 from apps.assets.tasks import sync_assets_task
 from apps.auth_app.models import User
 from apps.wallet.models import (
@@ -100,7 +98,8 @@ class AdminPanelServices:
         )
 
         if search:
-            transactions = transactions.filter(Q(id__icontains=search) | Q(user__email__icontains=search))
+            transactions = transactions.filter(Q(id__icontains=search) |
+                                               Q(user__email__icontains=search))
 
         return transactions
 
@@ -115,7 +114,8 @@ class AdminPanelServices:
         )
 
         if search:
-            crypto_transactions = crypto_transactions.filter(Q(id__icontains=search) | Q(user__email__icontains=search))
+            crypto_transactions = crypto_transactions.filter(Q(id__icontains=search) |
+                                                             Q(user__email__icontains=search))
 
         return crypto_transactions
 

@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.auth_app.views import (
     ChangePasswordView,
+    CheckAuthMe,
     ConfirmRegisterView,
     ConfirmResetPasswordView,
     GoogleLoginView,
@@ -16,7 +17,7 @@ from apps.auth_app.views import (
     ResendPasswordCodeView,
     ResendRegisterCodeView,
     ResetPasswordView,
-    TelegramLoginView, CheckAuthMe,
+    TelegramLoginView,
 )
 
 urlpatterns = [

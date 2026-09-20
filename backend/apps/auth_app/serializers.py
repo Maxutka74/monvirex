@@ -150,10 +150,16 @@ class ProfileChangeUsernameSerializer(serializers.Serializer):
         last_name = data.get('last_name')
 
         if len(first_name) < 2 or len(first_name) > 50:
-            raise serializers.ValidationError({'details': "First name must be between 2 and 50 characters"})
+            raise serializers.ValidationError({'details':
+                                                   "First name must be between"
+                                                   " 2 and 50 characters"
+                                               })
 
         if len(last_name) < 2 or len(last_name) > 50:
-            raise serializers.ValidationError({'details': "Last name must be between 2 and 50 characters"})
+            raise serializers.ValidationError({'details':
+                                                   "Last name must be between"
+                                                   " 2 and 50 characters"
+                                               })
 
         return data
 
