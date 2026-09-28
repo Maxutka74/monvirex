@@ -61,11 +61,18 @@ const BestToBuyCard = ({trade}: BestToBuyCardProps) => {
 
 
     return (
-        <div className={`w-full rounded-[20px] p-5 ${
+        <div className={`w-full rounded-[20px] p-5
+        ${
+            trade && (
+                'px-5 py-4'
+            )
+        }
+        ${
             theme === 'dark'
                 ? 'bg-black/60 border border-[#123A70] text-white shadow-[0_0_20px_rgba(0,102,255,0.08)]'
                 : 'bg-[#FFFFFF]/60'
-        }`}>
+        }
+        `}>
             <div className='flex flex-row items-center justify-between mb-5'>
                 <div className='flex flex-row items-center gap-3'>
                     <div className={`w-[44px] h-[44px] flex items-center justify-center rounded-[10px]  ${

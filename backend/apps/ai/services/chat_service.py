@@ -9,7 +9,7 @@ class ChatService:
 
     @staticmethod
     def get_chats(user):
-        return Chat.objects.filter(user=user)
+        return Chat.objects.prefetch_related('messages').filter(user=user).order_by('-updated_at')
 
     @staticmethod
     def get_chat(user, chat_id):
@@ -17,6 +17,15 @@ class ChatService:
 
         if chat is None:
             raise ChatNotFoundError()
+
+        return chat
+
+    @staticmethod
+    def create_chat(user):
+        chat = Chat.objects.create(
+            user=user,
+            title='New Chat'
+        )
 
         return chat
 
@@ -39,6 +48,10 @@ class ChatService:
 
         if chat is None:
             raise ChatNotFoundError()
+
+        if chat.title == 'New Chat':
+            chat.title = message
+            chat.save()
 
         messages = ChatMessage.objects.filter(chat=chat).order_by('-created_at')[:8]
 

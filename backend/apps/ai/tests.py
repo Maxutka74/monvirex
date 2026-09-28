@@ -51,7 +51,7 @@ class ChatsApiTest(APITestCase):
     def test_chat_create_success(self):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
-        response = self.client.post('/api/ai/chat/', data={
+        response = self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 
@@ -61,7 +61,7 @@ class ChatsApiTest(APITestCase):
     def test_chat_get_all(self):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
-        self.client.post('/api/ai/chat/', data={
+        self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 
@@ -73,13 +73,13 @@ class ChatsApiTest(APITestCase):
     def test_chat_continue_success(self):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
-        self.client.post('/api/ai/chat/', data={
+        self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 
         chat = Chat.objects.get(user=self.test_user)
 
-        response = self.client.post('/api/ai/chat/', data={
+        response = self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'My name Maxx',
             'chat_id': chat.id
         })
@@ -94,7 +94,7 @@ class ChatsApiTest(APITestCase):
     def test_chat_get_detail(self):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
-        self.client.post('/api/ai/chat/', data={
+        self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 
@@ -120,13 +120,25 @@ class ChatsApiTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_create_chat(self):
+        self.client.cookies['access_token'] = str(self.refresh.access_token)
+        response = self.client.post('/api/ai/chat/create/')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.json()['title'], 'New Chat')
+
+    def test_chat_create_unauthenticated(self):
+        response = self.client.get('/api/ai/chat/create/')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     @patch('apps.ai.views.ChatService.chat')
     def test_chat_rate_limit(self, mock_chat):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
         mock_chat.side_effect = GeminiRateLimitError()
 
-        response = self.client.post('/api/ai/chat/', data={
+        response = self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 
@@ -138,7 +150,7 @@ class ChatsApiTest(APITestCase):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
         for _ in range(11):
-            response = self.client.post('/api/ai/chat/', data={
+            response = self.client.post('/api/ai/chat/sendmessage/', data={
                 'message': 'Hello',
             })
 
@@ -150,7 +162,7 @@ class ChatsApiTest(APITestCase):
 
         mock_chat.side_effect = GeminiTimeoutError()
 
-        response = self.client.post('/api/ai/chat/', data={
+        response = self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 
@@ -162,7 +174,7 @@ class ChatsApiTest(APITestCase):
 
         mock_chat.side_effect = GeminiServiceError()
 
-        response = self.client.post('/api/ai/chat/', data={
+        response = self.client.post('/api/ai/chat/sendmessage/', data={
                'message': 'Hello',
             })
 
@@ -171,7 +183,7 @@ class ChatsApiTest(APITestCase):
     def test_chat_delete(self):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
-        self.client.post('/api/ai/chat/', data={
+        self.client.post('/api/ai/chat/sendmessage/', data={
             'message': 'Hello',
         })
 

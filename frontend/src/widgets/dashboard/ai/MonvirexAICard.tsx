@@ -5,9 +5,31 @@ import { PiLightningLight, PiShootingStarLight } from "react-icons/pi";
 import logo from "../../../assets/logos/MonvirexWhiteLogo.png";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {useNavigate} from "react-router-dom";
+import {useState} from "react";
 
 const MonvirexAICard = () => {
+    const navigate = useNavigate();
     const theme = useStore(themeStore, (state) => state.theme);
+    const [messages, setMessages] = useState("");
+
+    const handleMarketAnalysis = () => {navigate('/ai-assistant', {
+        state: {marketAnalysis: true}
+    })}
+
+    const handlePortfolioAnalysis = () => {navigate('/ai-assistant', {
+        state: {portfolioAnalysis: true}
+    })}
+
+    const handleSendMessage = () => {
+        const message = messages.trim()
+
+        if (!message) return;
+
+        navigate('/ai-assistant', {
+            state: {initialMessage: message},
+        })
+    }
 
     return (
         <div className="
@@ -39,17 +61,19 @@ const MonvirexAICard = () => {
             </div>
 
             <div className="
-                flex flex-row flex-1
+                flex flex-col sm:flex-row flex-1
                 items-stretch justify-center
                 gap-3
             ">
-                <div className="flex-1 min-w-0">
+                <button className="flex-1 min-w-0 text-start"
+                     onClick={() => handleMarketAnalysis()}   >
                     <div className={`
                             h-full
                             flex flex-col
                             justify-center items-center
                             gap-5
                             rounded-[20px]
+                            cursor-pointer
                             ${theme === "dark" ? "bg-black/80 text-white" : "bg-white"}
                         `}>
                         <div className="
@@ -79,36 +103,40 @@ const MonvirexAICard = () => {
                                 leading-tight
                             ">
                                 AI Market <br />
-                                Predictor
+                                Analysis
                             </h5>
                         </div>
 
-                        <p className="
+                        <p className={`
                             px-4 pb-5
                             text-[12px]
                             sm:text-base
-                            text-[#6F6F6F]
-                        ">
-                            Analyze live market trends,
-                            price changes, and volume
-                            to spot trading signals.
+                            text-center
+                            ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#6F6F6F]"}
+                        `}>
+                            Analyze current market data,
+                            price movements, and trading
+                            volume with AI-powered insights
                         </p>
                     </div>
-                </div>
+                </button>
 
-                <div className="flex-1 min-w-0">
+                <button className="flex-1 min-w-0 text-start"
+                        onClick={() => handlePortfolioAnalysis()}>
                     <div className={`
                             h-full
                             flex flex-col
                             justify-center items-center
                             gap-5
+                            sm:pt-0
+                            pt-5
                             rounded-[20px]
+                            cursor-pointer
                             ${theme === "dark" ? "bg-black/80 text-white" : "bg-white"}
                         `}>
                         <div className="
                             flex flex-row
                             items-center gap-3
-                            pt-5
                         ">
                             <div className="
                                 w-[38px] h-[38px]
@@ -132,21 +160,21 @@ const MonvirexAICard = () => {
                                 leading-tight
                             ">
                                 AI Portfolio <br />
-                                Optimizer
+                                Analysis
                             </h5>
                         </div>
 
                         <p className={`
                             px-4 pb-5
-                            text-[12px] sm:text-base
+                            text-[12px] sm:text-base text-center
                             ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#6F6F6F]"}
                         `}>
-                            Review your assets and
-                            suggest smarter allocation
-                            based on risk and trends.
+                            Analyze your portfolio,
+                            asset allocation, and performance
+                            with AI-powered insights
                         </p>
                     </div>
-                </div>
+                </button>
             </div>
 
             <div className="
@@ -155,58 +183,82 @@ const MonvirexAICard = () => {
                 gap-2
             ">
                 <div className={`
-                        relative flex-1
-                        h-[48px]
-                        flex items-center
-                        rounded-full
-                        ${theme === "dark"
-                            ? "bg-black/80 text-white"
-                            : "bg-white text-[#666D80]"
-                        }
-                    `}>
+                    relative flex-1
+                    h-[42px] sm:h-[48px]
+                    flex items-center
+                    rounded-full
+                    ${theme === "dark"
+                                ? "bg-black/80 text-white"
+                                : "bg-white text-[#666D80]"
+                            }
+                `}>
                     <PiLightningLight
-                        size={22}
-                        className="absolute left-3"
+                        className="
+                            absolute
+                            left-3
+                            text-[19px] sm:text-[22px]
+                        "
                     />
 
                     <input
+                        value={messages}
                         className={`
-                            w-full h-[48px]
+                            w-full
+                            h-[42px] sm:h-[48px]
                             rounded-full
-                            pl-[44px]
+                            pl-[38px] sm:pl-[44px]
+                            text-[13px] sm:text-base
                             outline-none
                             ${theme === "dark"
-                                ? "bg-transparent text-white placeholder:text-[#818898]"
-                                : "bg-transparent text-black"
-                            }
+                                        ? "bg-transparent text-white placeholder:text-[#818898]"
+                                        : "bg-transparent text-black"
+                                    }
                         `}
                         type="text"
                         placeholder="Search with AI"
+                        onChange={(e) => setMessages(e.target.value)}
                     />
                 </div>
 
-                <button className={`
-                        w-[92px] h-[48px]
+                <button
+                    className={`
+                        w-[78px] h-[42px]
+                        sm:w-[92px] sm:h-[48px]
                         flex flex-row
-                        items-center gap-2
+                        items-center
+                        gap-1 sm:gap-2
                         rounded-full
                         p-1
                         cursor-pointer
-                        ${theme === "dark" ? "bg-black/80" : "bg-white"}
-                    `}>
+                        shrink-0
+                        ${theme === "dark"
+                                ? "bg-black/80"
+                                : "bg-white"
+                            }
+                    `}
+                    onClick={() => handleSendMessage()}
+                >
                     <div className="
-                        w-[40px] h-[40px]
+                        w-[34px] h-[34px]
+                        sm:w-[40px] sm:h-[40px]
                         flex items-center justify-center
                         rounded-full
-                        bg-gradient-to-tr from-[#429EFF] via-[#33CFFF] to-[#9F87FF]
+                        bg-gradient-to-tr
+                        from-[#429EFF]
+                        via-[#33CFFF]
+                        to-[#9F87FF]
                         text-white
                     ">
-                        <span>AI</span>
+                        <span className="text-[13px] sm:text-base">
+                            AI
+                        </span>
                     </div>
 
                     <PiShootingStarLight
-                        size={26}
-                        className="text-[#429EFF]"
+                        className="
+                            text-[22px] sm:text-[26px]
+                            text-[#429EFF]
+                        "
                     />
                 </button>
             </div>

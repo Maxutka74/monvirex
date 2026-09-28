@@ -143,7 +143,7 @@ REST_FRAMEWORK = {
         'reset_password': '3/min',
         'trade': '20/min',
         'deposit': '10/min',
-        'gemini_model': '10/min',
+        'gemini_model': '25/min',
         'market_gemini': '10/min',
         'portfolio_gemini': '10/min'
     }

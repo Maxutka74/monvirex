@@ -7,7 +7,7 @@ import FastActionCard from "../../widgets/myassets/trading/FastActionCard.tsx";
 
 const MyAssetsPage = () => {
     return (
-        <section className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12">
+        <section className="w-full pb-3 px-4 sm:px-6 lg:px-8 2xl:px-12">
             <div className="mx-auto max-w-[1700px]">
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                     <div className="xl:col-span-8 flex flex-col gap-6">

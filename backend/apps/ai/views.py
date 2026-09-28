@@ -24,7 +24,6 @@ from config.throttles import (
 
 class ChatView(APIView):
     permission_classes = (IsAuthenticated,)
-    throttle_classes = (GeminiModelThrottle, )
 
     def get(self, request):
         chats = ChatService.get_chats(request.user)
@@ -36,6 +35,10 @@ class ChatView(APIView):
             status=status.HTTP_200_OK
         )
 
+class SendChatMessageView(APIView):
+    permission_classes = (IsAuthenticated,)
+    throttle_classes = (GeminiModelThrottle, )
+
     @extend_schema(request=ChatMessageSerializer)
     def post(self, request):
 
@@ -43,10 +46,10 @@ class ChatView(APIView):
         message.is_valid(raise_exception=True)
 
         try:
-            chat=ChatService.chat(request.user,
-                                  message.validated_data['message'],
-                                  message.validated_data.get('chat_id', None)
-                                  )
+            chat = ChatService.chat(request.user,
+                                    message.validated_data['message'],
+                                    message.validated_data.get('chat_id', None)
+                                    )
 
         except GeminiRateLimitError:
             return Response('Too Many Requests',
@@ -98,6 +101,19 @@ class ChatDetailView(APIView):
             )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CreateChatView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        chat = ChatService.create_chat(request.user)
+
+        serialize = ChatSerializer(chat)
+
+        return Response(
+            serialize.data,
+            status=status.HTTP_201_CREATED,
+        )
 
 class MarketAnalizeView(APIView):
     permission_classes = (IsAuthenticated,)
