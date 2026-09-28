@@ -13,6 +13,7 @@ import TradePage from "./pages/trade/TradePage.tsx";
 import AdminPanelPage from "./pages/admin-panel/AdminPanelPage.tsx";
 import StaffRoute from "./app/router/StaffRoute.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
+import AiPage from "./pages/ai-assistant/AiPage.tsx";
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
                             <Route path='/admin-panel' element={<AdminPanelPage />} />
                         </Route>
                         <Route path='/profile' element={<ProfilePage />} />
+                        <Route path='/ai-assistant' element={<AiPage />} />
                     </Route>
                 </Route>
             </Routes>
