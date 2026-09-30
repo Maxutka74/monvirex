@@ -3,8 +3,10 @@ from django.urls import path
 from apps.ai.views import (
     ChatDetailView,
     ChatView,
+    CreateChatView,
     MarketAnalizeView,
-    PortfolioAnalizeView, CreateChatView, SendChatMessageView,
+    PortfolioAnalizeView,
+    SendChatMessageView,
 )
 
 urlpatterns = [

@@ -23,8 +23,9 @@ class Transaction(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['user', 'status']),
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['status', 'created_at']),
             models.Index(fields=['transaction_type']),
-            models.Index(fields=['stripe_session_id']),
         ]
 
     TRANSACTION_TYPE_CHOICES = [
@@ -96,6 +97,7 @@ class CryptoTransaction(models.Model):
         indexes = [
             models.Index(fields=['user', 'status']),
             models.Index(fields=['transaction_type']),
+            models.Index(fields=['created_at']),
         ]
 
     TRANSACTION_TYPE_CHOICES = [

@@ -9,7 +9,8 @@ class ChatService:
 
     @staticmethod
     def get_chats(user):
-        return Chat.objects.prefetch_related('messages').filter(user=user).order_by('-updated_at')
+        return (Chat.objects.prefetch_related('messages')
+                .filter(user=user).order_by('-updated_at'))
 
     @staticmethod
     def get_chat(user, chat_id):

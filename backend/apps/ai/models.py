@@ -21,4 +21,7 @@ class ChatMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        indexes = [
+            models.Index(fields=['chat', '-created_at']),
+        ]
         ordering = ['created_at']
