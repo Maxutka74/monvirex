@@ -1,50 +1,9 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import AuthPage from "./pages/auth/AuthPage.tsx";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.tsx";
-import VerifyPasswordPage from "./pages/auth/VerifyPasswordPage.tsx";
-import ChangePasswordPage from "./pages/auth/ChangePasswordPage.tsx";
-import VerifyEmailPage from "./pages/auth/VerifyEmailPage.tsx";
-import ProtectedRoute from "./app/router/ProtectedRoute.tsx";
-import AuthFlowRoute from "./app/router/AuthFlowRoute.tsx";
-import MainLayout from "./app/layouts/MainLayout.tsx";
-import DashboardPage from "./pages/dashboard/DashboardPage.tsx";
-import MyAssetsPage from "./pages/myassets/MyAssetsPage.tsx";
-import TradePage from "./pages/trade/TradePage.tsx";
-import AdminPanelPage from "./pages/admin-panel/AdminPanelPage.tsx";
-import StaffRoute from "./app/router/StaffRoute.tsx";
-import ProfilePage from "./pages/profile/ProfilePage.tsx";
-import AiPage from "./pages/ai-assistant/AiPage.tsx";
+import RouterProvider from "./app/providers/RouterProvider.tsx";
 
 function App() {
 
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path='/' element={<AuthPage />} />
-                <Route path='/reset-password' element={<ForgotPasswordPage />} />
-                <Route element={<AuthFlowRoute storageKey='verify_token' redirectTo='/' />}>
-                    <Route path='/verify-email' element={<VerifyEmailPage />} />
-                </Route>
-                <Route element={<AuthFlowRoute storageKey='reset_token' redirectTo='/reset-password' />}>
-                    <Route path='/verify-reset-password' element={<VerifyPasswordPage />} />
-                </Route>
-                <Route element={<AuthFlowRoute storageKey='reset_verify_token' redirectTo='/reset-password' />}>
-                <Route path='/change-password' element={<ChangePasswordPage />} />
-                </Route>
-                <Route element={<ProtectedRoute />}>
-                    <Route element={<MainLayout />} >
-                        <Route path='/dashboard' element={<DashboardPage />} />
-                        <Route path='/myassets' element={<MyAssetsPage />} />
-                        <Route path='/trade' element={<TradePage /> } />
-                        <Route element={<StaffRoute />}>
-                            <Route path='/admin-panel' element={<AdminPanelPage />} />
-                        </Route>
-                        <Route path='/profile' element={<ProfilePage />} />
-                        <Route path='/ai-assistant' element={<AiPage />} />
-                    </Route>
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <RouterProvider />
     )
 }
 
