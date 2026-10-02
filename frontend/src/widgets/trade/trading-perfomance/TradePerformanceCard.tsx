@@ -226,7 +226,7 @@ const TradePerformanceCard = () => {
     });
 
     return (
-        <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 gap-5 ${
+        <div className={`w-full min-h-[692px] h-full flex flex-col rounded-[30px] p-4 sm:p-6 gap-5 ${
             theme === 'dark'
                 ? 'bg-black/60 border border-[#123A70] text-white shadow-[0_0_25px_rgba(0,102,255,0.08)]'
                 : 'bg-[#FFFFFF]/60'

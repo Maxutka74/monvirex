@@ -15,7 +15,7 @@ const MyAssetsPage = () => {
                         <MarketsCard />
                     </div>
 
-                    <div className="xl:col-span-4 flex flex-col gap-3">
+                    <div className="xl:col-span-4 flex flex-col gap-3.25">
                         <BestToBuyCard />
                         <FastActionCard />
                         <AIChart />

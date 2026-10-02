@@ -63,9 +63,9 @@ const BestToBuyCard = ({trade}: BestToBuyCardProps) => {
     return (
         <div className={`w-full rounded-[20px] p-5
         ${
-            trade && (
-                'px-5 py-4'
-            )
+            trade ? (
+                'min-h-[250px] px-5 py-4'
+            ): 'min-h-[256px]'
         }
         ${
             theme === 'dark'

@@ -84,7 +84,7 @@ const MarketOverviewCard = () => {
     }
 
     return (
-        <div className={`w-full h-full rounded-[30px] p-5 ${
+        <div className={`w-full min-h-[692px] h-full rounded-[30px] p-5 ${
             theme === 'dark'
                 ? 'bg-black/60 border border-[#123A70] text-white shadow-[0_0_25px_rgba(0,102,255,0.08)]'
                 : 'bg-[#FFFFFF]/60'

@@ -13,7 +13,7 @@ const ProtectedRoute = () => {
     }, [checkAuth]);
 
     if (isLoading) {
-        return <p>Loading...</p>
+        return
     }
 
     if (!isAuth) {

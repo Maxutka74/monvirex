@@ -140,7 +140,7 @@ const WalletOverviewCard = () => {
                 : 'bg-[#FFFFFF]/60'
         }`}>
             <div className="flex flex-col lg:flex-row gap-6">
-                <div className="min-h-[140px] sm:min-h-[154px] flex-1 rounded-[20px] bg-gradient-to-br from-[#3B82F6] via-[#2563EB] to-[#1D4ED8] px-4 sm:px-5 py-4 sm:py-5 flex flex-col justify-between gap-4 sm:gap-5">
+                <div className="min-h-[561px] sm:min-h-[432px] flex-1 rounded-[20px] bg-gradient-to-br from-[#3B82F6] via-[#2563EB] to-[#1D4ED8] px-4 sm:px-5 py-4 sm:py-5 flex flex-col justify-between gap-4 sm:gap-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 min-w-0">
                             <div className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-[#429EFF] shrink-0">
@@ -194,7 +194,7 @@ const WalletOverviewCard = () => {
                         <button className='text-white sm:text-xl cursor-pointer'>Transactions</button>
                     </div>
                 </div>
-                <div className={`flex-1 rounded-[20px] px-4 sm:px-5 py-4 sm:py-5 ${
+                <div className={`min-h-[641px] sm:min-h-[432px] flex-1 rounded-[20px] px-4 sm:px-5 py-4 sm:py-5 ${
                     theme === 'dark'
                         ? 'bg-[#071329] border border-[#123A70] text-white'
                         : 'bg-white border border-[#DFE1E7]'
