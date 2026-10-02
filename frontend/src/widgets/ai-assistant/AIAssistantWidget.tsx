@@ -59,7 +59,7 @@ const AIAssistantWidget = () => {
         return chats.map(chat => ({
             ...chat,
             updated_at: Intl.DateTimeFormat(
-                'uk-UA',
+                'en-US',
                 {
                     day: '2-digit',
                     month: '2-digit',
@@ -67,7 +67,7 @@ const AIAssistantWidget = () => {
                     hour: '2-digit',
                     minute: '2-digit',
                 }
-            ).format(new Date(chat.updated_at))
+            ).format(new Date(chat.updated_at)).replaceAll('/', '.')
         }))
     }
 

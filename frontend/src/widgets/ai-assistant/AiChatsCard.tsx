@@ -29,13 +29,13 @@ const AiChatsCard = ({messages, loading, error}: AiChatsCardProps) => {
 
     const formattingMessages = messages?.map((message) => ({
         ...message,
-        created_at: (Intl.DateTimeFormat('uk-UA', {
+        created_at: (Intl.DateTimeFormat('en-US', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
-        }).format(new Date(message.created_at))
+        }).format(new Date(message.created_at)).replaceAll('/', '.')
             + ', '
-            + Intl.DateTimeFormat('uk-UA', {
+            + Intl.DateTimeFormat('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
             }).format(new Date(message.created_at))

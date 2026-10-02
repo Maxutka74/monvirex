@@ -1,9 +1,9 @@
 import {BsCircleFill} from "react-icons/bs";
 import { useEffect, useState } from "react";
 import PortfolioHistoryChart from "./PortfolioHistoryChart.tsx";
-import walletApi, {type UserSnapshot} from "../../../features/wallet/api/walletApi.ts";
+import walletApi, {type UserSnapshot} from "../../../../features/wallet/api/walletApi.ts";
 import {useStore} from "zustand/react";
-import themeStore from "../../../entities/theme/themeStore.tsx";
+import themeStore from "../../../../entities/theme/themeStore.tsx";
 
 const PortfolioHistoryCard = () => {
     const theme = useStore(themeStore, (state) => state.theme);

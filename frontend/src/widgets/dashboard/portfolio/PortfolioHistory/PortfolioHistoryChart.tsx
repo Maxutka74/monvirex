@@ -8,9 +8,10 @@ import {
     Tooltip,
 } from "recharts";
 
-import type { UserSnapshot } from "../../../features/wallet/api/walletApi.ts";
+import type { UserSnapshot } from "../../../../features/wallet/api/walletApi.ts";
 import {useStore} from "zustand/react";
-import themeStore from "../../../entities/theme/themeStore.tsx";
+import themeStore from "../../../../entities/theme/themeStore.tsx";
+import PortfolioHistoryCustomTooltip from "./PortfolioHistoryCustomTooltip.tsx";
 
 type Props = {
     history: UserSnapshot[];
@@ -20,7 +21,10 @@ const PortfolioHistoryChart = ({ history }: Props) => {
     const theme = useStore(themeStore, (state) => state.theme);
 
     const chartData = history.map((data) => ({
-        date: new Date(data.created_at).getDate(),
+        date: Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: '2-digit'
+        }).format(new Date(data.created_at)),
         totalValue: Number(data.total_value),
         walletBalance: Number(data.wallet_balance),
     }));
@@ -63,17 +67,7 @@ const PortfolioHistoryChart = ({ history }: Props) => {
                         />
 
                         <Tooltip
-                            contentStyle={{
-                                backgroundColor: theme === "dark" ? "#000000" : "#FFFFFF",
-                                border: `1px solid ${
-                                    theme === "dark" ? "#263452" : "#D6DCE5"
-                                }`,
-                                borderRadius: "12px",
-                                color: theme === "dark" ? "#FFFFFF" : "#000000",
-                            }}
-                            labelStyle={{
-                                color: theme === "dark" ? "#A7B0C3" : "#666D80",
-                            }}
+                            content={<PortfolioHistoryCustomTooltip />}
                         />
 
                         <Line

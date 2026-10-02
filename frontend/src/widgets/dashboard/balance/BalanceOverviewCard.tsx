@@ -6,7 +6,7 @@ import {LuArrowDownLeft} from "react-icons/lu";
 import {IoIosArrowDown} from "react-icons/io";
 import {RiLoaderLine, RiMoneyDollarCircleLine} from "react-icons/ri";
 import {FiArrowUpRight} from "react-icons/fi";
-import PortfolioHistoryCard from "../portfolio/PortfolioHistoryCard.tsx";
+import PortfolioHistoryCard from "../portfolio/PortfolioHistory/PortfolioHistoryCard.tsx";
 import WalletActionModal from "../../../features/wallet/ui/WalletActionModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
