@@ -166,6 +166,8 @@ const NotificationDropdown = ({
         }
     };
 
+    console.log(notifications)
+
     return (
         <div
             className={`

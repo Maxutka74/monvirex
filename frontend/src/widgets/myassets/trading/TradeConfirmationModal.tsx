@@ -8,6 +8,7 @@ import {BiErrorCircle} from "react-icons/bi";
 import SuccessPaymentModal from "../../../shared/ui/SuccessPaymentModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 type TradeConfirmationModalProps = {
     setIsModalOpen: React.Dispatch<SetStateAction<boolean>>;
@@ -155,7 +156,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                 }`}>
                     <div className='w-full'>
                         <div className='w-full flex items-center justify-between'>
-                            <h3 className='text-[26px] font-medium'>{type} {(assetMarketAction) ? assetMarketAction.symbol: type === 'Buy' ? buyAsset?.value: type === 'Sell' ? sellAsset?.value: exchangeFromAsset?.value} {type === 'Exchange' && `⇄${exchangeToAsset?.value}`}</h3>
+                            <h3 className='text-[26px] font-medium'>{type} {(assetMarketAction) ? assetMarketAction.symbol: type === 'Buy' ? buyAsset?.value: type === 'Sell' ? sellAsset?.value: exchangeFromAsset?.value} {type === 'Exchange' && `⇄ ${exchangeToAsset?.value}`}</h3>
                             <button className={`h-[34px] w-[34px] flex items-center justify-center rounded-full sm:h-[40px] sm:w-[40px] cursor-pointer ${
                                 theme === 'dark'
                                     ? 'text-[#A8B8D0] border border-[#164B86] hover:text-white hover:bg-[#0B1D38]'
@@ -163,7 +164,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                             }`} onClick={() => setIsModalOpen(false)}><CgClose size={24}/></button>
                         </div>
                         <div className='flex flex-col gap-1 mb-3'>
-                            <p className={theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}>Current Price: {Number((assetMarketAction) ? assetMarketAction.value: type === 'Buy' ? buyAsset?.currentPrice: type === 'Sell' ? sellAsset?.currentPrice: exchangeFromAsset?.currentPrice).toFixed(6)} USDT</p>
+                            <p className={theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}>Current Price: {(assetMarketAction) ? assetMarketAction.value: type === 'Buy' ? formatNumber(buyAsset?.currentPrice ?? 0): type === 'Sell' ? formatNumber(sellAsset?.currentPrice ?? 0): formatNumber(exchangeFromAsset?.currentPrice ?? 0)} USDT</p>
                         </div>
                         <div className={`w-full h-px mb-3 ${
                             theme === 'dark' ? 'bg-[#123A70]' : 'bg-gray-100'
@@ -199,7 +200,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                                     }`} onChange={(e) => setAmount(e.target.value)} onClick={() => setIsError(false)}/>
                             </div>
                             <div className='flex flex-row items-center justify-between'>
-                                <p className={theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}>Available: {type === 'Buy' ? balance: type === 'Sell' ? String(sellAsset?.amount).slice(0,-4): String(exchangeFromAsset?.amount).slice(0,-4)} <span>{type === 'Buy' ? 'USDT': type === 'Sell'? sellAsset?.value: exchangeFromAsset?.value}</span></p>
+                                <p className={theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}>Available: {type === 'Buy' ? balance: type === 'Sell' ? sellAsset?.amount: exchangeFromAsset?.amount} <span>{type === 'Buy' ? 'USDT': type === 'Sell'? sellAsset?.value : exchangeFromAsset?.value}</span></p>
                                 <button
                                     className={`w-[40px] h-[40px] text-sm cursor-pointer ${
                                         theme === 'dark'
@@ -216,9 +217,9 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                             <div className='flex flex-row items-center justify-between mb-3'>
                                 <p>You Receive (Estimated)</p>
                                 <p className='text-[18px] text-right font-medium'>{
-                                    (type === 'Buy'? (Number((Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)).toFixed(6)) > 0 ? (Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)).toFixed(6): 0):
-                                    type === 'Sell'? Number(Number(Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6)) > 0 ? (Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6): 0:
-                                        Number(Number((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)).toFixed(6)) > 0 ? ((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)).toFixed(6): 0
+                                    (type === 'Buy'? (Number((Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)).toFixed(6)) > 0 ? formatNumber(Number(amount) / Number(assetMarketAction ? assetMarketAction.value: buyAsset?.currentPrice)): 0):
+                                    type === 'Sell'? Number(Number(Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6)) > 0 ? formatNumber(Number(amount) * Number(sellAsset?.currentPrice)): 0:
+                                        Number(Number((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)).toFixed(6)) > 0 ? formatNumber((Number(amount) * Number(exchangeFromAsset?.currentPrice)) / Number(exchangeToAsset?.currentPrice)): 0
                                     )}
                                     <span> {type === 'Buy' ?  buyAsset?.value: type === 'Sell' ? 'USDT': exchangeToAsset?.value}</span></p>
                             </div>
@@ -231,7 +232,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                             }`} />
                             <div className='flex flex-row items-center justify-between'>
                                 <span>Total</span>
-                                <p className='text-[18px] font-medium'>{type === 'Buy' ? amount:  type === 'Sell'? Number((Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6)) > 0 ? (Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6): 0 : Number(amount) > 0 ? (Number(amount) * Number(exchangeFromAsset?.currentPrice)).toFixed(2): 0} <span>USDT</span></p>
+                                <p className='text-[18px] font-medium'>{type === 'Buy' ? formatNumber(amount):  type === 'Sell'? Number((Number(amount) * Number(sellAsset?.currentPrice)).toFixed(6)) > 0 ? formatNumber(Number(amount) * Number(sellAsset?.currentPrice)): 0 : Number(amount) > 0 ? formatNumber(Number(amount) * Number(exchangeFromAsset?.currentPrice)): 0} <span>USDT</span></p>
                             </div>
                         </div>
                         <div className={`flex flex-row items-center gap-2 text-sm mb-5 ${

@@ -1,5 +1,6 @@
 import {Cell, Pie, PieChart, ResponsiveContainer, Tooltip} from "recharts";
 import WalletCustomTooltip from "./WalletCustomTooltip.tsx";
+import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
 
 type SparklineData = {
     name: string,
@@ -69,7 +70,7 @@ const WalletSparkline = ({data, totalValue, COLORS}: WalletSparklineProps) => {
             </span>
 
             <strong className='text-white text-xl'>
-                ${totalValue.toFixed(2)}
+                ${formatNumber(totalValue)}
             </strong>
         </div>
 

@@ -8,6 +8,7 @@ import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import {RiLoaderLine} from "react-icons/ri";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 
 const MyPortfolioCard = () => {
@@ -84,24 +85,6 @@ const MyPortfolioCard = () => {
             };
         })
         .filter((item) => item !== null);
-
-    const formatPrice = (price: number | string) => {
-        const value = Number(price);
-
-        if (value >= 1) {
-            return `$${value.toFixed(2)}`;
-        }
-
-        if (value >= 0.01) {
-            return `$${value.toFixed(4)}`;
-        }
-
-        if (value > 0) {
-            return `$${value.toFixed(6)}`;
-        }
-
-        return "$0.00";
-    };
 
     const totalPages = Math.ceil(
         portfolioTableData.length / itemsPerPage
@@ -209,7 +192,7 @@ const MyPortfolioCard = () => {
                                 </td>
 
                                 <td className="h-[46px] font-medium">
-                                    {formatPrice(item.value)}
+                                    ${formatNumber(item.value)}
                                 </td>
 
                                 <td className="pointer-events-none h-[48px]">
@@ -247,7 +230,7 @@ const MyPortfolioCard = () => {
                                 </td>
 
                                 <td className="h-[26px] text-center font-medium">
-                                    {formatPrice(item.balance)}
+                                    ${formatNumber(item.balance)}
                                 </td>
                             </tr>
                             ))}

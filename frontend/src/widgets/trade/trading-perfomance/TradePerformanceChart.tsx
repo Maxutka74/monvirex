@@ -3,6 +3,7 @@ import type {AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import type {IntervalOption} from "./TradePerformanceCard.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 type TradePerformanceChartProps = {
     klines: AssetKlines[]
@@ -114,23 +115,23 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
                 
                         <div class="flex justify-between gap-6">
                             <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Open:</span>
-                            <b class="text-blue-500">${kline.open.slice(0,-6)}</b>
+                            <b class="text-blue-500">${formatNumber(kline.open)}</b>
                         </div>
                 
                         <div class="flex justify-between gap-6">
                             <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">High:</span>
-                            <b class="text-orange-500">${kline.high.slice(0,-6)}</b>
+                            <b class="text-orange-500">${formatNumber(kline.high)}</b>
                         </div>
                 
                         <div class="flex justify-between gap-6">
                             <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Low:</span>
-                            <b class="text-blue-500">${kline.low.slice(0,-6)}</b>
+                            <b class="text-blue-500">${formatNumber(kline.low)}</b>
                         </div>
                 
                         <div class="flex justify-between gap-6">
                             <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Close:</span>
                             <b class="${isUp ? 'text-green-500' : 'text-red-500'}">
-                                ${kline.close.slice(0,-6)}
+                                ${formatNumber(kline.close)}
                             </b>
                         </div>
                 
@@ -141,7 +142,7 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
                                 } pt-2 flex justify-between gap-6">
                             <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Volume:</span>
                             <b class="${theme === 'dark' ? 'text-white' : 'text-gray-900'}">
-                                ${kline.volume.slice(0,-2)}
+                                ${formatNumber(kline.volume)}
                             </b>
                         </div>
                     </div>

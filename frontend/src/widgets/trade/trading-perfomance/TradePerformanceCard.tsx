@@ -7,6 +7,7 @@ import TradePerformanceChart from "./TradePerformanceChart.tsx";
 import {useMarketOverviewStore, useTradeStore} from "../../../entities/trade/tradeStore.ts";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 
 export type IntervalOption = {
@@ -268,14 +269,14 @@ const TradePerformanceCard = () => {
                     chartKlines.length > 0 && (
                         <div className='flex flex-col gap-3 md:flex-row justify-between'>
                             <div className='flex flex-row items-center gap-2 font-medium'>
-                                <span className='text-4xl'>${Number(chartKlines.slice(-1)[0].close).toFixed(3)}</span>
-                                <span className={theme === 'dark' ? 'text-xl text-[#1597FF]' : 'text-xl text-[#429EFF]'}>${((Number(chartKlines.slice(-1)[0].close)) - Number(chartKlines.slice(0)[0].close)).toFixed(2)}</span>
+                                <span className='text-4xl'>${formatNumber(chartKlines.slice(-1)[0].close ?? 0)}</span>
+                                <span className={theme === 'dark' ? 'text-xl text-[#1597FF]' : 'text-xl text-[#429EFF]'}>${formatNumber((Number(chartKlines.slice(-1)[0].close)) - Number(chartKlines.slice(0)[0].close))}</span>
                             </div>
                             <div className='flex flex-row items-center gap-3 font-medium'>
-                                <span>O <span className='text-[#429EFF]'>{Number(chartKlines.slice(-1)[0].open).toFixed(3)}</span></span>
-                                <span>H <span className='text-[#FFBE4C]'>{Number(chartKlines.slice(-1)[0].high).toFixed(3)}</span></span>
-                                <span>L <span className='text-[#429EFF]'>{Number(chartKlines.slice(-1)[0].low).toFixed(3)}</span></span>
-                                <span>C <span className='text-[#FFBE4C]'>{Number(chartKlines.slice(-1)[0].close).toFixed(3)}</span></span>
+                                <span>O <span className='text-[#429EFF]'>{formatNumber(chartKlines.slice(-1)[0].open ?? 0)}</span></span>
+                                <span>H <span className='text-[#FFBE4C]'>{formatNumber(chartKlines.slice(-1)[0].high ?? 0)}</span></span>
+                                <span>L <span className='text-[#429EFF]'>{formatNumber(chartKlines.slice(-1)[0].low ?? 0)}</span></span>
+                                <span>C <span className='text-[#FFBE4C]'>{formatNumber(chartKlines.slice(-1)[0].close ?? 0)}</span></span>
                             </div>
                         </div>
                     )

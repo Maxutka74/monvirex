@@ -13,6 +13,7 @@ import TransactionOverviewCard from "../transactions/TransactionOverviewCard.tsx
 import TransactionsModal from "../transactions-modal/TransactionsModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
+import { formatNumber } from "../../../../shared/utils/formatNumber.ts";
 
 type Period = '1d' | '7d' | '30d'
 
@@ -171,7 +172,7 @@ const WalletOverviewCard = () => {
                                                             <div className='w-[12px] h-[12px] rounded-full' style={{backgroundColor: COLORS[index]}} />
                                                             <div className='flex flex-col text-sm'>
                                                                 <h4 className='text-white'>{asset.name}</h4>
-                                                                <p className='text-[#BBD7FF]'>${asset.value.toFixed(4)}</p>
+                                                                <p className='text-[#BBD7FF]'>${formatNumber(asset.value)}</p>
                                                             </div>
                                                         </div>
                                                         <p className='text-white'>{asset.percentage.toFixed(2)}%</p>
@@ -253,10 +254,10 @@ const WalletOverviewCard = () => {
                                         <h4 className={`text-[32px] sm:text-[40px] font-medium ${
                                             theme === 'dark' ? 'text-white' : 'text-black'
                                         }`}>
-                                            ${allTimeVolume.toFixed(2)}
+                                            ${formatNumber(allTimeVolume)}
                                         </h4>
                                         <p className='text-[#DF1C41]'>
-                                            +${currentPeriodVolume.toFixed(4)}
+                                            +${formatNumber(currentPeriodVolume)}
                                             <span className={theme === 'dark' ? 'text-[#7184A3]' : 'text-[#6F6F6F]'}> {currentDate[days]}</span>
                                         </p>
                                     </div>

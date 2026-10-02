@@ -1,4 +1,5 @@
 import type { TooltipProps } from "recharts";
+import { formatNumber } from "../../../../shared/utils/formatNumber";
 
 const WalletCustomTooltip = ({ active, payload }: TooltipProps<number, string> & {payload?: any[]}) => {
     if (!active || !payload?.length) return null;
@@ -23,7 +24,7 @@ const WalletCustomTooltip = ({ active, payload }: TooltipProps<number, string> &
                     <span className="text-slate-400">Value</span>
 
                     <span className="text-white">
-                        ${asset.value.toFixed(2)}
+                        ${formatNumber(asset.value)}
                     </span>
                 </div>
 

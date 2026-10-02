@@ -4,6 +4,7 @@ import PortfolioHistoryChart from "./PortfolioHistoryChart.tsx";
 import walletApi, {type UserSnapshot} from "../../../../features/wallet/api/walletApi.ts";
 import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
 
 const PortfolioHistoryCard = () => {
     const theme = useStore(themeStore, (state) => state.theme);
@@ -101,9 +102,9 @@ const PortfolioHistoryCard = () => {
                         ${theme === "dark" ? "text-white" : "text-black"}
                     `}>
                         {lastSnapshot
-                            ? `$${Number(
-                                lastSnapshot.total_value
-                            ).toFixed(2)}`
+                            ? `$${
+                                formatNumber(lastSnapshot.total_value)
+                            }`
                             : "$0.00"}
                     </h5>
 
@@ -144,9 +145,9 @@ const PortfolioHistoryCard = () => {
                         ${theme === "dark" ? "text-white" : "text-black"}
                     `}>
                         {lastSnapshot
-                            ? `$${Number(
-                                lastSnapshot.wallet_balance
-                            ).toFixed(2)}`
+                            ? `$${
+                                formatNumber(lastSnapshot.wallet_balance)
+                            }`
                             : "$0.00"}
                     </h5>
 

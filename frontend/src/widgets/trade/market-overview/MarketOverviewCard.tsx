@@ -9,6 +9,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 
 const MarketOverviewCard = () => {
@@ -55,22 +56,6 @@ const MarketOverviewCard = () => {
         dataAsset();
     }, [currentAsset]);
 
-    const formatVolume = (volume: number) => {
-        if (volume >= 1_000_000_000) {
-            return `${(volume / 1_000_000_000).toFixed(2)}B`;
-        }
-
-        if (volume >= 1_000_000) {
-            return `${(volume / 1_000_000).toFixed(2)}M`;
-        }
-
-        if (volume >= 1_000) {
-            return `${(volume / 1_000).toFixed(2)}K`;
-        }
-
-        return volume.toFixed(2);
-    }
-
     const sellAssets = cryptoBalance?.find((cryptoAsset) => cryptoAsset.asset === asset?.symbol)
 
     const dataActions = {
@@ -99,7 +84,7 @@ const MarketOverviewCard = () => {
                 </div>
                 <h3 className='text-2xl font-medium'>Market Overview</h3>
             </div>
-            <h3 className='text-3xl font-medium mb-5'>${Number(klines.at(-1)?.close).toFixed(3)}</h3>
+            <h3 className='text-3xl font-medium mb-5'>${formatNumber(klines.at(-1)?.close ?? 0)}</h3>
             <div className='flex flex-row items-center justify-between mb-5'>
                 <div className='flex flex-row items-center gap-3 '>
                     <div className={`w-[54px] h-[54px] flex items-center justify-center rounded-full shrink-0 ${
@@ -154,7 +139,7 @@ const MarketOverviewCard = () => {
                             <MdClose size={20} />
                         )}
                     </div>
-                    <p>You {!sellAssets && "don't" } have this cruptocurrency</p>
+                    <p>You {!sellAssets && "don't" } have this cryptocurrency</p>
                 </div>
                 <div className={`text-right ${
                     theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
@@ -168,7 +153,7 @@ const MarketOverviewCard = () => {
             </div>
             <div className='flex flex-row items-center justify-between font-medium mb-5'>
                 <h5 className='text-xl'>Price(24)</h5>
-                <span>${asset?.price_change_24h}</span>
+                <span>${formatNumber(asset?.price_change_24h ?? 0)}</span>
             </div>
             <div className='w-full flex flex-row items-center justify-between mb-5'>
                 <div className={`min-w-[220px] w-full h-1 border-b ${
@@ -186,7 +171,7 @@ const MarketOverviewCard = () => {
             </div>
             <div className='flex flex-row items-center justify-between font-medium mb-5'>
                 <h5 className='text-xl'>Volume(24)</h5>
-                <span>${formatVolume(Number(asset?.volume_24h))}</span>
+                <span>${formatNumber(asset?.volume_24h ?? 0)}</span>
             </div>
             <div className='w-full flex flex-row items-center justify-between mb-5'>
                 <div className={`min-w-[220px] w-full h-1 border-b ${

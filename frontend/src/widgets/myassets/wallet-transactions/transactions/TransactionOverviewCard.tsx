@@ -3,6 +3,7 @@ import {RadialBar, RadialBarChart, ResponsiveContainer, Tooltip} from "recharts"
 import TransactionCustomTooltip from "./TransactionCustomTooltip.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
 
 type TransactionOverviewChartProps = {
     data: UserSummary | null,
@@ -71,7 +72,7 @@ const TransactionOverviewCard = ({data, currentPeriodVolume}: TransactionOvervie
                                                     ? 'text-white'
                                                     : 'text-black'
                                             }`}>
-                                                ${item.value.toFixed(1)}
+                                                ${formatNumber(item.value)}
                                             </p>
                                         </div>
                                     </div>

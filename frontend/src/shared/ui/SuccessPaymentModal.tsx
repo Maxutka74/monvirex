@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import type {PaymentSuccess} from "../../widgets/myassets/trading/TradeConfirmationModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../utils/formatNumber.ts";
 
 const SuccessPaymentModal = ({type, receiveAmount, receiveCurrency}: PaymentSuccess) => {
     const theme = useStore(themeStore, (state) => state.theme);
@@ -23,7 +24,7 @@ const SuccessPaymentModal = ({type, receiveAmount, receiveCurrency}: PaymentSucc
                     <h3 className={`text-[36px] font-medium ${
                         theme === 'dark' ? 'text-white' : 'text-black'
                     }`}>
-                        {Number(receiveAmount).toFixed(6)} {type === 'Sell' ? receiveCurrency : receiveCurrency.slice(0,-4)}
+                        {formatNumber(receiveAmount)} {type === 'Sell' ? receiveCurrency : receiveCurrency.slice(0,-4)}
                     </h3>
                     <p className={`text-[18px] font-medium ${
                         theme === 'dark' ? 'text-[#A8B8D0]' : 'text-black'

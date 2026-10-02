@@ -5,6 +5,7 @@ import {useState} from "react";
 import walletApi from "../api/walletApi.ts";
 import {RiLoaderLine} from "react-icons/ri";
 import {BiErrorCircle} from "react-icons/bi";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 type WalletActionModalProps = {
     balance: string
@@ -261,7 +262,7 @@ const WalletActionModal = ({
                                         </div>
 
                                         <h4 className="text-2xl font-medium sm:text-[28px]">
-                                            {balance}
+                                            {formatNumber(balance)}
                                         </h4>
 
                                         <span className={theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"}>
@@ -358,7 +359,7 @@ const WalletActionModal = ({
                                         </div>
 
                                         <h4 className="text-2xl font-medium sm:text-[28px]">
-                                            {balance}
+                                            {formatNumber(balance)}
                                         </h4>
 
                                         <span className={theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"}>
@@ -432,12 +433,12 @@ const WalletActionModal = ({
                                         theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"
                                     }`}>
                                         <p>
-                                            Available to withdraw: {maxWithdraw} USDT
+                                            Available to withdraw: {formatNumber(maxWithdraw)} USDT
                                         </p>
 
                                         <p>
                                             You will receive{" "}
-                                            {Number(amountWithdraw).toFixed(2)} USDT.
+                                            {formatNumber(amountWithdraw)} USDT.
                                             A 1% withdrawal fee applies.
                                         </p>
 

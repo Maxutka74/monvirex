@@ -10,6 +10,7 @@ import PortfolioHistoryCard from "../portfolio/PortfolioHistory/PortfolioHistory
 import WalletActionModal from "../../../features/wallet/ui/WalletActionModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 
 const BalanceOverviewCard = () => {
@@ -129,12 +130,12 @@ const BalanceOverviewCard = () => {
                                     className="animate-spin"
                                 />
                             ) : (
-                                balance
+                                formatNumber(balance)
                             )}
                         </h2>
 
                         <p className="flex items-center gap-1 sm:gap-2 text-base sm:text-xl text-white font-medium whitespace-nowrap">
-                            {totalIncome ? `+$${totalIncome}` : "$0"}
+                            {totalIncome ? `+$${formatNumber(totalIncome)}` : "$0"}
 
                             <span className="text-xs sm:text-lg">
                                 {periodText}
@@ -192,7 +193,7 @@ const BalanceOverviewCard = () => {
                                         `}
                                     />
                                 ) : (
-                                    balance
+                                    formatNumber(balance)
                                 )}
                             </h5>
                         </div>

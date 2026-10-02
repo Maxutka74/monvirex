@@ -1,3 +1,5 @@
+import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
+
 type CustomTooltipProps = {
     active?: boolean;
     payload?: {
@@ -47,10 +49,7 @@ const PortfolioHistoryCustomTooltip = ({
                         </div>
 
                         <span className="text-sm font-medium text-white">
-                            ${item.value.toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        })}
+                            ${formatNumber(item.value)}
                         </span>
                     </div>
                 ))}

@@ -7,6 +7,7 @@ import {RiLoaderLine} from "react-icons/ri";
 import TradingActions from "../../../widgets/trade/trading-actions/TradingActions.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../utils/formatNumber.ts";
 
 type BestToBuyCardProps = {
     trade?: boolean
@@ -131,7 +132,7 @@ const BestToBuyCard = ({trade}: BestToBuyCardProps) => {
                                 </div>
                             </div>
                             <div className='flex flex-col gap-2 text-[24px] font-medium'>
-                                <p>${Number(topBuy?.current_price).toFixed(6)}</p>
+                                <p>${formatNumber(topBuy?.current_price ?? 0)}</p>
                                 <div className={`flex flex-row items-center gap-1 ${
                                     theme === 'dark'
                                         ? 'text-[#40C4AA]'

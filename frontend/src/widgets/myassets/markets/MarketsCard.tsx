@@ -9,6 +9,7 @@ import { CgSortAz } from "react-icons/cg";
 import TradeConfirmationModal from "../trading/TradeConfirmationModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 type MarketAction = {
     symbol: string;
@@ -119,40 +120,6 @@ const MarketsCard = () => {
                 value: price,
             };
         })
-
-    const formatPrice = (price: number | string) => {
-        const value = Number(price);
-
-        if (value >= 1) {
-            return `$${value.toFixed(2)}`;
-        }
-
-        if (value >= 0.01) {
-            return `$${value.toFixed(4)}`;
-        }
-
-        if (value > 0) {
-            return `$${value.toFixed(8)}`;
-        }
-
-        return "$0.00";
-    };
-
-    const formatVolume = (volume: number) => {
-        if (volume >= 1_000_000_000) {
-            return `${(volume / 1_000_000_000).toFixed(2)}B`;
-        }
-
-        if (volume >= 1_000_000) {
-            return `${(volume / 1_000_000).toFixed(2)}M`;
-        }
-
-        if (volume >= 1_000) {
-            return `${(volume / 1_000).toFixed(2)}K`;
-        }
-
-        return volume.toFixed(2);
-    }
 
     const nextPageAssets = async () => {
         if (nextAssetsUrl && assets.length <= (currentPage * 5)) {
@@ -322,12 +289,12 @@ const MarketsCard = () => {
                                 </td>
 
                                 <td className="h-[46px] font-medium">
-                                    {formatPrice(item.value)}
+                                    ${formatNumber(item.value)}
                                 </td>
 
                                 <td className="pointer-events-none h-[48px]">
                                     <div className="flex h-full w-full items-center justify-center font-medium">
-                                        {formatVolume(Number(item.volume))}
+                                        {formatNumber(item.volume)}
                                     </div>
                                 </td>
 

@@ -7,6 +7,7 @@ import assetsApi, {
 } from "../../../features/assets/api/assetsApi.ts";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 const TopMoversCard = () => {
     const theme = useStore(themeStore, (state) => state.theme);
@@ -31,24 +32,6 @@ const TopMoversCard = () => {
 
         data();
     }, []);
-
-    const formatPrice = (price: number | string) => {
-        const value = Number(price);
-
-        if (value >= 1) {
-            return `$${value.toFixed(2)}`;
-        }
-
-        if (value >= 0.01) {
-            return `$${value.toFixed(4)}`;
-        }
-
-        if (value > 0) {
-            return `$${value.toFixed(6)}`;
-        }
-
-        return "$0.00";
-    };
 
     return (
         <div className={`
@@ -120,7 +103,7 @@ const TopMoversCard = () => {
                                     </p>
 
                                     <p className="text-right text-[16px] sm:text-[20px]">
-                                        {formatPrice(asset.current_price)}
+                                        {formatNumber(asset.current_price)}$
                                     </p>
                                 </div>
                             </li>

@@ -12,6 +12,7 @@ import type { UserSnapshot } from "../../../../features/wallet/api/walletApi.ts"
 import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
 import PortfolioHistoryCustomTooltip from "./PortfolioHistoryCustomTooltip.tsx";
+import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
 
 type Props = {
     history: UserSnapshot[];
@@ -60,7 +61,7 @@ const PortfolioHistoryChart = ({ history }: Props) => {
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tickFormatter={(value) => `$${value}`}
+                            tickFormatter={(value) => `$${formatNumber(value)}`}
                             tick={{
                                 fill: theme === "dark" ? "#A7B0C3" : "#666D80",
                             }}

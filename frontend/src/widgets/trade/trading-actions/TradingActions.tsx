@@ -10,6 +10,7 @@ import {LuHandCoins} from "react-icons/lu";
 import {BiErrorCircle} from "react-icons/bi";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../shared/utils/formatNumber.ts";
 
 type TradingActionsProps = {
     setOpenTradeActionModal: React.Dispatch<SetStateAction<boolean>>
@@ -215,10 +216,10 @@ const TradingActions = ({setOpenTradeActionModal, dataActions}: TradingActionsPr
                                     )}
                             </div>
                             <div className='flex flex-col items-end '>
-                                <p>{dataActions.type === 'Buy' ? Number((Number(amount) / Number(dataActions.current_price)).toFixed(6)) >= 0? Number((Number(amount) / Number(dataActions.current_price)).toFixed(6)):  0: Number((Number(amount) * Number(dataActions.current_price)).toFixed(2)) > 0 ? `${(Number(amount) * Number(dataActions.current_price)).toFixed(2)} $`: `${0} $`} <span className='text-sm'>{dataActions.type === 'Buy' && dataActions.name}</span></p>
+                                <p>{dataActions.type === 'Buy' ? Number((Number(amount) / Number(dataActions.current_price)).toFixed(6)) >= 0? formatNumber((Number(amount) / Number(dataActions.current_price))):  0: Number((Number(amount) * Number(dataActions.current_price)).toFixed(2)) > 0 ? `${formatNumber(Number(amount) * Number(dataActions.current_price))} $`: `${0} $`} <span className='text-sm'>{dataActions.type === 'Buy' && dataActions.name}</span></p>
                                 <p className={`text-sm ${
                                     theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
-                                }`}>≈ ${dataActions.type === 'Buy' ? Number(Number(amount).toFixed(2)) >= 0? Number(amount).toFixed(2): 0: Number((Number(amount) * Number(dataActions.current_price)).toFixed(2)) >= 0 ? (Number(amount) * Number(dataActions.current_price)).toFixed(2): 0}</p>
+                                }`}>≈ ${dataActions.type === 'Buy' ? Number(Number(amount).toFixed(2)) >= 0? formatNumber(amount): 0: Number((Number(amount) * Number(dataActions.current_price)).toFixed(2)) >= 0 ? formatNumber(Number(amount) * Number(dataActions.current_price)): 0}</p>
                             </div>
                         </div>
                     </div>

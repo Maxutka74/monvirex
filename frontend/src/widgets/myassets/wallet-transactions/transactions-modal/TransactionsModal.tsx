@@ -9,6 +9,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import walletApi, {type UserCryptoTransaction, type UserTransaction} from "../../../../features/wallet/api/walletApi.ts";
 import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
+import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
 
 type TranscarionsModalProps = {
     setOpenTransactionModal: React.Dispatch<SetStateAction<boolean>>
@@ -282,7 +283,7 @@ const TransactionsModal = ({setOpenTransactionModal}: TranscarionsModalProps) =>
                                                         <p>{item.type}</p>
                                                     </div>
                                                 </td>
-                                                <td className={`font-semibold ${item.type === 'Deposit' ? 'text-green-500': 'text-red-500'}`}>{item.type === 'Deposit'? `+${item.amount}`: `-${item.amount}`} USDT</td>
+                                                <td className={`font-semibold ${item.type === 'Deposit' ? 'text-green-500': 'text-red-500'}`}>{item.type === 'Deposit'? `+${formatNumber(item.amount)}`: `-${formatNumber(item.amount)}`} USDT</td>
                                                 <td>
                                                     <div className={`max-w-[135px] flex flex-row items-center justify-center gap-2 rounded-[10px] px-3 py-1 ${
                                                         item.status === 'Pending'
@@ -360,8 +361,8 @@ const TransactionsModal = ({setOpenTransactionModal}: TranscarionsModalProps) =>
                                                     </div>
                                                 </td>
                                                 <td className='font-medium'>{item.from_asset ? `${item.from_asset.slice(0,-4)} ⇄ ${item.pair}`: item.pair}</td>
-                                                <td>{item.amount}</td>
-                                                <td className='font-semibold'>{item.price} USDT</td>
+                                                <td>{formatNumber(item.amount)}</td>
+                                                <td className='font-semibold'>{formatNumber(item.price)} USDT</td>
                                                 <td>
                                                     <div className={`max-w-[135px] flex flex-row items-center justify-center gap-2 rounded-[10px] px-3 py-1 ${
                                                         item.status === 'Pending'
