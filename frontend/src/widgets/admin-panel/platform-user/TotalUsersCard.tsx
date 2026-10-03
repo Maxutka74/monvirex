@@ -1,7 +1,7 @@
 import { BsArrowRight } from "react-icons/bs";
 import {PiUsersThree} from "react-icons/pi";
 import adminApi, {type AdminPanelUsers} from "../../../features/admin/api/adminApi.ts";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import TotalUsersModal from "./TotalUsersModal.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
@@ -29,7 +29,7 @@ const TotalUsersCard = () => {
         usersData();
     }, [])
 
-    const banUser = async (id: number) => {
+    const banUser = useCallback(async (id: number) => {
         try {
             const updateUser = await adminApi.toggleAdminUserActive(id)
 
@@ -43,9 +43,9 @@ const TotalUsersCard = () => {
         } catch (e) {
             console.error(e);
         }
-    }
+    }, [])
 
-    const tableFormatingData = usersAll.map((user) => ({
+    const tableFormatingData =  useMemo(() => (usersAll.map((user) => ({
         id: user.id,
         name: (user.first_name + ' '+ user.last_name),
         email: user.email,
@@ -55,7 +55,7 @@ const TotalUsersCard = () => {
             day: "numeric",
             year: "numeric"
         }).format(new Date(user.date_joined))
-    }))
+    }))), [usersAll])
 
     return (
         <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 ${

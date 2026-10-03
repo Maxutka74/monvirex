@@ -29,8 +29,10 @@ const BalanceOverviewCard = () => {
             try {
                 setIsLoading(true);
 
-                const balanceData = await walletApi.getBalance();
-                const symmaryData = await walletApi.getActivitySummary(days);
+                const [balanceData, symmaryData] = await Promise.all([
+                    await walletApi.getBalance(),
+                    await walletApi.getActivitySummary(days)
+                ])
 
                 setBalance(balanceData.balance);
                 setSummary(symmaryData.summary);

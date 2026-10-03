@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import { HiOutlineChartPie } from "react-icons/hi";
 import walletApi, {
     type UserPortfolio,
@@ -17,20 +17,21 @@ import { formatNumber } from "../../../../shared/utils/formatNumber.ts";
 
 type Period = '1d' | '7d' | '30d'
 
-const WalletOverviewCard = () => {
-    const COLORS = [
-        "#F7931A",
-        "#627EEA",
-        "#9945FF",
-        "#26A17B",
-        "#94A3B8"
-    ];
+const COLORS = [
+    "#F7931A",
+    "#627EEA",
+    "#9945FF",
+    "#26A17B",
+    "#94A3B8"
+];
 
-    const currentDate: Record<Period, string> = {
-        '1d': 'Day',
-        '7d': 'Week',
-        '30d': 'Month'
-    }
+const currentDate: Record<Period, string> = {
+    '1d': 'Day',
+    '7d': 'Week',
+    '30d': 'Month'
+}
+
+const WalletOverviewCard = () => {
 
     const theme = useStore(themeStore, (state) => state.theme);
 
@@ -48,8 +49,10 @@ const WalletOverviewCard = () => {
         const fetchCryptoData = async () => {
             try {
                 setIsLoadingAsset(true);
-                const cryptoData = await walletApi.getPortfolio()
-                const summaryData = await walletApi.getActivitySummary('all')
+                const [cryptoData, summaryData] = await Promise.all([
+                    await walletApi.getPortfolio(),
+                    await walletApi.getActivitySummary('all')
+                ])
 
                 setPortfolio(cryptoData.portfolio)
                 setAllTimeSummary(summaryData.summary)
@@ -80,43 +83,47 @@ const WalletOverviewCard = () => {
         fetchTransactionData();
     }, [days]);
 
-    const totalValue = portfolio.reduce(
-        (sum, item) => sum + Number(item.current_value),
-        0
-    )
+    const {totalValue, cryptoData} = useMemo(() => {
+        const totalValue = portfolio.reduce(
+            (sum, item) => sum + Number(item.current_value),
+            0
+        )
 
-    const sortPortfolio = [...portfolio].sort((a, b) => (Number(b.current_value)) - Number(a.current_value))
+        const sortPortfolio = [...portfolio].sort((a, b) => (Number(b.current_value)) - Number(a.current_value))
 
-    const topAssets = sortPortfolio.slice(0,4).map(
-        item => ({
-            name: item.asset.replace('USDT', ''),
-            value: Number(item.current_value),
-            amount: Number(item.amount),
-            percentage: (
-                Number(item.current_value) / totalValue * 100
-            )
-        })
-    )
+        const topAssets = sortPortfolio.slice(0,4).map(
+            item => ({
+                name: item.asset.replace('USDT', ''),
+                value: Number(item.current_value),
+                amount: Number(item.amount),
+                percentage: (
+                    Number(item.current_value) / totalValue * 100
+                )
+            })
+        )
 
-    const otherAssets = () => {
-        const other = sortPortfolio.slice(4)
-        let value = 0
-        let amount = 0
+        const otherAssets = () => {
+            const other = sortPortfolio.slice(4)
+            let value = 0
+            let amount = 0
 
-        other.forEach(item => {
-            value += Number(item.current_value)
-            amount += Number(item.amount)
-        })
+            other.forEach(item => {
+                value += Number(item.current_value)
+                amount += Number(item.amount)
+            })
 
-        return {
-            name: 'Other Assets',
-            value: value,
-            amount: amount,
-            percentage: value / totalValue * 100
-        }
-    };
+            return {
+                name: 'Other Assets',
+                value: value,
+                amount: amount,
+                percentage: value / totalValue * 100
+            }
+        };
 
-    const cryptoData = [...topAssets, otherAssets()];
+        const cryptoData = [...topAssets, otherAssets()];
+
+        return {totalValue, cryptoData};
+    }, [portfolio])
 
     const allTimeVolume = allTimeSummary ?
         (Number(allTimeSummary.deposit)

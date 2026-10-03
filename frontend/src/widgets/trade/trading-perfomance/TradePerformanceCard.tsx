@@ -1,9 +1,9 @@
 import { RiBarChartLine } from "react-icons/ri"
 import Select from "react-select";
-import {useEffect, useState} from "react";
+import {lazy, Suspense, useEffect, useMemo, useState} from "react";
 import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import api from "../../../shared/api/instance.ts";
-import TradePerformanceChart from "./TradePerformanceChart.tsx";
+const TradePerformanceChart = lazy(() => import("./TradePerformanceChart.tsx"))
 import {useMarketOverviewStore, useTradeStore} from "../../../entities/trade/tradeStore.ts";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
@@ -103,7 +103,7 @@ const TradePerformanceCard = () => {
         }
 
         historyKlineData()
-    }, [currentAsset, interval]);
+    }, [currentAsset?.symbol, interval?.value]);
 
     useEffect(() => {
         if (!currentAsset?.symbol || !interval?.value) return ;
@@ -152,7 +152,7 @@ const TradePerformanceCard = () => {
         }
     }, [currentAsset?.symbol, interval?.value]);
 
-    const optionAssets = assets.map((item) => ({
+    const optionAssets = useMemo(() => (assets.map((item) => ({
         symbol: item.symbol,
         value: item.name,
         label: (
@@ -162,7 +162,7 @@ const TradePerformanceCard = () => {
             </div>
         ),
         interval: interval?.value,
-    }))
+    }))), [assets, interval?.value])
 
     const scrollMoreOptions = async () => {
         if (!nextPage) return;
@@ -284,7 +284,7 @@ const TradePerformanceCard = () => {
             </div>
             <div className='w-full min-w-0'>
                 {chartKlines.length > 0 && (
-                    <TradePerformanceChart klines={chartKlines} interval={interval} />
+                    <Suspense fallback={null}> <TradePerformanceChart klines={chartKlines} interval={interval} /> </Suspense>
                 )}
             </div>
         </div>

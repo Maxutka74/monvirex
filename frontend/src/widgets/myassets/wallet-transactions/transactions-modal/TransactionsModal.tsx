@@ -1,4 +1,4 @@
-import {type SetStateAction, useEffect, useState} from "react";
+import {type SetStateAction, useEffect, useMemo, useState} from "react";
 import { CgClose } from "react-icons/cg";
 import { GoChecklist } from "react-icons/go";
 import {PiCreditCardLight} from "react-icons/pi";
@@ -39,8 +39,13 @@ const TransactionsModal = ({setOpenTransactionModal}: TranscarionsModalProps) =>
     useEffect(() => {
         const dataTransaction = async () => {
             try {
-                const simpleTransactions = await walletApi.getTransactions()
-                const cryptoTransactions = await walletApi.getCryptoTransactions()
+                const [
+                    simpleTransactions,
+                    cryptoTransactions
+                ] = await Promise.all([
+                    walletApi.getTransactions(),
+                    walletApi.getCryptoTransactions(),
+                ]);
 
                 setSimpleTransactions(simpleTransactions.transactions)
                 setCryptoTransactions(cryptoTransactions.transactions)
@@ -52,7 +57,7 @@ const TransactionsModal = ({setOpenTransactionModal}: TranscarionsModalProps) =>
         dataTransaction()
     }, []);
 
-    const clearSimpleTransactions = simpleTransactions.map((item) => {
+    const clearSimpleTransactions = useMemo(() => (simpleTransactions.map((item) => {
         const date = new Intl.DateTimeFormat("en", {
             day: '2-digit',
             month: 'short',
@@ -75,9 +80,9 @@ const TransactionsModal = ({setOpenTransactionModal}: TranscarionsModalProps) =>
             'amount': item.amount,
             'status': status
         }
-    })
+    })), [simpleTransactions])
 
-    const clearCryptoTransactions = cryptoTransactions.map((item) => {
+    const clearCryptoTransactions = useMemo(() => (cryptoTransactions.map((item) => {
         const date = new Intl.DateTimeFormat("en", {
             day: '2-digit',
             month: 'short',
@@ -106,7 +111,7 @@ const TransactionsModal = ({setOpenTransactionModal}: TranscarionsModalProps) =>
             'status': status
         }
 
-    })
+    })), [cryptoTransactions])
 
     const filteredTransactions = filters === 'All' ?
         clearSimpleTransactions :

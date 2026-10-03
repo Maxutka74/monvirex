@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import walletApi, {type UserPortfolio} from "../../../features/wallet/api/walletApi.ts";
 import assetsApi, {type Asset, type AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import { HiOutlineClock } from "react-icons/hi";
@@ -62,41 +62,50 @@ const MyPortfolioCard = () => {
         data();
     }, []);
 
-    const portfolioTableData = portfolio
-        .map((item) => {
-            const asset = assets.find(
-                (asset) => asset.symbol === item.asset
-            );
+    const portfolioTableData = useMemo(() => {
+        return portfolio
+            .map((item) => {
+                const asset = assets.find(
+                    (asset) => asset.symbol === item.asset
+                );
 
-            if (!asset) {
-                return null;
-            }
+                if (!asset) {
+                    return null;
+                }
 
-            const balance = Number(item.amount);
-            const price = Number(asset.current_price);
+                const balance = Number(item.amount);
+                const price = Number(asset.current_price);
 
-            return {
-                icon: asset.icon_url,
-                symbol: asset.symbol,
-                balance: balance * price,
-                graphic: klinesBySymbol[item.asset] ?? [],
-                change_price: asset.price_change_24h,
-                value: price,
-            };
-        })
-        .filter((item) => item !== null);
+                return {
+                    icon: asset.icon_url,
+                    symbol: asset.symbol,
+                    balance: balance * price,
+                    graphic: klinesBySymbol[item.asset] ?? [],
+                    change_price: asset.price_change_24h,
+                    value: price,
+                };
+            })
+            .filter((item) => item !== null);
+    }, [portfolio, assets, klinesBySymbol])
 
-    const totalPages = Math.ceil(
-        portfolioTableData.length / itemsPerPage
-    );
+    const {totalPages, paginatedPortfolioData} = useMemo(() => {
+        const totalPages = Math.ceil(
+            portfolioTableData.length / itemsPerPage
+        );
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = currentPage * itemsPerPage;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = currentPage * itemsPerPage;
 
-    const paginatedPortfolioData = portfolioTableData.slice(
-        startIndex,
-        endIndex
-    );
+        const paginatedPortfolioData = portfolioTableData.slice(
+            startIndex,
+            endIndex
+        );
+
+        return {
+            totalPages,
+            paginatedPortfolioData,
+        }
+    }, [portfolioTableData, currentPage])
 
     return (
         <div className={`

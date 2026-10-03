@@ -1,5 +1,5 @@
 import { BiCheckDouble } from "react-icons/bi"
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import notificationsApi, {type Notification} from "../../../features/notifications/api/notificationsApi.ts";
 import {MdAddCard, MdOutlineNotificationsActive} from "react-icons/md";
 import {LiaMoneyBillWaveSolid} from "react-icons/lia";
@@ -102,7 +102,7 @@ const NotificationDropdown = ({
         }
     };
 
-    const filterNotifications = notifications.filter((notification) => {
+    const filterNotifications = useMemo(() => (notifications.filter((notification) => {
         if (isActiveButton === "all") {
             return true;
         }
@@ -112,9 +112,9 @@ const NotificationDropdown = ({
         }
 
         return true;
-    });
+    })), [notifications, isActiveButton]);
 
-    const groupedNotifications = () => {
+    const groupedNotifications = useMemo(() => {
         const groupedFormatedNotifications: Record<
             string,
             Notification[]
@@ -138,7 +138,7 @@ const NotificationDropdown = ({
         });
 
         return groupedFormatedNotifications;
-    };
+    }, [filterNotifications]);
 
     const scrollNotifications = async () => {
         if (!nextPage) return;
@@ -259,7 +259,7 @@ const NotificationDropdown = ({
                             You don’t have any notifications yet.
                         </p>
                     ) : (
-                        Object.entries(groupedNotifications()).map(
+                        Object.entries(groupedNotifications).map(
                             ([date, notifications]) => (
                                 <div
                                     key={date}

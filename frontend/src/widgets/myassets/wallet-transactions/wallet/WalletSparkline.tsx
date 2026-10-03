@@ -1,6 +1,7 @@
 import {Cell, Pie, PieChart, ResponsiveContainer, Tooltip} from "recharts";
 import WalletCustomTooltip from "./WalletCustomTooltip.tsx";
 import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
+import {memo, useMemo} from "react";
 
 type SparklineData = {
     name: string,
@@ -16,23 +17,28 @@ type WalletSparklineProps = {
 }
 
 const WalletSparkline = ({data, totalValue, COLORS}: WalletSparklineProps) => {
-    const clearData = data.map(item => ({
-        name: item.name,
-        value: item.value,
-        amount: item.amount,
-        percent: item.percentage
-    })).filter(item => Number(item.value) > 0)
 
-    const total = clearData.reduce(
-        (sum, item) => sum + item.value, 0
-    )
+    const {clearData, displayData} = useMemo(() => {
+        const clearData = data.map(item => ({
+            name: item.name,
+            value: item.value,
+            amount: item.amount,
+            percent: item.percentage
+        })).filter(item => Number(item.value) > 0)
 
-    const displayData =
-        total > 0
-            ? clearData
-            : [
-                {name: 'No activity' , value: 1, percent: 0, amount: 0, fill: "#E5E7EB", isPlaceholder: true}
-            ]
+        const total = clearData.reduce(
+            (sum, item) => sum + item.value, 0
+        )
+
+        const displayData =
+            total > 0
+                ? clearData
+                : [
+                    {name: 'No activity' , value: 1, percent: 0, amount: 0, fill: "#E5E7EB", isPlaceholder: true}
+                ]
+
+        return {clearData, displayData}
+    }, [data])
 
     return (
         <div className='relative w-full aspect-square max-w-[250px] min-w-0'>
@@ -78,4 +84,4 @@ const WalletSparkline = ({data, totalValue, COLORS}: WalletSparklineProps) => {
     )
 }
 
-export default WalletSparkline;
+export default memo(WalletSparkline);

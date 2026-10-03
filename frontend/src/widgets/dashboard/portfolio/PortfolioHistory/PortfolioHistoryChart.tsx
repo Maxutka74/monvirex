@@ -13,6 +13,7 @@ import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
 import PortfolioHistoryCustomTooltip from "./PortfolioHistoryCustomTooltip.tsx";
 import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
+import {memo, useMemo} from "react";
 
 type Props = {
     history: UserSnapshot[];
@@ -21,16 +22,20 @@ type Props = {
 const PortfolioHistoryChart = ({ history }: Props) => {
     const theme = useStore(themeStore, (state) => state.theme);
 
-    const chartData = history.map((data) => ({
-        date: Intl.DateTimeFormat('en-US', {
-            month: 'short',
-            day: '2-digit'
-        }).format(new Date(data.created_at)),
-        totalValue: Number(data.total_value),
-        walletBalance: Number(data.wallet_balance),
-    }));
+    const {chartData, totalSum} = useMemo(() => {
+        const chartData = history.map((data) => ({
+            date: Intl.DateTimeFormat('en-US', {
+                month: 'short',
+                day: '2-digit'
+            }).format(new Date(data.created_at)),
+            totalValue: Number(data.total_value),
+            walletBalance: Number(data.wallet_balance),
+        }));
 
-    const totalSum = chartData.reduce((sum, item) => sum + (item.totalValue + item.walletBalance), 0)
+        const totalSum = chartData.reduce((sum, item) => sum + (item.totalValue + item.walletBalance), 0)
+
+        return {chartData, totalSum};
+    }, [history])
 
     return (
         <div className="w-full h-[220px] sm:h-[260px] lg:h-full">
@@ -101,4 +106,4 @@ const PortfolioHistoryChart = ({ history }: Props) => {
     );
 };
 
-export default PortfolioHistoryChart;
+export default memo(PortfolioHistoryChart);

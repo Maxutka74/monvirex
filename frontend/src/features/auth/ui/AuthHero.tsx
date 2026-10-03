@@ -1,5 +1,5 @@
-import background from "../../../assets/images/Background.png";
-import logo from "../../../assets/logos/Monvirex.png";
+import background from "../../../assets/images/Background.webp";
+import logo from "../../../assets/logos/Monvirex.webp";
 
 import {SiGoogleanalytics} from "react-icons/si";
 import {FaExchangeAlt} from "react-icons/fa";

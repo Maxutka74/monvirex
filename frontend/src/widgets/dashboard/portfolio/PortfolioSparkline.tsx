@@ -1,10 +1,11 @@
-import type { AssetKlines } from "../../../../features/assets/api/assetsApi.ts";
+import type { AssetKlines } from "../../../features/assets/api/assetsApi.ts";
 import {
     Line,
     LineChart,
     ResponsiveContainer,
     YAxis,
 } from "recharts";
+import {memo, useMemo} from "react";
 
 type PortfolioSparklineProps = {
     data: AssetKlines[];
@@ -16,31 +17,37 @@ const PortfolioSparkline = ({
                                 isPositive,
                             }: PortfolioSparklineProps) => {
 
-    const chartData = data.map((item) => ({
-        time: item.time,
-        price: Number(item.close),
-    }));
+    const { chartData, minPrice, maxPrice, padding } = useMemo(() => {
+
+        const chartData = data.map((item) => ({
+            time: item.time,
+            price: Number(item.close),
+        }));
+
+        const price: number[] = chartData.map((item) => item.price);
+
+        const sortPrice = price.sort((a, b) => a - b);
+
+        const minPrice = sortPrice[0];
+        const maxPrice = sortPrice[sortPrice.length - 1];
+        const range = maxPrice - minPrice;
+
+        let padding = 0;
+
+        if (range === 0) {
+            padding = minPrice * 0.01;
+        } else {
+            padding = range * 0.1;
+        }
+
+        return {chartData, minPrice, maxPrice, padding};
+
+    }, [data])
 
     if (!chartData.length) {
         return (
             <div className="w-[120px] h-[40px] bg-[#F3F4F6] rounded-md" />
         );
-    }
-
-    const price: number[] = chartData.map((item) => item.price);
-
-    const sortPrice = price.sort((a, b) => a - b);
-
-    const minPrice = sortPrice[0];
-    const maxPrice = sortPrice[sortPrice.length - 1];
-    const range = maxPrice - minPrice;
-
-    let padding = 0;
-
-    if (range === 0) {
-        padding = minPrice * 0.01;
-    } else {
-        padding = range * 0.1;
     }
 
     return (
@@ -72,4 +79,4 @@ const PortfolioSparkline = ({
     );
 };
 
-export default PortfolioSparkline;
+export default memo(PortfolioSparkline);

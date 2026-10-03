@@ -2,8 +2,8 @@ import { Outlet } from "react-router-dom";
 
 import Navbar from "../../widgets/navbar/Navbar.tsx";
 
-import bgWhiteImage from "../../assets/images/Dashboard.png";
-import bgBlackImage from "../../assets/images/BlackBackground.png";
+import bgWhiteImage from "../../assets/images/Dashboard.webp";
+import bgBlackImage from "../../assets/images/BlackBackground.webp";
 import {useStore} from "zustand/react";
 import themeStore from "../../entities/theme/themeStore.tsx";
 

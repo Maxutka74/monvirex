@@ -7,7 +7,7 @@ import {
     IoMdNotificationsOutline,
 } from "react-icons/io";
 
-import logo from "../../assets/logos/MonvirexLogo.png";
+import logo from "../../assets/logos/MonvirexLogo.webp";
 
 import authApi from "../../features/auth/api/authApi.ts";
 import notificationsApi from "../../features/notifications/api/notificationsApi.ts";

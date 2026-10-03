@@ -2,7 +2,7 @@ import Select from "react-select";
 import {PiLightningBold} from "react-icons/pi";
 import {IoIosTrendingDown, IoIosTrendingUp} from "react-icons/io";
 import {TbArrowsExchange2} from "react-icons/tb";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {AiOutlineDollar} from "react-icons/ai";
 import {LuArrowRightLeft} from "react-icons/lu";
 import { GoArrowRight } from "react-icons/go";
@@ -48,9 +48,11 @@ const FastActionCard = () => {
     useEffect(() => {
         const actionData = async () => {
             try {
-                const assets = await assetsApi.getAssets(undefined, undefined, '-current_price');
-                const walletAssets = await walletApi.getPortfolio();
-                const balanceUser = await walletApi.getBalance();
+                const [assets, walletAssets,balanceUser] = await Promise.all([
+                    await assetsApi.getAssets(undefined, undefined, '-current_price'),
+                    await walletApi.getPortfolio(),
+                    await walletApi.getBalance()
+                ])
 
                 setAssets(assets.results)
                 setNextPage(assets.next)
@@ -87,7 +89,7 @@ const FastActionCard = () => {
         }
     }, [walletAssets]);
 
-    const optionAssets = assets.map((item) => ({
+    const optionAssets = useMemo(() => (assets.map((item) => ({
         value: item.name,
         label: (
             <div className='flex items-center gap-2'>
@@ -96,9 +98,9 @@ const FastActionCard = () => {
             </div>
         ),
         currentPrice: item.current_price
-    }))
+    }))), [assets])
 
-    const userOpinionAssets = clearWalletAssets.map((item) => {
+    const userOpinionAssets = useMemo(() => (clearWalletAssets.map((item) => {
         const dataAmount = walletAssets.find((walletItems) => item.symbol === walletItems.asset)
 
         return ({
@@ -112,7 +114,7 @@ const FastActionCard = () => {
             amount: dataAmount?.amount,
             currentPrice: item.current_price
         })
-        })
+        })), [clearWalletAssets, walletAssets])
 
     useEffect(() => {
         if(optionAssets.length > 0 && (!buyAsset || !exchangeFromAsset)){

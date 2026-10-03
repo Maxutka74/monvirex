@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import adminApi, {
     type AdminPanelCryptoTransactions,
 } from "../../../features/admin/api/adminApi.ts";
@@ -32,7 +32,7 @@ const CryptoTransactionsCard = () => {
         transactionsData();
     }, []);
 
-    const tableFormatingData = cryptoTransactions.map((transaction) => ({
+    const tableFormatingData = useMemo(() => (cryptoTransactions.map((transaction) => ({
         id: transaction.id.slice(0,8)+'...',
         email: transaction.user_email,
         asset: transaction.asset.slice(0,-4),
@@ -45,7 +45,7 @@ const CryptoTransactionsCard = () => {
             day: "numeric",
             year: "numeric"
         }).format(new Date(transaction.created_at))
-    }))
+    }))), [cryptoTransactions])
 
     return (
         <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 ${

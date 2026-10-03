@@ -2,7 +2,7 @@ import { TbHomeCog } from "react-icons/tb";
 import { CgFileDocument } from "react-icons/cg";
 import { PiLightningLight, PiShootingStarLight } from "react-icons/pi";
 
-import logo from "../../../assets/logos/MonvirexWhiteLogo.png";
+import logo from "../../../assets/logos/MonvirexWhiteLogo.webp";
 import {useStore} from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
 import {useNavigate} from "react-router-dom";

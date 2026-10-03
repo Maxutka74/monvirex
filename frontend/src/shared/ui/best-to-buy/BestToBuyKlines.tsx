@@ -1,5 +1,6 @@
 import type {AssetKlines} from "../../../features/assets/api/assetsApi.ts";
 import {Area, AreaChart, ResponsiveContainer} from "recharts";
+import {memo, useMemo} from "react";
 
 
 type BestToBuyKlinesProps = {
@@ -7,11 +8,11 @@ type BestToBuyKlinesProps = {
 }
 
 const BestToBuyKlines = ({klines}: BestToBuyKlinesProps) => {
-    const dataKlines = klines.map(
+    const dataKlines = useMemo(() => (klines.map(
         (kline) => (
             {price: Number(kline.close)}
         )
-    )
+    )), [klines])
 
     return(
         <div className='w-full h-[150px]'>
@@ -32,4 +33,4 @@ const BestToBuyKlines = ({klines}: BestToBuyKlinesProps) => {
     )
 }
 
-export default BestToBuyKlines;
+export default memo(BestToBuyKlines);

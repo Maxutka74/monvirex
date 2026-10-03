@@ -1,11 +1,12 @@
 import type {Message} from "../../features/ai-assistant/api/aiApi.ts";
 import profileStore from "../../entities/profile/profileStore.tsx";
 import type {Profile} from "../../features/profile/api/profileApi.ts";
-import logo from "../../assets/logos/AssistantLogo.png"
+import logo from "../../assets/logos/AssistantLogo.webp"
 import ReactMarkdown from "react-markdown";
 import {useStore} from "zustand/react";
 import themeStore from "../../entities/theme/themeStore.tsx";
 import {IoAlertCircleOutline} from "react-icons/io5";
+import {memo, useMemo} from "react";
 
 type AiChatsCardProps = {
     messages?: Message[];
@@ -27,7 +28,7 @@ const AiChatsCard = ({messages, loading, error}: AiChatsCardProps) => {
             : `${API_URL}${avatar}`
         : undefined
 
-    const formattingMessages = messages?.map((message) => ({
+    const formattingMessages = useMemo(() => (messages?.map((message) => ({
         ...message,
         created_at: (Intl.DateTimeFormat('en-US', {
             day: '2-digit',
@@ -40,7 +41,7 @@ const AiChatsCard = ({messages, loading, error}: AiChatsCardProps) => {
                 minute: '2-digit',
             }).format(new Date(message.created_at))
         ),
-    }))
+    }))), [messages])
 
     return (
         <div className='max-h-[440px] h-full overflow-y-auto pr-1 sm:pr-2 2xl:pr-4'>
@@ -214,4 +215,4 @@ const AiChatsCard = ({messages, loading, error}: AiChatsCardProps) => {
     )
 }
 
-export default AiChatsCard
+export default memo(AiChatsCard)

@@ -1,6 +1,6 @@
 import adminApi, {type AdminPanelTransactions} from "../../../features/admin/api/adminApi.ts";
 import {BsArrowRight} from "react-icons/bs";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {ReceiptText} from "lucide-react";
 import TotalTransactionsModal from "./TotalTransactionsModal.tsx";
 import {useStore} from "zustand/react";
@@ -29,7 +29,7 @@ const TransactionsCard = () => {
         transactionsData();
     }, []);
 
-    const tableFormatingData = transactions.map((transaction) => ({
+    const tableFormatingData = useMemo(() => (transactions.map((transaction) => ({
         id: transaction.id.slice(0,8)+'...',
         email: transaction.user_email,
         type: transaction.transaction_type.toUpperCase(),
@@ -40,7 +40,7 @@ const TransactionsCard = () => {
             day: "numeric",
             year: "numeric"
         }).format(new Date(transaction.created_at))
-    }))
+    }))), [transactions])
 
     return (
         <div className={`w-full h-full flex flex-col rounded-[30px] p-4 sm:p-6 ${

@@ -1,9 +1,9 @@
 import { BsClockHistory } from "react-icons/bs"
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import aiApi, {type Message, type UserChats} from "../../features/ai-assistant/api/aiApi.ts";
 import {LuArrowUpRight, LuChartNoAxesCombined, LuFileText, LuMessageSquareText} from "react-icons/lu";
 import {FaRegTrashAlt} from "react-icons/fa";
-import logoMonvirex from "../../assets/logos/MonvirexLogo.png"
+import logoMonvirex from "../../assets/logos/MonvirexLogo.webp"
 import {FiSend} from "react-icons/fi";
 import AiChatsCard from "./AiChatsCard.tsx";
 import {useStore} from "zustand/react";
@@ -55,7 +55,7 @@ const AIAssistantWidget = () => {
         handleSendMessage(null, initialMessage)
     }, [])
 
-    const formattingChats = () => {
+    const formattingChats = useMemo(() => {
         return chats.map(chat => ({
             ...chat,
             updated_at: Intl.DateTimeFormat(
@@ -69,7 +69,7 @@ const AIAssistantWidget = () => {
                 }
             ).format(new Date(chat.updated_at)).replaceAll('/', '.')
         }))
-    }
+    }, [chats])
 
     const createNewChat = async () => {
         setErrorMessage(null)
@@ -449,7 +449,7 @@ const AIAssistantWidget = () => {
                             </div>
                         ) : (
                             <ul>
-                                {formattingChats().map((chat) => (
+                                {formattingChats.map((chat) => (
                                     <li
                                         key={chat.id}
                                         className={`w-full h-16 flex items-center border rounded-[12px] px-3 sm:px-4 py-3 mb-3 cursor-pointer transition-colors duration-200 ${

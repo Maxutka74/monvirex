@@ -1,6 +1,6 @@
 import {PiUsersThree} from "react-icons/pi";
 import {CgClose} from "react-icons/cg";
-import {type SetStateAction, useEffect, useState} from "react";
+import {type SetStateAction, useEffect, useMemo, useState} from "react";
 import adminApi, {type AdminPanelToggleUser} from "../../../features/admin/api/adminApi.ts";
 import {MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight} from "react-icons/md";
 import {VscSearch} from "react-icons/vsc";
@@ -108,7 +108,7 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
 
     const paginatedPages = totalUserAll
 
-    const pagesToDisplay = () => {
+    const pagesToDisplay = useMemo(() => {
         const page = currentPage + 1
 
         if (totalPage <= 3) {
@@ -140,7 +140,7 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
         }
 
         return pageList
-    }
+    }, [currentPage, totalPage])
 
     const userId = (id: number) => {
         setCurrentUser(id)
@@ -267,7 +267,7 @@ const TotalUsersModal = ({setUsersModalOpen, tableFormatingData, banUser, allPag
                         </div>
 
                         <div className='hidden sm:flex flex-row items-center gap-3'>
-                            {pagesToDisplay().map((item, index) => (
+                            {pagesToDisplay.map((item, index) => (
                                 <button key={`${item} - ${index}`} className={`w-[36px] h-[36px] flex justify-center items-center font-medium rounded-md cursor-pointer ${
                                     typeof item === 'number'
                                         ? currentPage === item - 1

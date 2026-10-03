@@ -5,6 +5,8 @@ const api = axios.create({
     withCredentials: true
 })
 
+let refreshPromise: Promise<unknown> | null = null;
+
 api.interceptors.response.use(
     (response)=> response,
 
@@ -17,7 +19,11 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                await api.post('/auth/refresh/')
+                if(!refreshPromise) {
+                    refreshPromise = api.post('/auth/refresh/')
+                        .finally(() => refreshPromise = null);
+                }
+                await refreshPromise
 
                 return api(originalRequest);
             } catch (refreshError) {

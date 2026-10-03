@@ -1,4 +1,4 @@
-import logo from "../../../assets/logos/Monvirex.png";
+import logo from "../../../assets/logos/Monvirex.webp";
 
 const MobileLogo = () => {
     return (

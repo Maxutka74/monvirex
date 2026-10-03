@@ -1,5 +1,5 @@
 import { FiArrowUpRight } from "react-icons/fi"
-import ai_robot from "../../assets/images/Ai_Decoration.svg"
+import ai_robot from "../../assets/images/Ai_Decoration.webp"
 import {useStore} from "zustand/react";
 import themeStore from "../../entities/theme/themeStore.tsx";
 import {useNavigate} from "react-router-dom";

@@ -16,6 +16,20 @@ type MarketAction = {
     value: string;
 };
 
+const sortOptions = [
+    { label: "Price ↑", value: "current_price" },
+    { label: "Price ↓", value: "-current_price" },
+
+    { label: "Change ↑", value: "price_change_24h" },
+    { label: "Change ↓", value: "-price_change_24h" },
+
+    { label: "Volume ↑", value: "volume_24h" },
+    { label: "Volume ↓", value: "-volume_24h" },
+
+    { label: "Name A-Z", value: "name" },
+    { label: "Name Z-A", value: "-name" },
+];
+
 const MarketsCard = () => {
     const theme = useStore(themeStore, (state) => state.theme);
 
@@ -31,20 +45,6 @@ const MarketsCard = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAsset, setSelectedAsset] = useState<MarketAction | null>(null);
-
-    const sortOptions = [
-        { label: "Price ↑", value: "current_price" },
-        { label: "Price ↓", value: "-current_price" },
-
-        { label: "Change ↑", value: "price_change_24h" },
-        { label: "Change ↓", value: "-price_change_24h" },
-
-        { label: "Volume ↑", value: "volume_24h" },
-        { label: "Volume ↓", value: "-volume_24h" },
-
-        { label: "Name A-Z", value: "name" },
-        { label: "Name Z-A", value: "-name" },
-    ];
 
     useEffect(() => {
         if (search.trim().length === 0) {

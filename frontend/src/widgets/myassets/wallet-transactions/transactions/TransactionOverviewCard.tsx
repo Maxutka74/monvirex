@@ -4,6 +4,7 @@ import TransactionCustomTooltip from "./TransactionCustomTooltip.tsx";
 import {useStore} from "zustand/react";
 import themeStore from "../../../../entities/theme/themeStore.tsx";
 import {formatNumber} from "../../../../shared/utils/formatNumber.ts";
+import {memo, useMemo} from "react";
 
 type TransactionOverviewChartProps = {
     data: UserSummary | null,
@@ -13,24 +14,27 @@ type TransactionOverviewChartProps = {
 const TransactionOverviewCard = ({data, currentPeriodVolume}: TransactionOverviewChartProps) => {
     const theme = useStore(themeStore, (state) => state.theme);
 
-    const chartData = [
-        { name: "Deposit", value: Number(data?.deposit), percent: currentPeriodVolume > 0? Number(data?.deposit) / currentPeriodVolume * 100: 0, fill: "#22C55E" },
-        { name: "Withdraw", value: Number(data?.withdraw), percent: currentPeriodVolume > 0? Number(data?.withdraw) / currentPeriodVolume * 100: 0, fill: "#F97316" },
-        { name: "Buy", value: Number(data?.buy), percent: currentPeriodVolume > 0? Number(data?.buy) / currentPeriodVolume * 100: 0, fill: "#3B82F6" },
-        { name: "Sell", value: Number(data?.sell), percent: currentPeriodVolume > 0? Number(data?.sell) / currentPeriodVolume * 100: 0, fill: "#8B5CF6" },
-        { name: "Exchange", value: Number(data?.exchange), percent: currentPeriodVolume > 0? Number(data?.exchange) / currentPeriodVolume * 100: 0, fill: "#94A3B8" }
-    ];
+    const {chartData, displayData} = useMemo(() => {
+        const chartData = [
+            { name: "Deposit", value: Number(data?.deposit), percent: currentPeriodVolume > 0? Number(data?.deposit) / currentPeriodVolume * 100: 0, fill: "#22C55E" },
+            { name: "Withdraw", value: Number(data?.withdraw), percent: currentPeriodVolume > 0? Number(data?.withdraw) / currentPeriodVolume * 100: 0, fill: "#F97316" },
+            { name: "Buy", value: Number(data?.buy), percent: currentPeriodVolume > 0? Number(data?.buy) / currentPeriodVolume * 100: 0, fill: "#3B82F6" },
+            { name: "Sell", value: Number(data?.sell), percent: currentPeriodVolume > 0? Number(data?.sell) / currentPeriodVolume * 100: 0, fill: "#8B5CF6" },
+            { name: "Exchange", value: Number(data?.exchange), percent: currentPeriodVolume > 0? Number(data?.exchange) / currentPeriodVolume * 100: 0, fill: "#94A3B8" }
+        ];
 
-    const total = chartData.reduce(
-        (sum, item) => sum + item.value, 0
-    )
+        const total = chartData.reduce(
+            (sum, item) => sum + item.value, 0
+        )
 
-    const displayData =
-        total > 0
-            ? chartData
-            : [
-                {name: 'No activity' , value: 1, percent: 0, fill: "#E5E7EB"}
-            ]
+        const displayData =
+            total > 0
+                ? chartData
+                : [
+                    {name: 'No activity' , value: 1, percent: 0, fill: "#E5E7EB"}
+                ]
+        return {chartData, displayData};
+    }, [data, currentPeriodVolume]);
 
     return (
         <div className='w-full flex flex-col sm:flex-row items-center justify-center gap-1'>
@@ -85,4 +89,4 @@ const TransactionOverviewCard = ({data, currentPeriodVolume}: TransactionOvervie
     )
 }
 
-export default TransactionOverviewCard
+export default memo(TransactionOverviewCard)

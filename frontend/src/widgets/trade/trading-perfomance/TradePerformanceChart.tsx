@@ -1,9 +1,34 @@
-import ReactECharts from 'echarts-for-react';
-import type {AssetKlines} from "../../../features/assets/api/assetsApi.ts";
-import type {IntervalOption} from "./TradePerformanceCard.tsx";
-import {useStore} from "zustand/react";
+import ReactEChartsCoreModule from "echarts-for-react/lib/core";
+import * as echarts from "echarts/core";
+
+import { CandlestickChart } from "echarts/charts";
+
+import {
+    GridComponent,
+    TooltipComponent,
+} from "echarts/components";
+
+import { CanvasRenderer } from "echarts/renderers";
+
+import type { AssetKlines } from "../../../features/assets/api/assetsApi.ts";
+import type { IntervalOption } from "./TradePerformanceCard.tsx";
+
+import { useStore } from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
-import {formatNumber} from "../../../shared/utils/formatNumber.ts";
+import { formatNumber } from "../../../shared/utils/formatNumber.ts";
+import {useMemo} from "react";
+
+echarts.use([
+    CandlestickChart,
+    GridComponent,
+    TooltipComponent,
+    CanvasRenderer
+])
+
+const ReactEChartsCore =
+    (ReactEChartsCoreModule as unknown as {
+        default: typeof ReactEChartsCoreModule
+    }).default;
 
 type TradePerformanceChartProps = {
     klines: AssetKlines[]
@@ -13,12 +38,12 @@ type TradePerformanceChartProps = {
 const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) => {
     const theme = useStore(themeStore, (state) => state.theme);
 
-    const candleData = klines.map((kline) => [
+    const candleData = useMemo(() => (klines.map((kline) => [
         Number(kline.open),
         Number(kline.close),
         Number(kline.low),
         Number(kline.high),
-    ])
+    ])), [klines])
 
     const formatXAxisDate = (date: Date, interval: string) => {
         switch (interval) {
@@ -68,15 +93,15 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
         }
     };
 
-    const xAxisData = klines.map((kline) => {
+    const xAxisData = useMemo(() => (klines.map((kline) => {
         const data = new Date(Number(kline.time) * 1000);
 
         if (interval) {
             return formatXAxisDate(data, interval.value);
         }
-    })
+    })), [klines, interval?.value])
 
-    const option = {
+    const option = useMemo(() => ({
         tooltip: {
             trigger: 'axis',
 
@@ -223,10 +248,10 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
                 }
             },
         ],
-    };
+    }), [klines, xAxisData, candleData, theme]);
 
     return (
-        <ReactECharts option={option} style={{width:'100%', height:'510px'}} />
+        <ReactEChartsCore echarts={echarts} option={option} style={{width:'100%', height:'510px'}} />
     )
 }
 

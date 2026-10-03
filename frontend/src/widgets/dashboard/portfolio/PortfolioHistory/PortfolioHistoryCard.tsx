@@ -1,5 +1,5 @@
 import {BsCircleFill} from "react-icons/bs";
-import { useEffect, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import PortfolioHistoryChart from "./PortfolioHistoryChart.tsx";
 import walletApi, {type UserSnapshot} from "../../../../features/wallet/api/walletApi.ts";
 import {useStore} from "zustand/react";
@@ -31,39 +31,47 @@ const PortfolioHistoryCard = () => {
         data();
     }, []);
 
-    const firstTotalValueSnapshot = history.find(
-        (snapshot) => Number(snapshot.total_value) > 0
-    );
+    const {lastSnapshot, totalValue, totalBalance} = useMemo(() => {
+        const firstTotalValueSnapshot = history.find(
+            (snapshot) => Number(snapshot.total_value) > 0
+        );
 
-    const firstWalletBalanceSnapshot = history.find(
-        (snapshot) => Number(snapshot.wallet_balance) > 0
-    );
+        const firstWalletBalanceSnapshot = history.find(
+            (snapshot) => Number(snapshot.wallet_balance) > 0
+        );
 
-    const lastSnapshot = history[history.length - 1];
+        const lastSnapshot = history[history.length - 1];
 
-    const totalValue =
-        firstTotalValueSnapshot &&
-        lastSnapshot &&
-        Number(firstTotalValueSnapshot.total_value) !== 0
-            ? `${(
-                ((Number(lastSnapshot.total_value) -
-                        Number(firstTotalValueSnapshot.total_value)) /
-                    Number(firstTotalValueSnapshot.total_value)) *
-                100
-            ).toFixed(2)}`
-            : "+0.00";
+        const totalValue =
+            firstTotalValueSnapshot &&
+            lastSnapshot &&
+            Number(firstTotalValueSnapshot.total_value) !== 0
+                ? `${(
+                    ((Number(lastSnapshot.total_value) -
+                            Number(firstTotalValueSnapshot.total_value)) /
+                        Number(firstTotalValueSnapshot.total_value)) *
+                    100
+                ).toFixed(2)}`
+                : "+0.00";
 
-    const totalBalance =
-        firstWalletBalanceSnapshot &&
-        lastSnapshot &&
-        Number(firstWalletBalanceSnapshot.wallet_balance) !== 0
-            ? `${(
-                ((Number(lastSnapshot.wallet_balance) -
-                        Number(firstWalletBalanceSnapshot.wallet_balance)) /
-                    Number(firstWalletBalanceSnapshot.wallet_balance)) *
-                100
-            ).toFixed(2)}`
-            : "0.00";
+        const totalBalance =
+            firstWalletBalanceSnapshot &&
+            lastSnapshot &&
+            Number(firstWalletBalanceSnapshot.wallet_balance) !== 0
+                ? `${(
+                    ((Number(lastSnapshot.wallet_balance) -
+                            Number(firstWalletBalanceSnapshot.wallet_balance)) /
+                        Number(firstWalletBalanceSnapshot.wallet_balance)) *
+                    100
+                ).toFixed(2)}`
+                : "0.00";
+
+        return {
+            lastSnapshot,
+            totalValue,
+            totalBalance,
+        }
+    }, [history])
 
     return (
         <div className="flex flex-col lg:flex-row h-full gap-5">
