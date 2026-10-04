@@ -169,13 +169,13 @@ const MarketsCard = () => {
                             ? 'bg-[#071329] text-white placeholder:text-[#60718D] border border-[#164B86] focus:border-[#1597FF]'
                             : 'text-[#666D80] border border-[#A4ACB9]'
                     }`} value={search} type="text" onChange={(e) => setSearch(e.target.value)} placeholder='Search by name...'/>
-                    <div className={`relative w-[120px] sm:w-[115px] h-[46px] rounded-full px-3 ${
+                    <div className={`relative w-[120px] sm:w-[115px] h-[46px] rounded-full ${
                         theme === 'dark'
                             ? 'bg-[#071329] border border-[#164B86] text-[#A8B8D0]'
                             : 'border border-[#A4ACB9] text-[#6F6F6F]'
                     }`}>
                         <select
-                            className={`absolute w-full appearance-none outline-none bg-transparent top-2.5 ${
+                            className={`absolute w-full appearance-none outline-none bg-transparent top-2.5 pl-3 cursor-pointer ${
                                 theme === 'dark'
                                     ? 'text-[#A8B8D0]'
                                     : 'text-[#6F6F6F]'
@@ -186,7 +186,7 @@ const MarketsCard = () => {
                                 }}>
                             <option
                                 value=""
-                                className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}
+                                className={`${theme === 'dark' ? 'bg-[#071329] text-white' : ''}`}
                             >
                                 Sort
                             </option>
@@ -221,7 +221,7 @@ const MarketsCard = () => {
                     />
                 </div>
             ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto min-h-[311px]">
                     <table className="min-w-[760px] w-full">
                         <thead>
                         <tr className={`h-[31px] w-full font-medium ${

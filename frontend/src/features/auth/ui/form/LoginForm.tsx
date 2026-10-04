@@ -108,11 +108,11 @@ const LoginForm = () => {
                 />
                 {visiblePassword?
                     <FiEye size={24}
-                           className="text-gray-400 ml-2"
+                           className="text-gray-400 ml-2 cursor-pointer"
                            onClick={() => setVisiblePassword(!visiblePassword)}
                     />:
                     <FiEyeOff size={24}
-                              className="text-gray-400 ml-2"
+                              className="text-gray-400 ml-2 cursor-pointer"
                               onClick={() => setVisiblePassword(!visiblePassword)}
                     />
                 }
@@ -127,7 +127,7 @@ const LoginForm = () => {
                 </button>
                 <div className='flex flex-row items-center justify-between'>
                     <div className='flex items-center justify-center gap-2'>
-                        <div onClick={() => setRememberMe(!rememberMe)}>
+                        <div className='cursor-pointer' onClick={() => setRememberMe(!rememberMe)}>
                             {rememberMe === false?
                                 <MdOutlineCheckBoxOutlineBlank size={25}
                                                                className="text-[#DFE1E7]"

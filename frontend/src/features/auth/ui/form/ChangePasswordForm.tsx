@@ -89,12 +89,12 @@ const ChangePasswordForm = () => {
                     />
                     {visiblePassword ?
                         <FiEye size={24}
-                               className="text-gray-400 ml-2"
+                               className="text-gray-400 ml-2 cursor-pointer"
                                onClick={() => setVisiblePassword(!visiblePassword)}
                         />
                         :
                         <FiEyeOff size={24}
-                                  className="text-gray-400 ml-2"
+                                  className="text-gray-400 ml-2 cursor-pointer"
                                   onClick={() => setVisiblePassword(!visiblePassword)}
                         />
                     }
@@ -127,12 +127,12 @@ const ChangePasswordForm = () => {
                     />
                     {visibleConfirmPassword ?
                         <FiEye size={24}
-                               className="text-gray-400 ml-2"
+                               className="text-gray-400 ml-2 cursor-pointer"
                                onClick={() => setVisibleConfirmPassword(!visibleConfirmPassword)}
                         />
                         :
                         <FiEyeOff size={24}
-                                  className="text-gray-400 ml-2"
+                                  className="text-gray-400 ml-2 cursor-pointer"
                                   onClick={() => setVisibleConfirmPassword(!visibleConfirmPassword)}
                         />
                     }

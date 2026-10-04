@@ -94,7 +94,7 @@ const BalanceOverviewCard = () => {
                                 className={`
                                     w-full h-full rounded-full border border-white
                                     appearance-none pl-3 pr-8 sm:pr-10
-                                    text-sm sm:text-base
+                                    text-sm sm:text-base cursor-pointer
                                     ${theme === "dark"
                                         ? "bg-black/40 text-white"
                                         : "bg-transparent text-white"

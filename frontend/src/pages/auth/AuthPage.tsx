@@ -27,12 +27,12 @@ const AuthPage = () => {
                         <div className='w-full h-[55px] flex items-center justify-between p-1 rounded-[50px] bg-[#ECEFF3]'>
                             <button
                                 type='button'
-                                className={activeTab === 'login'? 'w-1/2 h-[44px] text-white bg-black rounded-[50px]':'w-1/2 h-[44px]'}
+                                className={activeTab === 'login'? 'w-1/2 h-[44px] text-white bg-black rounded-[50px]':'w-1/2 h-[44px] cursor-pointer'}
                                 onClick={() => setActiveTab('login')}>
                                 Login
                             </button>
                             <button type='button'
-                                    className={activeTab === 'register'? 'w-1/2 h-[44px] text-white bg-black rounded-[50px]':'w-1/2 h-[44px]'}
+                                    className={activeTab === 'register'? 'w-1/2 h-[44px] text-white bg-black rounded-[50px]':'w-1/2 h-[44px] cursor-pointer'}
                                     onClick={() => setActiveTab('register')}>
                                 Sign Up
                             </button>

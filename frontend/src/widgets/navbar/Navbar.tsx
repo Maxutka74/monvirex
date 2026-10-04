@@ -273,6 +273,7 @@ const Navbar = () => {
                             xl:top-21
                             xl:right-1
                             xl:w-auto
+                            z-[9999]
                         "
                     >
                         <NotificationDropdown

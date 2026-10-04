@@ -147,7 +147,7 @@ const VerifyEmailForm = () => {
                     </div>
                 </div>
             </form>
-            {isSuccess && <SuccessModal title={'Congratulations, You\'re In'} message={'Let\'s get started and take your customer support dashboard to the next level!'} link={'#'} buttonName={'Get Started'} />}
+            {isSuccess && <SuccessModal title={'Congratulations, You\'re In'} message={'Let\'s get started and take your customer support dashboard to the next level!'} link={'/dashboard'} buttonName={'Get Started'} />}
         </>
     )
 }

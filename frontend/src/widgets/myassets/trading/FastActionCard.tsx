@@ -251,7 +251,7 @@ const FastActionCard = () => {
                     ? 'border border-[#164B86] text-[#1597FF] bg-[#071329]'
                     : 'border border-gray-100 text-[#429EFF]'
                 } ${actions === 'Exchange' ? 'mb-3' : 'mb-5'}`}>
-                <div className={`flex-1 flex flex-row items-center justify-center gap-3 border-r border-gray-100 ${actions === 'Buy' && (
+                <button className={`flex-1 flex flex-row items-center justify-center gap-3 border-r border-gray-100 cursor-pointer ${actions === 'Buy' && (
                     theme === 'dark'
                         ? 'text-white bg-[#1597FF] rounded-l-[10px] shadow-[0_0_12px_rgba(21,151,255,0.25)]'
                         : 'text-white bg-[#429EFF] rounded-l-[10px]'
@@ -263,8 +263,8 @@ const FastActionCard = () => {
                 }}>
                     <IoIosTrendingUp size={20} />
                     <span>Buy</span>
-                </div>
-                <div className={`flex-1 flex flex-row items-center justify-center gap-3 border-r border-gray-100 ${actions === 'Sell' && (
+                </button>
+                <button className={`flex-1 flex flex-row items-center justify-center gap-3 border-r border-gray-100 cursor-pointer ${actions === 'Sell' && (
                     theme === 'dark'
                         ? 'text-white bg-[#1597FF] rounded-none shadow-[0_0_12px_rgba(21,151,255,0.25)]'
                         : 'text-white bg-[#429EFF] rounded-none'
@@ -276,8 +276,8 @@ const FastActionCard = () => {
                 }}>
                     <IoIosTrendingDown size={20} />
                     <span>Sell</span>
-                </div>
-                <div className={`flex-1 flex flex-row items-center justify-center gap-1 sm:gap-3 ${actions === 'Exchange' && (
+                </button>
+                <button className={`flex-1 flex flex-row items-center justify-center gap-1 sm:gap-3 cursor-pointer ${actions === 'Exchange' && (
                     theme === 'dark'
                         ? 'text-white bg-[#1597FF] rounded-r-[10px] shadow-[0_0_12px_rgba(21,151,255,0.25)]'
                         : 'text-white bg-[#429EFF] rounded-r-[10px]'
@@ -289,7 +289,7 @@ const FastActionCard = () => {
                 }}>
                     <TbArrowsExchange2 size={20} />
                     <span>Exchange</span>
-                </div>
+                </button>
             </div>
             <div className={`flex flex-col gap-1 ${actions === 'Exchange' ? 'mb-2': 'mb-5'}`}>
                 <p className='font-medium'>Select asset</p>
@@ -364,13 +364,13 @@ const FastActionCard = () => {
                 <div className={`relative flex flex-row items-center rounded-[10px] ${
                     theme === 'dark'
                         ? 'border border-[#164B86] bg-[#071329]'
-                        : 'border border-gray-100'
+                        : 'border border-gray-200'
                 }`}>
                     {actions === 'Buy' &&
                         <div className={`max-w-[120px] w-full border-r flex flex-row items-center justify-center gap-3 p-3 ${
                             theme === 'dark'
                                 ? 'border-[#164B86]'
-                                : 'border-gray-100'
+                                : 'border-gray-200'
                         }`}>
                             <AiOutlineDollar size={24} />
                             <span>USDT</span>
@@ -392,7 +392,7 @@ const FastActionCard = () => {
                         <span className={`text-sm font-medium rounded-[5px] px-4 py-1 mr-4 ${
                             theme === 'dark'
                                 ? 'bg-[#0B1D38] text-[#A8B8D0] border border-[#164B86]'
-                                : 'bg-gray-100'
+                                : 'bg-gray-200'
                         }`}>{actions === 'Sell'? sellAsset?.value: exchangeToAsset?.value}</span>
                     }
                 </div>
@@ -403,7 +403,7 @@ const FastActionCard = () => {
                         theme === 'dark'
                             ? 'text-[#7184A3]'
                             : 'text-[#6F6F6F]'
-                    }`}>Enter the amount of USD you want to spend. <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>Available: {balance} USD</span></p>
+                    }`}>Enter the amount of USDT you want to spend. <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>Available: {balance} USD</span></p>
                 }
                 {(actions === 'Sell' || actions === 'Exchange') &&
                     <p className={`text-sm ${

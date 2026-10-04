@@ -248,6 +248,7 @@ const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) 
                 }
             },
         ],
+
     }), [klines, xAxisData, candleData, theme]);
 
     return (

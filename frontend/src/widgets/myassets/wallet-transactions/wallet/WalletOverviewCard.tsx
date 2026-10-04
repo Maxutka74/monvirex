@@ -217,7 +217,7 @@ const WalletOverviewCard = () => {
                                 </div>
                                 <div className="relative w-[90px] sm:w-[110px] h-[36px] sm:h-[46px] border border-[#429EFF] rounded-full shrink-0">
                                     <select
-                                        className={`w-full h-full rounded-full border bg-transparent appearance-none pl-3 pr-8 sm:pr-10 text-sm sm:text-base outline-none ${
+                                        className={`w-full h-full rounded-full border bg-transparent appearance-none pl-3 pr-8 sm:pr-10 text-sm sm:text-base outline-none cursor-pointer ${
                                             theme === 'dark'
                                                 ? 'border-[#1597FF] text-white'
                                                 : 'border-white text-black'
@@ -263,7 +263,7 @@ const WalletOverviewCard = () => {
                                         }`}>
                                             ${formatNumber(allTimeVolume)}
                                         </h4>
-                                        <p className='text-[#DF1C41]'>
+                                        <p className='text-[#DF1C41] text-right'>
                                             +${formatNumber(currentPeriodVolume)}
                                             <span className={theme === 'dark' ? 'text-[#7184A3]' : 'text-[#6F6F6F]'}> {currentDate[days]}</span>
                                         </p>
