@@ -183,77 +183,84 @@ const MyPortfolioCard = () => {
                         </thead>
 
                         <tbody>
-                        {paginatedPortfolioData.map((item) => (
-                            <tr
-                                key={item.symbol}
-                                className="h-[46px]"
-                            >
-                                <td>
-                                    <div className="flex h-[46px] items-center gap-2 font-medium">
-                                        <img
-                                            src={item.icon}
-                                            alt=""
-                                            className="h-[20px] w-[20px]"
-                                        />
-
-                                        {item.symbol.slice(0, 3)}
-                                    </div>
-                                </td>
-
-                                <td className="h-[46px] font-medium">
-                                    ${formatNumber(item.value)}
-                                </td>
-
-                                <td className="pointer-events-none h-[48px]">
-                                    <div className="flex h-full w-full items-center justify-center">
-                                        <PortfolioSparkline
-                                            data={item.graphic}
-                                            isPositive={
-                                                Number(item.change_price) >
-                                                0
+                        {paginatedPortfolioData.length === 0 ? (
+                            <tr>
+                                <td colSpan={5}>
+                                    <div className="flex h-[240px] w-full items-center justify-center">
+                                        <p
+                                            className={`
+                            text-center text-[18px] sm:text-xl
+                            ${theme === "dark"
+                                                ? "text-[#A7B0C3]"
+                                                : "text-gray-600"
                                             }
-                                        />
+                        `}
+                                        >
+                                            You don’t have any cryptocurrencies in your portfolio yet
+                                        </p>
                                     </div>
-                                </td>
-
-                                <td>
-                                    <div
-                                        className={`flex h-[46px] items-center justify-center ${
-                                            Number(item.change_price) > 0
-                                                ? "text-[#40C4AA]"
-                                                : "text-[#DF1C41]"
-                                        }`}
-                                    >
-                                        {Number(item.change_price) > 0 ? (
-                                            <>
-                                                <GoArrowUpRight />
-                                                +{item.change_price}%
-                                            </>
-                                        ) : (
-                                            <>
-                                                <GoArrowDownRight />
-                                                {item.change_price}%
-                                            </>
-                                        )}
-                                    </div>
-                                </td>
-
-                                <td className="h-[26px] text-center font-medium">
-                                    ${formatNumber(item.balance)}
                                 </td>
                             </tr>
-                            ))}
-                        </tbody>
-                        {paginatedPortfolioData.length === 0 && (
-                            <div className='absolute inset-0 flex items-center justify-center'>
-                                <p className={`
-                                    text-[18px] text-center sm:text-xl
-                                    ${theme === "dark" ? "text-[#A7B0C3]" : "text-gray-600"}
-                                `}>
-                                    You don’t have any cryptocurrencies in your portfolio yet
-                                </p>
-                            </div>
+                        ) : (
+                            paginatedPortfolioData.map((item) => (
+                                <tr
+                                    key={item.symbol}
+                                    className="h-[46px]"
+                                >
+                                    <td>
+                                        <div className="flex h-[46px] items-center gap-2 font-medium">
+                                            <img
+                                                src={item.icon}
+                                                alt=""
+                                                className="h-[20px] w-[20px]"
+                                            />
+
+                                            {item.symbol.slice(0, 3)}
+                                        </div>
+                                    </td>
+
+                                    <td className="h-[46px] font-medium">
+                                        ${formatNumber(item.value)}
+                                    </td>
+
+                                    <td className="pointer-events-none h-[48px]">
+                                        <div className="flex h-full w-full items-center justify-center">
+                                            <PortfolioSparkline
+                                                data={item.graphic}
+                                                isPositive={Number(item.change_price) > 0}
+                                            />
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div
+                                            className={`flex h-[46px] items-center justify-center ${
+                                                Number(item.change_price) > 0
+                                                    ? "text-[#40C4AA]"
+                                                    : "text-[#DF1C41]"
+                                            }`}
+                                        >
+                                            {Number(item.change_price) > 0 ? (
+                                                <>
+                                                    <GoArrowUpRight />
+                                                    +{item.change_price}%
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <GoArrowDownRight />
+                                                    {item.change_price}%
+                                                </>
+                                            )}
+                                        </div>
+                                    </td>
+
+                                    <td className="h-[26px] text-center font-medium">
+                                        ${formatNumber(item.balance)}
+                                    </td>
+                                </tr>
+                            ))
                         )}
+                        </tbody>
                     </table>
                 </div>
             )}

@@ -166,7 +166,9 @@ const Navbar = () => {
                                 ? "bg-[#1683ff] shadow-[0_0_16px_rgba(22,131,255,0.35)] hover:bg-[#3695ff]"
                                 : "bg-[#429EFF]"
                         }
-                    `}>
+                    `}
+                    onClick={() => navigate('/trade')}
+                >
                     Buy & Sell
                 </button>
 

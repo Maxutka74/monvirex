@@ -8,7 +8,7 @@ def set_auth_cookies(response, refresh, remember_me=False):
         key='access_token',
         value=str(refresh.access_token),
         httponly=True,
-        secure=settings.COOKIE_SECURE,
+        secure=False,
         samesite='Lax',
         max_age=300,
     )
@@ -17,7 +17,7 @@ def set_auth_cookies(response, refresh, remember_me=False):
         key='refresh_token',
         value=str(refresh),
         httponly=True,
-        secure=settings.COOKIE_SECURE,
+        secure=False,
         samesite='Lax',
         max_age=refresh_max_age,
     )

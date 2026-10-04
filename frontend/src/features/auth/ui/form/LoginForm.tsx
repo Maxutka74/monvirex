@@ -1,7 +1,7 @@
 import {useState} from "react";
 
 import {FiEye, FiEyeOff, FiLock, FiMail} from "react-icons/fi";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {MdOutlineCheckBoxOutlineBlank} from "react-icons/md";
 import {GoCheckbox} from "react-icons/go";
 import authHooks from "../../model/useAuth.ts"
@@ -14,6 +14,8 @@ import { LoginButton } from '@telegram-auth/react'
 import type {AxiosError} from "axios";
 
 const LoginForm = () => {
+    const navigate = useNavigate();
+
     const [ email, setEmail ] = useState<string>('')
     const [ password, setPassword ] = useState<string>('')
 
@@ -25,7 +27,7 @@ const LoginForm = () => {
     const {mutate: login, isSuccess, isError, error, reset} = authHooks.useLogin()
     const backendError = (error as AxiosError< {detail: string} >)?.response?.data.detail
 
-    const {mutate: google_login} = authHooks.useGoogleLogin()
+    const {mutateAsync: google_login} = authHooks.useGoogleLogin()
 
     const {mutate: telegram_login} = authHooks.useTelegramLogin()
 
@@ -163,9 +165,10 @@ const LoginForm = () => {
 
                         <div className="absolute inset-0 opacity-0 overflow-hidden">
                             <GoogleLogin
-                                onSuccess={(credentialResponse) => {
+                                onSuccess={async (credentialResponse) => {
                                     if (credentialResponse.credential) {
-                                        google_login(credentialResponse.credential)
+                                        await google_login(credentialResponse.credential)
+                                        navigate('/dashboard')
                                     }
                                 }}
                             />
@@ -186,6 +189,7 @@ const LoginForm = () => {
                                 botUsername="MonvirexBot"
                                 onAuthCallback={(data) => {
                                     telegram_login(data)
+                                    navigate('/dashboard')
                                 }}
                             />
                         </div>
