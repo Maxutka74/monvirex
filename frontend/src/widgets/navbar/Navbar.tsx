@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
 import {
     IoIosArrowDown,
@@ -33,6 +33,7 @@ const Navbar = () => {
     ];
 
     const navigate = useNavigate();
+    const location = useLocation();
     const theme = useStore(themeStore, (state) => state.theme);
 
 
@@ -86,7 +87,7 @@ const Navbar = () => {
         };
 
         navbarData();
-    }, [email]);
+    }, [email, location.pathname]);
 
     const avatar = profile?.avatar
 
