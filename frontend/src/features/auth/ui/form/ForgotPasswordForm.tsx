@@ -1,98 +1,123 @@
-import {BiErrorCircle} from "react-icons/bi";
-import {FiMail} from "react-icons/fi";
-import {useState} from "react";
-import authHooks from '../../model/useAuth.ts'
-import {GoArrowLeft} from "react-icons/go";
-import {Link, useNavigate} from "react-router-dom";
-import type {AxiosError} from "axios";
+import { BiErrorCircle } from "react-icons/bi";
+import { FiMail } from "react-icons/fi";
+import { useState } from "react";
+import authHooks from "../../model/useAuth.ts";
+import { GoArrowLeft } from "react-icons/go";
+import { Link, useNavigate } from "react-router-dom";
+import type { AxiosError } from "axios";
 
 const ForgotPasswordForm = () => {
-    const [ email , setEmail ] = useState<string>('');
-    const [ incorrectEmail, setIncorrectEmail] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [incorrectEmail, setIncorrectEmail] = useState<boolean>(false);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const { mutate: resetPassword, isError, error, reset } = authHooks.useResetPassword()
-    const backendError = (error as AxiosError< {detail: string} >)?.response?.data.detail
+  const {
+    mutate: resetPassword,
+    isError,
+    error,
+    reset,
+  } = authHooks.useResetPassword();
+  const backendError = (error as AxiosError<{ detail: string }>)?.response?.data
+    .detail;
 
-    function sendResetPasswordForm(event: React.FormEvent){
-        event.preventDefault()
+  function sendResetPasswordForm(event: React.FormEvent) {
+    event.preventDefault();
 
-        setIncorrectEmail(false)
+    setIncorrectEmail(false);
 
-        const normalizedEmail = email.trim().toLowerCase()
+    const normalizedEmail = email.trim().toLowerCase();
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)){
-            setIncorrectEmail(true);
-            return;
-        }
-
-        const check_email = JSON.parse(sessionStorage.getItem('reset_token') || '{}')
-        if (check_email.email === normalizedEmail && check_email.expires_at > Date.now()) {
-            navigate('/verify-reset-password')
-            return;
-        } else {
-            resetPassword(normalizedEmail)
-        }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setIncorrectEmail(true);
+      return;
     }
 
-    return (
-        <>
-            <form onSubmit={(event) => sendResetPasswordForm(event)}
-                  className='flex flex-col items-start justify-center'>
-                {(incorrectEmail || isError) &&
-                    <div className="w-full h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
-                        <BiErrorCircle size={16}
-                                       className="ml-[10px] text-[#DF1C41]"
-                        />
-                        <p className="text-[14px] font-medium">
-                            {incorrectEmail
-                                ? "Please enter a valid email address"
-                                : backendError || "Something went wrong"}
-                        </p>
-                    </div>
-                }
+    const check_email = JSON.parse(
+      sessionStorage.getItem("reset_token") || "{}",
+    );
+    if (
+      check_email.email === normalizedEmail &&
+      check_email.expires_at > Date.now()
+    ) {
+      navigate("/verify-reset-password");
+      return;
+    } else {
+      resetPassword(normalizedEmail);
+    }
+  }
 
-                <label htmlFor="email"
-                       className="mb-1.5 font-medium text-[14px] text-[#0D0D12]">
-                    Email
-                </label>
-                <div className={`w-full h-12 flex items-center bg-gray-100 border 
-                ${(incorrectEmail || isError) ? 'border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]'
-                    : email.trim().length > 0? 'border-[#429EFF] shadow-[0px_0px_3px_#285DF2]'
-                        :'border-gray-400'} rounded-full px-4 py-2 mb-6`}
-                >
-                    <FiMail size={24}
-                            className="text-gray-400 mr-2"
-                    />
-                    <input
-                        type="text"
-                        id='email'
-                        value={email}
-                        onChange={(e) => {setEmail(e.target.value); setIncorrectEmail(false); if (isError) reset()}}
-                        placeholder={'Input your email'}
-                        className='w-full outline-none'
-                        autoComplete='email'
-                    />
-                </div>
-                <div className="w-full flex flex-col items-center justify-center  mb-6">
-                    <button className={`w-full h-[44px] rounded-[50px] text-[#818898] text-[16px] font-medium 
-                        ${email.trim().length > 0? 'text-white bg-[#429EFF] cursor-pointer' 
-                        : 'bg-[#ECEFF3] cursor-not-allowed'} mb-6`}
-                        disabled={!(email.trim().length > 0)}
-                    >
-                        Continue
-                    </button>
-                    <Link to="/"
-                          className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"
-                    >
-                        <GoArrowLeft />
-                        Back
-                    </Link>
-                </div>
-            </form>
-        </>
-    )
-}
+  return (
+    <>
+      <form
+        onSubmit={(event) => sendResetPasswordForm(event)}
+        className="flex flex-col items-start justify-center"
+      >
+        {(incorrectEmail || isError) && (
+          <div className="w-full h-[38px] flex justify-start items-center gap-2 rounded-[6px] bg-[#FFF0F3] mb-[24px]">
+            <BiErrorCircle size={16} className="ml-[10px] text-[#DF1C41]" />
+            <p className="text-[14px] font-medium">
+              {incorrectEmail
+                ? "Please enter a valid email address"
+                : backendError || "Something went wrong"}
+            </p>
+          </div>
+        )}
 
-export default ForgotPasswordForm
+        <label
+          htmlFor="email"
+          className="mb-1.5 font-medium text-[14px] text-[#0D0D12]"
+        >
+          Email
+        </label>
+        <div
+          className={`w-full h-12 flex items-center bg-gray-100 border 
+                ${
+                  incorrectEmail || isError
+                    ? "border-[#EC778D] shadow-[0px_0px_3px_#F2D7DF]"
+                    : email.trim().length > 0
+                      ? "border-[#429EFF] shadow-[0px_0px_3px_#285DF2]"
+                      : "border-gray-400"
+                } rounded-full px-4 py-2 mb-6`}
+        >
+          <FiMail size={24} className="text-gray-400 mr-2" />
+          <input
+            type="text"
+            id="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setIncorrectEmail(false);
+              if (isError) reset();
+            }}
+            placeholder={"Input your email"}
+            className="w-full outline-none"
+            autoComplete="email"
+          />
+        </div>
+        <div className="w-full flex flex-col items-center justify-center  mb-6">
+          <button
+            className={`w-full h-[44px] rounded-[50px] text-[#818898] text-[16px] font-medium 
+                        ${
+                          email.trim().length > 0
+                            ? "text-white bg-[#429EFF] cursor-pointer"
+                            : "bg-[#ECEFF3] cursor-not-allowed"
+                        } mb-6`}
+            disabled={!(email.trim().length > 0)}
+          >
+            Continue
+          </button>
+          <Link
+            to="/"
+            className="w-[85px] h-[40px] flex flex-row items-center justify-center gap-3"
+          >
+            <GoArrowLeft />
+            Back
+          </Link>
+        </div>
+      </form>
+    </>
+  );
+};
+
+export default ForgotPasswordForm;

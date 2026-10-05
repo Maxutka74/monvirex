@@ -3,116 +3,115 @@ import { IoStatsChartSharp } from "react-icons/io5";
 import { RiLoaderLine } from "react-icons/ri";
 
 import assetsApi, {
-    type Asset,
+  type Asset,
 } from "../../../features/assets/api/assetsApi.ts";
-import {useStore} from "zustand/react";
+import { useStore } from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
-import {formatNumber} from "../../../shared/utils/formatNumber.ts";
+import { formatNumber } from "../../../shared/utils/formatNumber.ts";
 
 const TopMoversCard = () => {
-    const theme = useStore(themeStore, (state) => state.theme);
+  const theme = useStore(themeStore, (state) => state.theme);
 
-    const [assets, setAssets] = useState<Asset[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const data = async () => {
-            try {
-                setIsLoading(true);
+  useEffect(() => {
+    const data = async () => {
+      try {
+        setIsLoading(true);
 
-                const topMoversAssets = await assetsApi.getTopMovers();
+        const topMoversAssets = await assetsApi.getTopMovers();
 
-                setAssets(topMoversAssets.top_movers.slice(0, 5));
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        setAssets(topMoversAssets.top_movers.slice(0, 5));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-        data();
-    }, []);
+    data();
+  }, []);
 
-    return (
-        <div className={`
-                w-full h-full min-h-[400px] xl:min-h-[500px]
-                flex flex-col gap-5 rounded-[30px] p-4 lg:p-6
-                ${theme === "dark" ? "border border-[#0B4EA2] bg-black/60 text-white" : "bg-[#FFFFFF]/60"}
-            `}>
-            <div className="flex items-center gap-2">
-                <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#429EFF]">
-                    <IoStatsChartSharp
-                        size={24}
-                        className="text-white"
-                    />
-                </div>
-
-                <h4 className="text-[18px] font-medium">
-                    Top Movers
-                </h4>
-            </div>
-
-            <div className="flex flex-1 flex-col">
-                {isLoading ? (
-                    <div className="flex flex-1 items-center justify-center">
-                        <RiLoaderLine
-                            size={36}
-                            className={`
-                                animate-spin
-                                ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
-                            `}
-                        />
-                    </div>
-                ) : (
-                    <ul className="flex flex-1 flex-col justify-between gap-2">
-                        {assets.map((asset) => (
-                            <li key={asset.symbol}>
-                                <div className="grid grid-cols-[50px_minmax(0,1fr)_70px_80px] items-center gap-2 sm:gap-4 lg:grid-cols-[60px_minmax(0,1fr)_80px_100px]">
-                                    <div className={`
-                                        flex h-[50px] w-[50px] items-center justify-center
-                                        rounded-full sm:h-[60px] sm:w-[60px]
-                                        ${theme === "dark" ? "bg-black" : "bg-[#DFE1E7]"}
-                                    `}>
-                                        <img
-                                            className="h-[24px] w-[24px] sm:h-[30px] sm:w-[30px]"
-                                            src={asset.icon_url}
-                                            alt={asset.name}
-                                        />
-                                    </div>
-
-                                    <div className="flex min-w-0 flex-col items-start justify-center">
-                                        <h5 className="w-full truncate text-[16px] font-medium sm:text-[20px]">
-                                            {asset.symbol}
-                                        </h5>
-
-                                        <p className="w-full truncate text-[12px] text-[#818898]">
-                                            {asset.name.toUpperCase()}
-                                        </p>
-                                    </div>
-
-                                    <p
-                                        className={`text-center ${
-                                            Number(asset.price_change_24h) > 0
-                                                ? "text-green-400"
-                                                : "text-red-700"
-                                        }`}
-                                    >
-                                        {Number(asset.price_change_24h) > 0
-                                            ? `+${asset.price_change_24h}%`
-                                            : `${asset.price_change_24h}%`}
-                                    </p>
-
-                                    <p className="text-right text-[16px] sm:text-[20px]">
-                                        {formatNumber(asset.current_price)}$
-                                    </p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+  return (
+    <div
+      className={`
+          w-full h-full min-h-[400px] xl:min-h-[500px]
+          flex flex-col gap-5 rounded-[30px] p-4 lg:p-6
+          ${theme === "dark" ? "border border-[#0B4EA2] bg-black/60 text-white" : "bg-[#FFFFFF]/60"}
+      `}
+    >
+      <div className="flex items-center gap-2">
+        <div className="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#429EFF]">
+          <IoStatsChartSharp size={24} className="text-white" />
         </div>
-    );
+
+        <h4 className="text-[18px] font-medium">Top Movers</h4>
+      </div>
+
+      <div className="flex flex-1 flex-col">
+        {isLoading ? (
+          <div className="flex flex-1 items-center justify-center">
+            <RiLoaderLine
+              size={36}
+              className={`
+                  animate-spin
+                  ${theme === "dark" ? "text-[#A7B0C3]" : "text-[#666D80]"}
+              `}
+            />
+          </div>
+        ) : (
+          <ul className="flex flex-1 flex-col justify-between gap-2">
+            {assets.map((asset) => (
+              <li key={asset.symbol}>
+                <div className="grid grid-cols-[50px_minmax(0,1fr)_70px_80px] items-center gap-2 sm:gap-4 lg:grid-cols-[60px_minmax(0,1fr)_80px_100px]">
+                  <div
+                    className={`
+                        flex h-[50px] w-[50px] items-center justify-center
+                        rounded-full sm:h-[60px] sm:w-[60px]
+                        ${theme === "dark" ? "bg-black" : "bg-[#DFE1E7]"}
+                    `}
+                  >
+                    <img
+                      className="h-[24px] w-[24px] sm:h-[30px] sm:w-[30px]"
+                      src={asset.icon_url}
+                      alt={asset.name}
+                    />
+                  </div>
+
+                  <div className="flex min-w-0 flex-col items-start justify-center">
+                    <h5 className="w-full truncate text-[16px] font-medium sm:text-[20px]">
+                      {asset.symbol}
+                    </h5>
+
+                    <p className="w-full truncate text-[12px] text-[#818898]">
+                      {asset.name.toUpperCase()}
+                    </p>
+                  </div>
+
+                  <p
+                    className={`text-center ${
+                      Number(asset.price_change_24h) > 0
+                        ? "text-green-400"
+                        : "text-red-700"
+                    }`}
+                  >
+                    {Number(asset.price_change_24h) > 0
+                      ? `+${asset.price_change_24h}%`
+                      : `${asset.price_change_24h}%`}
+                  </p>
+
+                  <p className="text-right text-[16px] sm:text-[20px]">
+                    {formatNumber(asset.current_price)}$
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default TopMoversCard;

@@ -1,26 +1,25 @@
 import useUserStore from "../../entities/user/model/userStore.ts";
-import {Navigate, Outlet} from "react-router-dom";
-import {useEffect} from "react";
-
+import { Navigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 
 const ProtectedRoute = () => {
-    const isAuth = useUserStore((state) => (state.isAuth))
-    const isLoading = useUserStore((state) => (state.isLoading))
-    const checkAuth = useUserStore((state) => state.checkAuth);
+  const isAuth = useUserStore((state) => state.isAuth);
+  const isLoading = useUserStore((state) => state.isLoading);
+  const checkAuth = useUserStore((state) => state.checkAuth);
 
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
-    if (isLoading) {
-        return
-    }
+  if (isLoading) {
+    return;
+  }
 
-    if (!isAuth) {
-        return <Navigate to="/" replace />
-    }
+  if (!isAuth) {
+    return <Navigate to="/" replace />;
+  }
 
-    return <Outlet />
-}
+  return <Outlet />;
+};
 
-export default ProtectedRoute
+export default ProtectedRoute;

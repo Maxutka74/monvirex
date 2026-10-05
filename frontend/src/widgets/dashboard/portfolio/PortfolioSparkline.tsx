@@ -1,82 +1,57 @@
 import type { AssetKlines } from "../../../features/assets/api/assetsApi.ts";
-import {
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    YAxis,
-} from "recharts";
-import {memo, useMemo} from "react";
+import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
+import { memo, useMemo } from "react";
 
 type PortfolioSparklineProps = {
-    data: AssetKlines[];
-    isPositive: boolean;
+  data: AssetKlines[];
+  isPositive: boolean;
 };
 
-const PortfolioSparkline = ({
-                                data,
-                                isPositive,
-                            }: PortfolioSparklineProps) => {
+const PortfolioSparkline = ({ data, isPositive }: PortfolioSparklineProps) => {
+  const { chartData, minPrice, maxPrice, padding } = useMemo(() => {
+    const chartData = data.map((item) => ({
+      time: item.time,
+      price: Number(item.close),
+    }));
 
-    const { chartData, minPrice, maxPrice, padding } = useMemo(() => {
+    const price: number[] = chartData.map((item) => item.price);
 
-        const chartData = data.map((item) => ({
-            time: item.time,
-            price: Number(item.close),
-        }));
+    const sortPrice = price.sort((a, b) => a - b);
 
-        const price: number[] = chartData.map((item) => item.price);
+    const minPrice = sortPrice[0];
+    const maxPrice = sortPrice[sortPrice.length - 1];
+    const range = maxPrice - minPrice;
 
-        const sortPrice = price.sort((a, b) => a - b);
+    const padding = range === 0 ? minPrice * 0.01 : range * 0.1;
 
-        const minPrice = sortPrice[0];
-        const maxPrice = sortPrice[sortPrice.length - 1];
-        const range = maxPrice - minPrice;
+    return { chartData, minPrice, maxPrice, padding };
+  }, [data]);
 
-        let padding = 0;
+  if (!chartData.length) {
+    return <div className="w-[120px] h-[40px] bg-[#F3F4F6] rounded-md" />;
+  }
 
-        if (range === 0) {
-            padding = minPrice * 0.01;
-        } else {
-            padding = range * 0.1;
-        }
+  return (
+    <div className="w-[100px] h-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData}>
+          <YAxis
+            dataKey="price"
+            hide
+            domain={[minPrice - padding, maxPrice + padding]}
+          />
 
-        return {chartData, minPrice, maxPrice, padding};
-
-    }, [data])
-
-    if (!chartData.length) {
-        return (
-            <div className="w-[120px] h-[40px] bg-[#F3F4F6] rounded-md" />
-        );
-    }
-
-    return (
-        <div className="w-[100px] h-full">
-            <ResponsiveContainer
-                width="100%"
-                height="100%"
-            >
-                <LineChart data={chartData}>
-                    <YAxis
-                        dataKey="price"
-                        hide
-                        domain={[
-                            minPrice - padding,
-                            maxPrice + padding,
-                        ]}
-                    />
-
-                    <Line
-                        type="linear"
-                        dataKey="price"
-                        strokeWidth={1.5}
-                        stroke={isPositive ? "#40C4AA" : "#DF1C41"}
-                        dot={false}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
-        </div>
-    );
+          <Line
+            type="linear"
+            dataKey="price"
+            strokeWidth={1.5}
+            stroke={isPositive ? "#40C4AA" : "#DF1C41"}
+            dot={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 };
 
 export default memo(PortfolioSparkline);

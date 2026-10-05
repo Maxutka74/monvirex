@@ -1,15 +1,14 @@
 import useUserStore from "../../entities/user/model/userStore.ts";
-import {Navigate, Outlet} from "react-router-dom";
-
+import { Navigate, Outlet } from "react-router-dom";
 
 const StaffRoute = () => {
-    const isStaff = useUserStore((state) => (state.isStaff))
+  const isStaff = useUserStore((state) => state.isStaff);
 
-    if (!isStaff) {
-        return <Navigate to="/dashboard" replace />
-    }
+  if (!isStaff) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
-    return <Outlet />
-}
+  return <Outlet />;
+};
 
-export default StaffRoute
+export default StaffRoute;

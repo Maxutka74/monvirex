@@ -1,10 +1,7 @@
 import RouterProvider from "./app/providers/RouterProvider.tsx";
 
 function App() {
-
-    return (
-        <RouterProvider />
-    )
+  return <RouterProvider />;
 }
 
-export default App
+export default App;

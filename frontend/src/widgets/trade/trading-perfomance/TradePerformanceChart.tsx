@@ -3,10 +3,7 @@ import * as echarts from "echarts/core";
 
 import { CandlestickChart } from "echarts/charts";
 
-import {
-    GridComponent,
-    TooltipComponent,
-} from "echarts/components";
+import { GridComponent, TooltipComponent } from "echarts/components";
 
 import { CanvasRenderer } from "echarts/renderers";
 
@@ -16,244 +13,263 @@ import type { IntervalOption } from "./TradePerformanceCard.tsx";
 import { useStore } from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
 import { formatNumber } from "../../../shared/utils/formatNumber.ts";
-import {useMemo} from "react";
+import { useMemo } from "react";
 
 echarts.use([
-    CandlestickChart,
-    GridComponent,
-    TooltipComponent,
-    CanvasRenderer
-])
+  CandlestickChart,
+  GridComponent,
+  TooltipComponent,
+  CanvasRenderer,
+]);
 
-const ReactEChartsCore =
-    (ReactEChartsCoreModule as unknown as {
-        default: typeof ReactEChartsCoreModule
-    }).default;
+const ReactEChartsCore = (
+  ReactEChartsCoreModule as unknown as {
+    default: typeof ReactEChartsCoreModule;
+  }
+).default;
 
 type TradePerformanceChartProps = {
-    klines: AssetKlines[]
-    interval: IntervalOption | null
-}
+  klines: AssetKlines[];
+  interval: IntervalOption | null;
+};
 
-const TradePerformanceChart = ({klines, interval} : TradePerformanceChartProps) => {
-    const theme = useStore(themeStore, (state) => state.theme);
+const TradePerformanceChart = ({
+  klines,
+  interval,
+}: TradePerformanceChartProps) => {
+  const theme = useStore(themeStore, (state) => state.theme);
 
-    const candleData = useMemo(() => (klines.map((kline) => [
+  const candleData = useMemo(
+    () =>
+      klines.map((kline) => [
         Number(kline.open),
         Number(kline.close),
         Number(kline.low),
         Number(kline.high),
-    ])), [klines])
+      ]),
+    [klines],
+  );
 
-    const formatXAxisDate = (date: Date, interval: string) => {
-        switch (interval) {
-            case '1m':
-            case '3m':
-            case '5m':
-            case '15m':
-            case '30m':
-                return date.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
+  const formatXAxisDate = (date: Date, interval: string) => {
+    switch (interval) {
+      case "1m":
+      case "3m":
+      case "5m":
+      case "15m":
+      case "30m":
+        return date.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
-            case '1h':
-            case '2h':
-            case '4h':
-            case '6h':
-            case '8h':
-            case '12h':
-                return date.toLocaleString('en-US', {
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
+      case "1h":
+      case "2h":
+      case "4h":
+      case "6h":
+      case "8h":
+      case "12h":
+        return date.toLocaleString("en-US", {
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
-            case '1d':
-            case '3d':
-                return date.toLocaleDateString('en-US', {
-                    day: '2-digit',
-                    month: 'short',
-                });
+      case "1d":
+      case "3d":
+        return date.toLocaleDateString("en-US", {
+          day: "2-digit",
+          month: "short",
+        });
 
-            case '1w':
-                return date.toLocaleDateString('en-US', {
-                    day: '2-digit',
-                    month: 'short',
-                });
+      case "1w":
+        return date.toLocaleDateString("en-US", {
+          day: "2-digit",
+          month: "short",
+        });
 
-            case '1M':
-                return date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    year: 'numeric',
-                });
+      case "1M":
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        });
 
-            default:
-                return date.toLocaleDateString('en-US');
-        }
-    };
+      default:
+        return date.toLocaleDateString("en-US");
+    }
+  };
 
-    const xAxisData = useMemo(() => (klines.map((kline) => {
+  const intervalValue = interval?.value;
+
+  const xAxisData = useMemo(
+    () =>
+      klines.map((kline) => {
         const data = new Date(Number(kline.time) * 1000);
 
         if (interval) {
-            return formatXAxisDate(data, interval.value);
+          return formatXAxisDate(data, interval.value);
         }
-    })), [klines, interval?.value])
+      }),
+    [klines, intervalValue],
+  );
 
-    const option = useMemo(() => ({
-        tooltip: {
-            trigger: 'axis',
+  const option = useMemo(
+    () => ({
+      tooltip: {
+        trigger: "axis",
 
-            backgroundColor: theme === 'dark' ? '#020817' : '#FFFFFF',
-            borderColor: theme === 'dark' ? '#164B86' : '#DFE1E7',
-            textStyle: {
-                color: theme === 'dark' ? '#FFFFFF' : '#000000',
-            },
+        backgroundColor: theme === "dark" ? "#020817" : "#FFFFFF",
+        borderColor: theme === "dark" ? "#164B86" : "#DFE1E7",
+        textStyle: {
+          color: theme === "dark" ? "#FFFFFF" : "#000000",
+        },
 
-            axisPointer: {
-                type: 'cross',
-                lineStyle: {
-                    color: theme === 'dark' ? '#164B86' : '#CCCCCC',
-                },
-                crossStyle: {
-                    color: theme === 'dark' ? '#164B86' : '#CCCCCC',
-                },
-            },
+        axisPointer: {
+          type: "cross",
+          lineStyle: {
+            color: theme === "dark" ? "#164B86" : "#CCCCCC",
+          },
+          crossStyle: {
+            color: theme === "dark" ? "#164B86" : "#CCCCCC",
+          },
+        },
 
-            formatter: (params: any) => {
-                const kline = klines[params[0].dataIndex]
-                const date = new Date(Number(kline.time) * 1000)
+        formatter: (params: any) => {
+          const kline = klines[params[0].dataIndex];
+          const date = new Date(Number(kline.time) * 1000);
 
-                const isUp = Number(kline.close) >= Number(kline.open)
+          const isUp = Number(kline.close) >= Number(kline.open);
 
-                return `
+          return `
                     <div class="min-w-[180px] flex flex-col gap-2">
-                        <div class="${theme === 'dark' ? 'text-white' : 'text-black'} font-medium">
-                            ${Intl.DateTimeFormat('en-US', {
-                                    day: '2-digit',
-                                    month: 'short',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                }).format(new Date(date))}
+                        <div class="${theme === "dark" ? "text-white" : "text-black"} font-medium">
+                            ${Intl.DateTimeFormat("en-US", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }).format(new Date(date))}
                         </div>
                 
                         <div class="flex justify-between gap-6">
-                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Open:</span>
+                            <span class="${theme === "dark" ? "text-[#7184A3]" : "text-gray-500"}">Open:</span>
                             <b class="text-blue-500">${formatNumber(kline.open)}</b>
                         </div>
                 
                         <div class="flex justify-between gap-6">
-                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">High:</span>
+                            <span class="${theme === "dark" ? "text-[#7184A3]" : "text-gray-500"}">High:</span>
                             <b class="text-orange-500">${formatNumber(kline.high)}</b>
                         </div>
                 
                         <div class="flex justify-between gap-6">
-                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Low:</span>
+                            <span class="${theme === "dark" ? "text-[#7184A3]" : "text-gray-500"}">Low:</span>
                             <b class="text-blue-500">${formatNumber(kline.low)}</b>
                         </div>
                 
                         <div class="flex justify-between gap-6">
-                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Close:</span>
-                            <b class="${isUp ? 'text-green-500' : 'text-red-500'}">
+                            <span class="${theme === "dark" ? "text-[#7184A3]" : "text-gray-500"}">Close:</span>
+                            <b class="${isUp ? "text-green-500" : "text-red-500"}">
                                 ${formatNumber(kline.close)}
                             </b>
                         </div>
                 
                         <div class="border-t ${
-                                    theme === 'dark'
-                                        ? 'border-[#164B86]'
-                                        : 'border-gray-100'
-                                } pt-2 flex justify-between gap-6">
-                            <span class="${theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-500'}">Volume:</span>
-                            <b class="${theme === 'dark' ? 'text-white' : 'text-gray-900'}">
+                          theme === "dark"
+                            ? "border-[#164B86]"
+                            : "border-gray-100"
+                        } pt-2 flex justify-between gap-6">
+                            <span class="${theme === "dark" ? "text-[#7184A3]" : "text-gray-500"}">Volume:</span>
+                            <b class="${theme === "dark" ? "text-white" : "text-gray-900"}">
                                 ${formatNumber(kline.volume)}
                             </b>
                         </div>
                     </div>
-                `
-            },
+                `;
+        },
+      },
+
+      xAxis: {
+        type: "category",
+        data: xAxisData,
+        boundaryGap: true,
+
+        axisLine: {
+          lineStyle: {
+            color: theme === "dark" ? "#123A70" : "#CCCCCC",
+          },
         },
 
-        xAxis: {
-            type: 'category',
-            data: xAxisData,
-            boundaryGap: true,
-
-            axisLine: {
-                lineStyle: {
-                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
-                },
-            },
-
-            axisTick: {
-                lineStyle: {
-                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
-                },
-            },
-
-            axisLabel: {
-                color: theme === 'dark' ? '#7184A3' : '#666666',
-            },
+        axisTick: {
+          lineStyle: {
+            color: theme === "dark" ? "#123A70" : "#CCCCCC",
+          },
         },
 
-        yAxis: {
-            type: 'value',
-            scale: true,
-            position: 'right',
+        axisLabel: {
+          color: theme === "dark" ? "#7184A3" : "#666666",
+        },
+      },
 
-            axisLine: {
-                lineStyle: {
-                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
-                },
-            },
+      yAxis: {
+        type: "value",
+        scale: true,
+        position: "right",
 
-            axisTick: {
-                lineStyle: {
-                    color: theme === 'dark' ? '#123A70' : '#CCCCCC',
-                },
-            },
-
-            axisLabel: {
-                color: theme === 'dark' ? '#7184A3' : '#666666',
-            },
-
-            splitLine: {
-                lineStyle: {
-                    color: theme === 'dark' ? '#102747' : '#EEEEEE',
-                },
-            },
+        axisLine: {
+          lineStyle: {
+            color: theme === "dark" ? "#123A70" : "#CCCCCC",
+          },
         },
 
-        grid: {
-            left: 10,
-            right: 10,
-            bottom: 20,
-            top: 20,
-            containLabel: true,
-
+        axisTick: {
+          lineStyle: {
+            color: theme === "dark" ? "#123A70" : "#CCCCCC",
+          },
         },
 
-        series: [
-            {
-                type: 'candlestick',
-                data: candleData,
+        axisLabel: {
+          color: theme === "dark" ? "#7184A3" : "#666666",
+        },
 
-                itemStyle: {
-                    color: '#16a34a',
-                    color0: '#ef4444',
+        splitLine: {
+          lineStyle: {
+            color: theme === "dark" ? "#102747" : "#EEEEEE",
+          },
+        },
+      },
 
-                    borderColor: '#16a34a',
-                    borderColor0: '#ef4444'
-                }
-            },
-        ],
+      grid: {
+        left: 10,
+        right: 10,
+        bottom: 20,
+        top: 20,
+        containLabel: true,
+      },
 
-    }), [klines, xAxisData, candleData, theme]);
+      series: [
+        {
+          type: "candlestick",
+          data: candleData,
 
-    return (
-        <ReactEChartsCore echarts={echarts} option={option} style={{width:'100%', height:'510px'}} />
-    )
-}
+          itemStyle: {
+            color: "#16a34a",
+            color0: "#ef4444",
+
+            borderColor: "#16a34a",
+            borderColor0: "#ef4444",
+          },
+        },
+      ],
+    }),
+    [klines, xAxisData, candleData, theme],
+  );
+
+  return (
+    <ReactEChartsCore
+      echarts={echarts}
+      option={option}
+      style={{ width: "100%", height: "510px" }}
+    />
+  );
+};
 
 export default TradePerformanceChart;

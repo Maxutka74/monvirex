@@ -1,400 +1,393 @@
-import {useEffect, useState} from "react";
-import assetsApi, {type Asset} from "../../../features/assets/api/assetsApi.ts";
+import { useEffect, useState } from "react";
+import assetsApi, {
+  type Asset,
+} from "../../../features/assets/api/assetsApi.ts";
 import { HiOutlineClock } from "react-icons/hi";
-import {GoArrowDownRight, GoArrowUpRight} from "react-icons/go";
-import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
-import {RiLoaderLine} from "react-icons/ri";
+import { GoArrowDownRight, GoArrowUpRight } from "react-icons/go";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import { RiLoaderLine } from "react-icons/ri";
 import api from "../../../shared/api/instance.ts";
 import { CgSortAz } from "react-icons/cg";
 import TradeConfirmationModal from "../trading/TradeConfirmationModal.tsx";
-import {useStore} from "zustand/react";
+import { useStore } from "zustand/react";
 import themeStore from "../../../entities/theme/themeStore.tsx";
-import {formatNumber} from "../../../shared/utils/formatNumber.ts";
+import { formatNumber } from "../../../shared/utils/formatNumber.ts";
 
 type MarketAction = {
-    symbol: string;
-    value: string;
+  symbol: string;
+  value: string;
 };
 
 const sortOptions = [
-    { label: "Price ↑", value: "current_price" },
-    { label: "Price ↓", value: "-current_price" },
+  { label: "Price ↑", value: "current_price" },
+  { label: "Price ↓", value: "-current_price" },
 
-    { label: "Change ↑", value: "price_change_24h" },
-    { label: "Change ↓", value: "-price_change_24h" },
+  { label: "Change ↑", value: "price_change_24h" },
+  { label: "Change ↓", value: "-price_change_24h" },
 
-    { label: "Volume ↑", value: "volume_24h" },
-    { label: "Volume ↓", value: "-volume_24h" },
+  { label: "Volume ↑", value: "volume_24h" },
+  { label: "Volume ↓", value: "-volume_24h" },
 
-    { label: "Name A-Z", value: "name" },
-    { label: "Name Z-A", value: "-name" },
+  { label: "Name A-Z", value: "name" },
+  { label: "Name Z-A", value: "-name" },
 ];
 
 const MarketsCard = () => {
-    const theme = useStore(themeStore, (state) => state.theme);
+  const theme = useStore(themeStore, (state) => state.theme);
 
-    const [assets, setAssets] = useState<Asset[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [nextAssetsUrl, setNextAssetsUrl] = useState("");
-    const [totalPages, setTotalPages] = useState(1);
-    const [slicer, setSlicer] = useState(0);
-    const [search, setSearch] = useState("");
-    const [debounceSearch, setDebounceSearch] = useState('');
-    const [order, setOrder] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [nextAssetsUrl, setNextAssetsUrl] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const [slicer, setSlicer] = useState(0);
+  const [search, setSearch] = useState("");
+  const [debounceSearch, setDebounceSearch] = useState("");
+  const [order, setOrder] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedAsset, setSelectedAsset] = useState<MarketAction | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<MarketAction | null>(null);
 
-    useEffect(() => {
-        if (search.trim().length === 0) {
-            setCurrentPage(1)
-            setSlicer(0)
-            setDebounceSearch('')
+  useEffect(() => {
+    if (search.trim().length === 0) {
+      setCurrentPage(1);
+      setSlicer(0);
+      setDebounceSearch("");
 
-            const data = async () => {
-                try {
-                    setIsLoading(true);
+      const data = async () => {
+        try {
+          setIsLoading(true);
 
-                    const ordering = order || '-current_price'
+          const ordering = order || "-current_price";
 
-                    const asset = await assetsApi.getAssets(undefined, undefined, ordering);
+          const asset = await assetsApi.getAssets(
+            undefined,
+            undefined,
+            ordering,
+          );
 
-                    setNextAssetsUrl(asset.next ?? "")
-                    setAssets(asset.results);
+          setNextAssetsUrl(asset.next ?? "");
+          setAssets(asset.results);
 
-                    setTotalPages(Math.ceil(asset.count / asset.results.length))
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            data();
+          setTotalPages(Math.ceil(asset.count / asset.results.length));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
         }
-    }, [search, order]);
+      };
 
-    useEffect(() => {
-        if (search.length >= 1){
-            const timer = setTimeout(() => setDebounceSearch(search), 500)
-
-            return () => {
-                clearTimeout(timer)
-            }
-        }
-
-    }, [search]);
-
-    useEffect(() => {
-        if(debounceSearch.length >= 1) {
-            const dataSearch = async () => {
-                try {
-                    const asset = await assetsApi.getAssets(debounceSearch);
-
-                    setAssets(asset.results);
-                    setNextAssetsUrl(asset.next ?? "");
-                    setCurrentPage(1);
-                    setTotalPages(Math.ceil(asset.count / asset.results.length));
-                    setSlicer(0)
-
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            dataSearch();
-        }
-
-    }, [debounceSearch]);
-
-    const portfolioTableData = assets
-        .map((item) => {
-            const price = Number(item.current_price);
-
-            return {
-                icon: item.icon_url,
-                symbol: item.symbol,
-                volume: item.volume_24h,
-                change_price: item.price_change_24h,
-                value: price,
-            };
-        })
-
-    const nextPageAssets = async () => {
-        if (nextAssetsUrl && assets.length <= (currentPage * 5)) {
-            const next = nextAssetsUrl.indexOf('api/')
-
-            const nextAssets = await api.get(nextAssetsUrl.slice((next)+3))
-
-            setAssets(assets => [...assets, ...nextAssets.data.results]);
-            setNextAssetsUrl(nextAssets.data.next)
-        }
-
+      data();
     }
+  }, [search, order]);
 
-    const paginatedAssets = portfolioTableData.slice(slicer, slicer + 5)
+  useEffect(() => {
+    if (search.length >= 1) {
+      const timer = setTimeout(() => setDebounceSearch(search), 500);
 
-    const buyAssets = (asset: MarketAction) => {
-        setSelectedAsset(asset);
-        setIsModalOpen(true)
+      return () => {
+        clearTimeout(timer);
+      };
     }
+  }, [search]);
 
-    return (
-        <div className={`relative w-full min-h-[400px] rounded-[30px] p-4 sm:p-5 ${
-            theme === 'dark'
-                ? 'bg-black/60 border border-[#0B4EA2] text-white shadow-[0_0_25px_rgba(0,102,255,0.08)]'
-                : 'bg-[#FFFFFF]/60'
-        }`}>
-            <div className="flex flex-row items-center justify-between pb-[20px]">
-                <div className='flex flex-row gap-2 items-center'>
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-full sm:h-[44px] sm:w-[44px] ${
-                        theme === 'dark'
-                            ? 'bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.35)]'
-                            : 'bg-[#429EFF]'
-                    }`}>
-                        <HiOutlineClock
-                            size={24}
-                            className="text-[#FFFFFF]"
-                        />
-                    </div>
+  useEffect(() => {
+    if (debounceSearch.length >= 1) {
+      const dataSearch = async () => {
+        try {
+          const asset = await assetsApi.getAssets(debounceSearch);
 
-                    <h4 className="text-[20px] font-medium sm:text-[24px]">
-                        Markets
-                    </h4>
-                </div>
-                <div className='flex flex-col items-end sm:flex-row gap-6'>
-                    <input className={`w-[80%] sm:w-[240px] h-[46px] outline-none p-2 rounded-full ${
-                        theme === 'dark'
-                            ? 'bg-[#071329] text-white placeholder:text-[#60718D] border border-[#164B86] focus:border-[#1597FF]'
-                            : 'text-[#666D80] border border-[#A4ACB9]'
-                    }`} value={search} type="text" onChange={(e) => setSearch(e.target.value)} placeholder='Search by name...'/>
-                    <div className={`relative w-[120px] sm:w-[115px] h-[46px] rounded-full ${
-                        theme === 'dark'
-                            ? 'bg-[#071329] border border-[#164B86] text-[#A8B8D0]'
-                            : 'border border-[#A4ACB9] text-[#6F6F6F]'
-                    }`}>
-                        <select
-                            className={`absolute w-full appearance-none outline-none bg-transparent top-2.5 pl-3 cursor-pointer ${
-                                theme === 'dark'
-                                    ? 'text-[#A8B8D0]'
-                                    : 'text-[#6F6F6F]'
-                            }`}
-                                value={order}
-                                onChange={(e) => {
-                                    setOrder(e.target.value)
-                                }}>
-                            <option
-                                value=""
-                                className={`${theme === 'dark' ? 'bg-[#071329] text-white' : ''}`}
-                            >
-                                Sort
-                            </option>
-                            {sortOptions.map((option) => (
-                                <option
-                                    key={option.value}
-                                    value={option.value}
-                                    className={theme === 'dark' ? 'bg-[#071329] text-white' : ''}
-                                >
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                        <CgSortAz size={24} className={`absolute top-2.5 right-1 pointer-events-none ${
-                            theme === 'dark'
-                                ? 'text-[#1597FF]'
-                                : 'text-[#6F6F6F]'
-                        }`}/>
-                    </div>
-                </div>
-            </div>
+          setAssets(asset.results);
+          setNextAssetsUrl(asset.next ?? "");
+          setCurrentPage(1);
+          setTotalPages(Math.ceil(asset.count / asset.results.length));
+          setSlicer(0);
+        } catch (e) {
+          console.error(e);
+        }
+      };
 
-            {isLoading ? (
-                <div className="flex h-[240px] w-full items-center justify-center">
-                    <RiLoaderLine
-                        size={48}
-                        className={`animate-spin ${
-                            theme === 'dark'
-                                ? 'text-[#1597FF]'
-                                : 'text-[#666D80]'
-                        }`}
-                    />
-                </div>
-            ) : (
-                <div className="overflow-x-auto min-h-[311px]">
-                    <table className="min-w-[760px] w-full">
-                        <thead>
-                        <tr className={`h-[31px] w-full font-medium ${
-                            theme === 'dark'
-                                ? 'text-[#7184A3]'
-                                : 'text-[#666D80]'
-                        }`}>
-                            <th
-                                scope="col"
-                                className="h-[26px] w-1/5 text-left"
-                            >
-                                Currency
-                            </th>
+      dataSearch();
+    }
+  }, [debounceSearch]);
 
-                            <th
-                                scope="col"
-                                className="h-[26px] w-1/5 text-left"
-                            >
-                                Price
-                            </th>
+  const portfolioTableData = assets.map((item) => {
+    const price = Number(item.current_price);
 
-                            <th
-                                scope="col"
-                                className="h-[26px] w-1/5"
-                            >
-                                24H Volume
-                            </th>
+    return {
+      icon: item.icon_url,
+      symbol: item.symbol,
+      volume: item.volume_24h,
+      change_price: item.price_change_24h,
+      value: price,
+    };
+  });
 
-                            <th
-                                scope="col"
-                                className="h-[26px] w-1/5"
-                            >
-                                24H Change
-                            </th>
+  const nextPageAssets = async () => {
+    if (nextAssetsUrl && assets.length <= currentPage * 5) {
+      const next = nextAssetsUrl.indexOf("api/");
 
-                            <th
-                                scope="col"
-                                className="h-[26px] w-1/5"
-                            >
-                                Action
-                            </th>
-                        </tr>
-                        </thead>
+      const nextAssets = await api.get(nextAssetsUrl.slice(next + 3));
 
-                        <tbody>
-                        {paginatedAssets.map((item) => (
-                            <tr
-                                key={item.symbol}
-                                className={`h-[56px] ${
-                                    theme === 'dark'
-                                        ? 'border-t border-[#102747]/80'
-                                        : ''
-                                }`}
-                            >
-                                <td>
-                                    <div className="flex h-[46px] items-center gap-2 font-medium">
-                                        <img
-                                            src={item.icon}
-                                            alt=""
-                                            className="h-[20px] w-[20px]"
-                                        />
+      setAssets((assets) => [...assets, ...nextAssets.data.results]);
+      setNextAssetsUrl(nextAssets.data.next);
+    }
+  };
 
-                                        {item.symbol.slice(0,-4)}
-                                    </div>
-                                </td>
+  const paginatedAssets = portfolioTableData.slice(slicer, slicer + 5);
 
-                                <td className="h-[46px] font-medium">
-                                    ${formatNumber(item.value)}
-                                </td>
+  const buyAssets = (asset: MarketAction) => {
+    setSelectedAsset(asset);
+    setIsModalOpen(true);
+  };
 
-                                <td className="pointer-events-none h-[48px]">
-                                    <div className="flex h-full w-full items-center justify-center font-medium">
-                                        {formatNumber(item.volume)}
-                                    </div>
-                                </td>
+  return (
+    <div
+      className={`relative w-full min-h-[400px] rounded-[30px] p-4 sm:p-5 ${
+        theme === "dark"
+          ? "bg-black/60 border border-[#0B4EA2] text-white shadow-[0_0_25px_rgba(0,102,255,0.08)]"
+          : "bg-[#FFFFFF]/60"
+      }`}
+    >
+      <div className="flex flex-row items-center justify-between pb-[20px]">
+        <div className="flex flex-row gap-2 items-center">
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-full sm:h-[44px] sm:w-[44px] ${
+              theme === "dark"
+                ? "bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.35)]"
+                : "bg-[#429EFF]"
+            }`}
+          >
+            <HiOutlineClock size={24} className="text-[#FFFFFF]" />
+          </div>
 
-                                <td>
-                                    <div
-                                        className={`flex h-[46px] items-center justify-center ${
-                                            Number(item.change_price) > 0
-                                                ? "text-[#40C4AA]"
-                                                : "text-[#DF1C41]"
-                                        }`}
-                                    >
-                                        {Number(item.change_price) > 0 ? (
-                                            <>
-                                                <GoArrowUpRight />
-                                                +{item.change_price}%
-                                            </>
-                                        ) : (
-                                            <>
-                                                <GoArrowDownRight />
-                                                {item.change_price}%
-                                            </>
-                                        )}
-                                    </div>
-                                </td>
-
-                                <td className="text-center">
-                                    <button className={`w-[57px] h-[42px] text-white font-medium rounded-full cursor-pointer ${
-                                        theme === 'dark'
-                                            ? 'bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.25)] hover:bg-[#269FFF]'
-                                            : 'bg-[#429EFF]'
-                                    }`} onClick={() => {
-                                        buyAssets({
-                                            symbol: item.symbol.slice(0, -4),
-                                            value: String(item.value),
-                                        })
-                                    }}>Buy</button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            <div
-                className={`flex flex-row items-center justify-center gap-4 pt-2 ${
-                    theme === 'dark'
-                        ? 'text-[#7184A3]'
-                        : 'text-[#666D80]'
-                }`}
-            >
-                <FiArrowLeft
-                    size={24}
-                    onClick={() => {
-                        currentPage > 1
-                            ? setCurrentPage(currentPage => currentPage - 1)
-                            : null;
-                        setSlicer(slicer => slicer-5)
-                        }
-                    }
-                    className={`cursor-pointer ${
-                        currentPage === 1
-                            ? theme === 'dark'
-                                ? "pointer-events-none cursor-not-allowed text-[#263650]"
-                                : "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
-                            : theme === 'dark'
-                                ? "text-[#1597FF] hover:text-[#5DB8FF]"
-                                : ""
-                    }`}
-                />
-
-                <p>
-                    Page {currentPage} of {totalPages}
-                </p>
-
-                <FiArrowRight
-                    size={24}
-                    onClick={() => {
-                        currentPage < totalPages
-                            ? setCurrentPage(currentPage => currentPage + 1)
-                            : null;
-                        nextPageAssets();
-                        setSlicer(slicer => slicer + 5)
-                    }
-                    }
-                    className={`cursor-pointer ${
-                        currentPage === totalPages
-                            ? theme === 'dark'
-                                ? "pointer-events-none cursor-not-allowed text-[#263650]"
-                                : "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
-                            : theme === 'dark'
-                                ? "text-[#1597FF] hover:text-[#5DB8FF]"
-                                : ""
-                    }`}
-                />
-            </div>
-            {(isModalOpen && selectedAsset) && (
-                <TradeConfirmationModal setIsModalOpen={setIsModalOpen} type='Buy' assetMarketAction={selectedAsset}/>
-            )}
+          <h4 className="text-[20px] font-medium sm:text-[24px]">Markets</h4>
         </div>
-    );
+        <div className="flex flex-col items-end sm:flex-row gap-6">
+          <input
+            className={`w-[80%] sm:w-[240px] h-[46px] outline-none p-2 rounded-full ${
+              theme === "dark"
+                ? "bg-[#071329] text-white placeholder:text-[#60718D] border border-[#164B86] focus:border-[#1597FF]"
+                : "text-[#666D80] border border-[#A4ACB9]"
+            }`}
+            value={search}
+            type="text"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name..."
+          />
+          <div
+            className={`relative w-[120px] sm:w-[115px] h-[46px] rounded-full ${
+              theme === "dark"
+                ? "bg-[#071329] border border-[#164B86] text-[#A8B8D0]"
+                : "border border-[#A4ACB9] text-[#6F6F6F]"
+            }`}
+          >
+            <select
+              className={`absolute w-full appearance-none outline-none bg-transparent top-2.5 pl-3 cursor-pointer ${
+                theme === "dark" ? "text-[#A8B8D0]" : "text-[#6F6F6F]"
+              }`}
+              value={order}
+              onChange={(e) => {
+                setOrder(e.target.value);
+              }}
+            >
+              <option
+                value=""
+                className={`${theme === "dark" ? "bg-[#071329] text-white" : ""}`}
+              >
+                Sort
+              </option>
+              {sortOptions.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                  className={theme === "dark" ? "bg-[#071329] text-white" : ""}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <CgSortAz
+              size={24}
+              className={`absolute top-2.5 right-1 pointer-events-none ${
+                theme === "dark" ? "text-[#1597FF]" : "text-[#6F6F6F]"
+              }`}
+            />
+          </div>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex h-[240px] w-full items-center justify-center">
+          <RiLoaderLine
+            size={48}
+            className={`animate-spin ${
+              theme === "dark" ? "text-[#1597FF]" : "text-[#666D80]"
+            }`}
+          />
+        </div>
+      ) : (
+        <div className="overflow-x-auto min-h-[311px]">
+          <table className="min-w-[760px] w-full">
+            <thead>
+              <tr
+                className={`h-[31px] w-full font-medium ${
+                  theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"
+                }`}
+              >
+                <th scope="col" className="h-[26px] w-1/5 text-left">
+                  Currency
+                </th>
+
+                <th scope="col" className="h-[26px] w-1/5 text-left">
+                  Price
+                </th>
+
+                <th scope="col" className="h-[26px] w-1/5">
+                  24H Volume
+                </th>
+
+                <th scope="col" className="h-[26px] w-1/5">
+                  24H Change
+                </th>
+
+                <th scope="col" className="h-[26px] w-1/5">
+                  Action
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {paginatedAssets.map((item) => (
+                <tr
+                  key={item.symbol}
+                  className={`h-[56px] ${
+                    theme === "dark" ? "border-t border-[#102747]/80" : ""
+                  }`}
+                >
+                  <td>
+                    <div className="flex h-[46px] items-center gap-2 font-medium">
+                      <img
+                        src={item.icon}
+                        alt=""
+                        className="h-[20px] w-[20px]"
+                      />
+
+                      {item.symbol.slice(0, -4)}
+                    </div>
+                  </td>
+
+                  <td className="h-[46px] font-medium">
+                    ${formatNumber(item.value)}
+                  </td>
+
+                  <td className="pointer-events-none h-[48px]">
+                    <div className="flex h-full w-full items-center justify-center font-medium">
+                      {formatNumber(item.volume)}
+                    </div>
+                  </td>
+
+                  <td>
+                    <div
+                      className={`flex h-[46px] items-center justify-center ${
+                        Number(item.change_price) > 0
+                          ? "text-[#40C4AA]"
+                          : "text-[#DF1C41]"
+                      }`}
+                    >
+                      {Number(item.change_price) > 0 ? (
+                        <>
+                          <GoArrowUpRight />+{item.change_price}%
+                        </>
+                      ) : (
+                        <>
+                          <GoArrowDownRight />
+                          {item.change_price}%
+                        </>
+                      )}
+                    </div>
+                  </td>
+
+                  <td className="text-center">
+                    <button
+                      className={`w-[57px] h-[42px] text-white font-medium rounded-full cursor-pointer ${
+                        theme === "dark"
+                          ? "bg-[#1597FF] shadow-[0_0_15px_rgba(21,151,255,0.25)] hover:bg-[#269FFF]"
+                          : "bg-[#429EFF]"
+                      }`}
+                      onClick={() => {
+                        buyAssets({
+                          symbol: item.symbol.slice(0, -4),
+                          value: String(item.value),
+                        });
+                      }}
+                    >
+                      Buy
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <div
+        className={`flex flex-row items-center justify-center gap-4 pt-2 ${
+          theme === "dark" ? "text-[#7184A3]" : "text-[#666D80]"
+        }`}
+      >
+        <FiArrowLeft
+          size={24}
+          onClick={() => {
+            if (currentPage > 1) {
+              setCurrentPage((currentPage) => currentPage - 1);
+            }
+            setSlicer((slicer) => slicer - 5);
+          }}
+          className={`cursor-pointer ${
+            currentPage === 1
+              ? theme === "dark"
+                ? "pointer-events-none cursor-not-allowed text-[#263650]"
+                : "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+              : theme === "dark"
+                ? "text-[#1597FF] hover:text-[#5DB8FF]"
+                : ""
+          }`}
+        />
+
+        <p>
+          Page {currentPage} of {totalPages}
+        </p>
+
+        <FiArrowRight
+          size={24}
+          onClick={() => {
+            if (currentPage < totalPages) {
+              setCurrentPage((currentPage) => currentPage + 1);
+            }
+            nextPageAssets();
+            setSlicer((slicer) => slicer + 5);
+          }}
+          className={`cursor-pointer ${
+            currentPage === totalPages
+              ? theme === "dark"
+                ? "pointer-events-none cursor-not-allowed text-[#263650]"
+                : "pointer-events-none cursor-not-allowed text-[#CBD5E1]"
+              : theme === "dark"
+                ? "text-[#1597FF] hover:text-[#5DB8FF]"
+                : ""
+          }`}
+        />
+      </div>
+      {isModalOpen && selectedAsset && (
+        <TradeConfirmationModal
+          setIsModalOpen={setIsModalOpen}
+          type="Buy"
+          assetMarketAction={selectedAsset}
+        />
+      )}
+    </div>
+  );
 };
 
 export default MarketsCard;
