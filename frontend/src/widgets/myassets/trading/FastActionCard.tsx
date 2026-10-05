@@ -324,7 +324,7 @@ const FastActionCard = () => {
                                 isSearchable={false} options={userOpinionAssets} maxMenuHeight={200}
                                 value={exchangeToAsset} onChange={(option) => setExchangeToAsset(option)}/>
                             </div>
-                            <p className='text-sm'>Available: {exchangeToAsset ? <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>{String(exchangeToAsset?.amount).slice(0,-4)} {exchangeToAsset?.value}</span>: "No crypto available"}</p>
+                            <p className='text-sm'>Available: {exchangeToAsset ? <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>{String(exchangeToAsset?.amount)} {exchangeToAsset?.value}</span>: "No crypto available"}</p>
                         </div>
                         <div className={`w-[44px] h-[44px] flex items-center justify-center rounded-full shrink-0 ${
                             theme === 'dark'
@@ -403,7 +403,7 @@ const FastActionCard = () => {
                         theme === 'dark'
                             ? 'text-[#7184A3]'
                             : 'text-[#6F6F6F]'
-                    }`}>Enter the amount of USDT you want to spend. <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>Available: {balance} USD</span></p>
+                    }`}>Enter the amount of USDT you want to spend. <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>Available: {balance} USDT</span></p>
                 }
                 {(actions === 'Sell' || actions === 'Exchange') &&
                     <p className={`text-sm ${
@@ -411,7 +411,7 @@ const FastActionCard = () => {
                             ? 'text-[#7184A3]'
                             : 'text-[#6F6F6F]'
                     }`}>Enter the amount of {actions === 'Sell' ? sellAsset?.value: actions === 'Exchange' && exchangeToAsset?.value} you want to {actions === 'Sell' ? 'sell': 'exchange'}. <span className={theme === 'dark' ? 'text-[#1597FF]' : 'text-[#429EFF]'}>
-                        Available: {sellAsset || exchangeToAsset ? actions === 'Sell' ? String(sellAsset?.amount).slice(0,-4): actions === 'Exchange' && String(exchangeToAsset?.amount).slice(0, -4): "No crypto available"}
+                        Available: {sellAsset || exchangeToAsset ? actions === 'Sell' ? String(sellAsset?.amount): actions === 'Exchange' && String(exchangeToAsset?.amount): "No crypto available"}
                         </span></p>
                 }
             </div>

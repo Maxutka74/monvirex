@@ -176,12 +176,12 @@ const TradingActions = ({setOpenTradeActionModal, dataActions}: TradingActionsPr
                                     theme === 'dark'
                                         ? 'text-[#1597FF] border border-[#164B86] bg-[#0B1D38] hover:bg-[#0B2A52]'
                                         : 'text-[#429EFF] border border-gray-200'
-                                }`} onClick={() => setAmount(dataActions.type === 'Buy'? balance: dataActions.current_amount.slice(0,8))}>MAX</button>
+                                }`} onClick={() => setAmount(dataActions.type === 'Buy'? balance: dataActions.current_amount)}>MAX</button>
                             </div>
                         </div>
                         <p className={`text-end font-normal ${
                             theme === 'dark' ? 'text-[#7184A3]' : 'text-gray-400'
-                        }`}>Available: {dataActions.type === 'Buy'? balance: dataActions.current_amount.slice(0,8)} <span>{dataActions.type === 'Buy'? 'USDT': dataActions.name}</span></p>
+                        }`}>Available: {dataActions.type === 'Buy'? balance: dataActions.current_amount} <span>{dataActions.type === 'Buy'? 'USDT': dataActions.name}</span></p>
                     </div>
                 </div>
                 <div className={`flex items-center justify-center text-center my-3 ${

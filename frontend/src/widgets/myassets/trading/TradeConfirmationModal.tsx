@@ -206,7 +206,7 @@ const TradeConfirmationModal = ({setIsModalOpen, type, buyAsset, sellAsset, exch
                                         theme === 'dark'
                                             ? 'text-[#1597FF]'
                                             : 'text-[#429EFF]'
-                                    }`} onClick={() => setAmount(type === 'Buy' ? String(balance): type === 'Sell' ? String(sellAsset?.amount).slice(0,-4): String(exchangeFromAsset?.amount).slice(0,-4))}>MAX</button>
+                                    }`} onClick={() => setAmount(type === 'Buy' ? String(balance): type === 'Sell' ? String(sellAsset?.amount): String(exchangeFromAsset?.amount))}>MAX</button>
                             </div>
                         </div>
                         <div className={`w-full p-3 rounded-[10px] mb-3 ${

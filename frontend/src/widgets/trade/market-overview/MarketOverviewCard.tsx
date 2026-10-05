@@ -148,7 +148,7 @@ const MarketOverviewCard = () => {
                     <span className={sellAssets
                         ? theme === 'dark' ? 'text-[#40C4AA]' : 'text-green-500'
                         : ''
-                    }>{sellAssets? sellAssets?.amount.slice(0, 8): '0.000'} {currentAsset?.value}</span>
+                    }>{sellAssets? sellAssets?.amount: '0.000'} {currentAsset?.value}</span>
                 </div>
             </div>
             <div className='flex flex-row items-center justify-between font-medium mb-5'>
