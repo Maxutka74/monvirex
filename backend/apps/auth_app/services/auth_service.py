@@ -197,7 +197,7 @@ class AuthService:
         send_email.apply_async(
             args=[
                 email,
-                'Monvirex - Скидання пароля',
+                'Monvirex - Password Reset',
                 {'code': code},
                 'auth_app/reset_password_email.html',
             ],
@@ -233,7 +233,7 @@ class AuthService:
         send_email.apply_async(
             args=[
                 email,
-                'Monvirex - Скидання пароля',
+                'Monvirex - Password Reset',
                 {'code': code},
                 'auth_app/reset_password_email.html',
             ],
