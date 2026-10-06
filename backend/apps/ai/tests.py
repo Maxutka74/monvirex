@@ -145,18 +145,6 @@ class ChatsApiTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
 
     @patch('apps.ai.views.ChatService.chat')
-    def test_chat_throttle(self, mock_chat):
-        mock_chat.return_value = 'Test'
-        self.client.cookies['access_token'] = str(self.refresh.access_token)
-
-        for _ in range(11):
-            response = self.client.post('/api/ai/chat/sendmessage/', data={
-                'message': 'Hello',
-            })
-
-        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-
-    @patch('apps.ai.views.ChatService.chat')
     def test_chat_timeout(self, mock_chat):
         self.client.cookies['access_token'] = str(self.refresh.access_token)
 
