@@ -18,3 +18,11 @@ CACHES = {
 
 CELERY_BROKER_URL = config('REDIS_URL')
 CELERY_RESULT_BACKEND = config('REDIS_URL')
+
+CORS_ALLOWED_ORIGINS = [
+    "https://monvirex-frontend.vercel.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://monvirex-frontend.vercel.app",
+]
