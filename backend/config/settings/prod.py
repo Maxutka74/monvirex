@@ -23,6 +23,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://monvirex-frontend.vercel.app",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = [
     "https://monvirex-frontend.vercel.app",
 ]
