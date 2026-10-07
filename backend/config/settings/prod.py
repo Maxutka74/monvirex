@@ -16,6 +16,14 @@ CACHES = {
     }
 }
 
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': 'required',
+}
+
+CELERY_REDIS_BACKEND_USE_SSL = {
+    'ssl_cert_reqs': 'required',
+}
+
 CELERY_BROKER_URL = config('REDIS_URL')
 CELERY_RESULT_BACKEND = config('REDIS_URL')
 
