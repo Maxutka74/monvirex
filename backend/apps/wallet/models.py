@@ -44,7 +44,7 @@ class Transaction(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='transactions'
     )
-    idempotency_key = models.CharField(unique=True, null=True, blank=True)
+    idempotency_key = models.CharField(unique=True, null=True, blank=True, max_length=255)
     transaction_type = models.CharField(
         max_length=20, choices=TRANSACTION_TYPE_CHOICES, default='deposit'
     )
