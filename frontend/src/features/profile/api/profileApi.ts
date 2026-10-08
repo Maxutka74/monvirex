@@ -6,7 +6,7 @@ export type Profile = {
   avatar: string;
 };
 
-export type ProfileResponse = Record<string, Profile>;
+export type ProfileResponse = Profile;
 
 export type UpdateProfile = {
   first_name: string;

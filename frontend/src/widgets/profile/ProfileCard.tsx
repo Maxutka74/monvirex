@@ -110,11 +110,9 @@ const ProfileCard = () => {
   const deleteUserAvatar = async () => {
     if (!profile?.avatar || profile.avatar === DEFAULT_AVATAR) return;
 
-    if (!email) return;
-
     try {
       await profileApi.deleteAvatar();
-      refreshProfile(email);
+      refreshProfile();
 
       setToast({
         show: true,
