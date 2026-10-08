@@ -43,6 +43,7 @@ const Navbar = () => {
     useState(false);
 
   const email = useUserStore((state: UserStore | null) => state?.user?.email);
+  const userId = useUserStore((state) => state?.user?.id);
 
   const profile = profileStore((state) => state.profile);
 
@@ -64,14 +65,14 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (!email) return;
+    if (!userId) return;
 
-    refreshProfile(email);
-  }, [email]);
+    refreshProfile();
+  }, [userId, refreshProfile]);
 
   useEffect(() => {
     const navbarData = async () => {
-      if (!email) return;
+      if (!userId) return;
 
       try {
         const unReadNotificationData = await notificationsApi.getUnreadCount();
@@ -83,7 +84,7 @@ const Navbar = () => {
     };
 
     navbarData();
-  }, [email, location.pathname]);
+  }, [userId, location.pathname]);
 
   const avatar = profile?.avatar;
 
