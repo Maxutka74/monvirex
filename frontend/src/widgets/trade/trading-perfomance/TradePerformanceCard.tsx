@@ -119,8 +119,12 @@ const TradePerformanceCard = () => {
   useEffect(() => {
     if (!currentAsset?.symbol || !interval?.value) return;
 
+    const wsBaseUrl = import.meta.env.VITE_API_URL
+        .replace(/^http/, "ws")
+        .replace(/\api\/?$/, "")
+
     const socket = new WebSocket(
-      `ws://localhost:8000/ws/klines/${currentAsset?.symbol}/${interval?.value}/`,
+      `${wsBaseUrl}/ws/klines/${currentAsset?.symbol}/${interval?.value}/`,
     );
 
     socket.onmessage = (event) => {
