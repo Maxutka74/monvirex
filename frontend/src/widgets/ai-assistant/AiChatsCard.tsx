@@ -15,7 +15,7 @@ type AiChatsCardProps = {
 };
 
 const AiChatsCard = ({ messages, loading, error }: AiChatsCardProps) => {
-  const API_URL = "http://localhost:8000";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const theme = useStore(themeStore, (state) => state.theme);
   const avatarUser: Profile | null = profileStore((state) => state.profile);

@@ -24,7 +24,7 @@ import { useStore } from "zustand/react";
 import themeStore from "../../entities/theme/themeStore.tsx";
 
 const Navbar = () => {
-  const API_URL = "http://localhost:8000";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const navItems = [
     { label: "Home", path: "/dashboard" },

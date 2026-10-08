@@ -35,7 +35,7 @@ type Toast = {
 const ProfileCard = () => {
   const theme = useStore(themeStore, (state) => state.theme);
 
-  const API_URL = "http://localhost:8000";
+  const API_URL = import.meta.env.VITE_API_URL;
   const email = userStore((state) => state?.user?.email);
   const profile = profileStore((state) => state?.profile);
   const setAvatar = profileStore((state) => state?.setAvatar);
