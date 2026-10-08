@@ -36,6 +36,7 @@ const ProfileCard = () => {
   const theme = useStore(themeStore, (state) => state.theme);
 
   const API_URL = import.meta.env.VITE_API_URL;
+  const DEFAULT_AVATAR = "https://res.cloudinary.com/dfpfrizds/image/upload/v1782311086/user_ev9tiw.png";
   const email = userStore((state) => state?.user?.email);
   const profile = profileStore((state) => state?.profile);
   const setAvatar = profileStore((state) => state?.setAvatar);
@@ -107,7 +108,7 @@ const ProfileCard = () => {
   };
 
   const deleteUserAvatar = async () => {
-    if (profile?.avatar.includes("res")) return;
+    if (!profile?.avatar || profile.avatar === DEFAULT_AVATAR) return;
 
     if (!email) return;
 
