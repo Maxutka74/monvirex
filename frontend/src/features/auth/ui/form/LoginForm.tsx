@@ -36,7 +36,7 @@ const LoginForm = () => {
 
   const { mutateAsync: google_login } = authHooks.useGoogleLogin();
 
-  const { mutate: telegram_login } = authHooks.useTelegramLogin();
+  const { mutateAsync: telegram_login } = authHooks.useTelegramLogin();
 
   function sendLoginForm(event: React.FormEvent) {
     event.preventDefault();
@@ -214,8 +214,8 @@ const LoginForm = () => {
             <div className="absolute inset-0 opacity-0 z-50 overflow-hidden">
               <LoginButton
                 botUsername="MonvirexBot"
-                onAuthCallback={(data) => {
-                  telegram_login(data);
+                onAuthCallback={async (data) => {
+                  await telegram_login(data);
                   navigate("/dashboard");
                 }}
               />
