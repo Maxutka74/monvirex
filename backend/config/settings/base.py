@@ -20,7 +20,7 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = ['rest_framework', 'corsheaders', 'drf_spectacular', 'channels']
+THIRD_PARTY_APPS = ['rest_framework', 'corsheaders', 'drf_spectacular', 'channels', 'cloudinary_storage', 'cloudinary']
 
 LOCAL_APPS = [
     'apps.auth_app',
@@ -62,6 +62,15 @@ TEMPLATES = [
         },
     },
 ]
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -126,8 +135,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -207,6 +214,12 @@ STRIPE_SUCCESS_URL = config(
     'STRIPE_SUCCESS_URL'
 )
 STRIPE_CANCEL_URL = config('STRIPE_CANCEL_URL')
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
 
 GEMINI_API_KEY=config('GEMINI_API_KEY')
 
