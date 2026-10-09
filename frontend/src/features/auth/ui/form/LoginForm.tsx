@@ -214,17 +214,16 @@ const LoginForm = () => {
             </div>
           </div>
           <div className="relative w-full xl:w-[212px] h-[48px] cursor-pointer">
-            <div className="pointer-events-none w-full h-full flex items-center justify-center gap-[12px] px-4 py-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
+            <div className="pointer-events-none w-full h-full flex items-center justify-center gap-3 px-4 py-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
               <FaTelegram size={24} className="text-[#229ED9]" />
               <span className="text-[14px]">Sign in with Telegram</span>
             </div>
 
             <div
               className="absolute inset-0 opacity-0 z-50 overflow-hidden
-                [&>div]:!w-full
-                [&>div]:!h-full
+                flex items-center justify-center
                 [&_iframe]:!w-full
-                [&_iframe]:!h-full
+                [&_iframe]:!h-[48px]
                 [&_iframe]:!max-w-none"
             >
               <LoginButton
