@@ -9,6 +9,6 @@ export default defineConfig({
     host: true,
     port: 5173,
 
-    allowedHosts: ["monvirex.vercel.app"],
+    allowedHosts: ['d34d-185-35-10-226.ngrok-free.app'],
   },
 });
