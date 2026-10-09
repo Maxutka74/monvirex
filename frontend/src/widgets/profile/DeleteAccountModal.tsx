@@ -30,11 +30,11 @@ const DeleteAccountModal = ({
 
     try {
       await profileApi.deleteProfile({ password });
+      navigate("/");
     } catch {
       setError("Invalid credentials");
     }
 
-    navigate("/");
   };
 
   return (
