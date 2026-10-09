@@ -195,8 +195,15 @@ const LoginForm = () => {
               <span className="text-[14px]">Sign in with Google</span>
             </div>
 
-            <div className="absolute inset-0 opacity-0 z-50 overflow-hidden [&_iframe]:!w-full [&_iframe]:!h-full">
+            <div className="absolute inset-0 opacity-0 overflow-hidden
+                [&_[role=button]]:!w-full
+                [&_[role=button]]:!h-[48px]
+                [&_[role=button]]:!min-h-[48px]
+                [&_iframe]:!h-[48px]"
+            >
               <GoogleLogin
+
+                width='375'
                 onSuccess={async (credentialResponse) => {
                   if (credentialResponse.credential) {
                     await google_login(credentialResponse.credential);
@@ -207,11 +214,19 @@ const LoginForm = () => {
             </div>
           </div>
           <div className="relative w-full xl:w-[212px] h-[48px] cursor-pointer">
-            <div className="pointer-events-none w-full h-full flex flex-row items-center justify-center gap-[12px] pl-4 pt-3 pr-4 pb-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
+            <div className="pointer-events-none w-full h-full flex items-center justify-center gap-[12px] px-4 py-3 border border-[#DFE1E7] rounded-[50px] bg-[#F8FAFB]">
               <FaTelegram size={24} className="text-[#229ED9]" />
               <span className="text-[14px]">Sign in with Telegram</span>
             </div>
-            <div className="absolute inset-0 opacity-0 z-50 overflow-hidden [&_iframe]:!w-full [&_iframe]:!h-full">
+
+            <div
+              className="absolute inset-0 opacity-0 z-50 overflow-hidden
+                [&>div]:!w-full
+                [&>div]:!h-full
+                [&_iframe]:!w-full
+                [&_iframe]:!h-full
+                [&_iframe]:!max-w-none"
+            >
               <LoginButton
                 botUsername="MonvirexBot"
                 onAuthCallback={async (data) => {
