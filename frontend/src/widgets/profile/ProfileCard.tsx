@@ -464,7 +464,7 @@ const ProfileCard = () => {
                 Change your password to <br /> keep your account secure
               </p>
             </div>
-            <div className="w-full flex gap-5">
+            <div className="w-full flex flex-col gap-5">
                 {isTelegramUser && (
                   <p
                       className={`text-[13px] mb-2 ${
