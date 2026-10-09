@@ -3,6 +3,7 @@ import api from "../../../shared/api/instance.ts";
 export type AdminPanelUsers = {
   id: string;
   email: string;
+  telegram_id: number
   first_name: string;
   last_name: string;
   is_active: boolean;

@@ -53,7 +53,7 @@ const TotalUsersCard = () => {
       usersAll.map((user) => ({
         id: user.id,
         name: user.first_name + " " + user.last_name,
-        email: user.email,
+        email: user.email || user.telegram_id,
         status: user.is_active ? "Active" : "Inactive",
         joined: Intl.DateTimeFormat("en-US", {
           month: "short",
@@ -118,7 +118,7 @@ const TotalUsersCard = () => {
             >
               <th className="px-2">ID</th>
               <th className="text-left">Name</th>
-              <th className="text-left">Email</th>
+              <th className="text-left">Email or Telegram ID</th>
               <th>Status</th>
               <th className="text-left">Joined</th>
             </tr>
