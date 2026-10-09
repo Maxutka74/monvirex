@@ -28,11 +28,11 @@ CELERY_BROKER_URL = config('REDIS_URL')
 CELERY_RESULT_BACKEND = config('REDIS_URL')
 
 CORS_ALLOWED_ORIGINS = [
-    "https://monvirex-frontend.vercel.app",
+    config('CORS_ALLOWED_ORIGINS')
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://monvirex-frontend.vercel.app",
+    config('CORS_ALLOWED_ORIGINS')
 ]
