@@ -466,17 +466,17 @@ const ProfileCard = () => {
             </div>
             <div className="w-full flex gap-5">
               <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
-                <div className="flex-1 flex flex-col gap-1">
                   {isTelegramUser && (
-                      <p
-                          className={`text-[13px] mb-2 ${
-                              theme === "dark" ? "text-[#7184A3]" : "text-gray-500"
-                          }`}
-                      >
-                          Your account is linked to Telegram.
-                          Password changes are unavailable.
-                      </p>
+                    <p
+                        className={`text-[13px] mb-2 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-500"
+                        }`}
+                    >
+                        Your account is linked to Telegram.
+                        Password changes are unavailable.
+                    </p>
                   )}
+                <div className="flex-1 flex flex-col gap-1">
                   <span className="font-medium">Current Password</span>
                   {error?.currentPassword && (
                     <div
@@ -510,7 +510,13 @@ const ProfileCard = () => {
                     {showCurrentPassword ? (
                       <FiEye
                         size={24}
-                        className="absolute top-3 right-5 text-gray-400 cursor-pointer"
+                        className={`absolute top-3 right-5 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        } ${
+                            isTelegramUser
+                                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer"
+                        }`}
                         onClick={() =>
                           setShowCurrentPassword(!showCurrentPassword)
                         }
@@ -518,7 +524,13 @@ const ProfileCard = () => {
                     ) : (
                       <FiEyeOff
                         size={24}
-                        className="absolute top-3 right-5 text-gray-400 cursor-pointer"
+                        className={`absolute top-3 right-5 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        } ${
+                            isTelegramUser
+                                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer"
+                        }`}
                         onClick={() =>
                           setShowCurrentPassword(!showCurrentPassword)
                         }
@@ -558,13 +570,25 @@ const ProfileCard = () => {
                     {showNewPassword ? (
                       <FiEye
                         size={24}
-                        className="absolute top-3 right-5 text-gray-400 cursor-pointer"
+                        className={`absolute top-3 right-5 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        } ${
+                            isTelegramUser
+                                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer"
+                        }`}
                         onClick={() => setShowNewPassword(!showNewPassword)}
                       />
                     ) : (
                       <FiEyeOff
                         size={24}
-                        className="absolute top-3 right-5 text-gray-400 cursor-pointer"
+                        className={`absolute top-3 right-5 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        } ${
+                            isTelegramUser
+                                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer"
+                        }`}
                         onClick={() => setShowNewPassword(!showNewPassword)}
                       />
                     )}
@@ -604,8 +628,12 @@ const ProfileCard = () => {
                     {showConfirmPassword ? (
                       <FiEye
                         size={24}
-                        className={`absolute top-3 right-5 cursor-pointer ${
-                          theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        className={`absolute top-3 right-5 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        } ${
+                            isTelegramUser
+                                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer"
                         }`}
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
@@ -614,8 +642,12 @@ const ProfileCard = () => {
                     ) : (
                       <FiEyeOff
                         size={24}
-                        className={`absolute top-3 right-5 cursor-pointer ${
-                          theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        className={`absolute top-3 right-5 ${
+                            theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                        } ${
+                            isTelegramUser
+                                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer"
                         }`}
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)

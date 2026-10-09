@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { BiErrorCircle } from "react-icons/bi";
 import { useStore } from "zustand/react";
 import themeStore from "../../entities/theme/themeStore.tsx";
+import userStore from "../../entities/user/model/userStore.ts";
 
 type DeleteAccountModalProps = {
   setDeleteModalOpen: React.Dispatch<SetStateAction<boolean>>;
@@ -18,6 +19,8 @@ const DeleteAccountModal = ({
   const theme = useStore(themeStore, (state) => state.theme);
 
   const navigate = useNavigate();
+  const telegram_id = userStore((state) => state?.user?.telegram_id);
+  const isTelegramUser = telegram_id != null;
   const [password, setPassword] = useState<string>("");
   const [visiblePassword, setVisiblePassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,54 +86,76 @@ const DeleteAccountModal = ({
               deleted
             </p>
           </div>
-          <div className="w-full flex flex-col items-center justify-center gap-3 mb-5">
-            <p className="w-full text-center font-medium">
-              Please enter your password to continue
-            </p>
-            {error && (
-              <div
-                className={`w-full h-[38px] flex justify-start items-center text-wrap gap-2 rounded-[6px] bg-[#FFF0F3]`}
-              >
-                <BiErrorCircle
-                  size={16}
-                  className="ml-[10px] text-[#DF1C41] shrink-0"
-                />
-                <p className="text-[14px] font-medium">{error}</p>
-              </div>
-            )}
-            <div className="w-full relative">
-              <GoLock className="absolute top-3 left-3 text-2xl" />
-              <input
-                value={password}
-                type={`${visiblePassword ? "text" : "password"}`}
-                className={`w-full h-12 outline-none rounded-full px-12 ${
-                  theme === "dark"
-                    ? "bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]"
-                    : "border border-gray-100"
+          {isTelegramUser ? (
+            <div className="w-full flex flex-col items-center justify-center gap-3 mb-5">
+              <p
+                className={`text-center text-[15px] ${
+                  theme === "dark" ? "text-[#A8B8D0]" : "text-[#6F6F6F]"
                 }`}
-                placeholder="Enter your password"
-                onChange={(e) => setPassword(e.target.value)}
-                onClick={() => setError(null)}
-              />
-              {visiblePassword ? (
-                <FiEye
-                  size={24}
-                  className={`absolute top-3 right-5 cursor-pointer ${
-                    theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
-                  }`}
-                  onClick={() => setVisiblePassword(!visiblePassword)}
-                />
-              ) : (
-                <FiEyeOff
-                  size={24}
-                  className={`absolute top-3 right-5 cursor-pointer ${
-                    theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
-                  }`}
-                  onClick={() => setVisiblePassword(!visiblePassword)}
-                />
-              )}
+              >
+                To delete your Telegram-linked account, please contact our support team.
+              </p>
+
+              <a
+                href="mailto:Monvirex.support@monvirex.online?subject=Account%20Deletion%20Request"
+                className="text-[#429EFF] font-medium hover:underline break-all text-center"
+              >
+                Monvirex.support@monvirex.online
+              </a>
             </div>
-          </div>
+          ) : (
+            <div className="w-full flex flex-col items-center justify-center gap-3 mb-5">
+              <p className="w-full text-center font-medium">
+                Please enter your password to continue
+              </p>
+
+              {error && (
+                <div className="w-full h-[38px] flex justify-start items-center text-wrap gap-2 rounded-[6px] bg-[#FFF0F3]">
+                  <BiErrorCircle
+                    size={16}
+                    className="ml-[10px] text-[#DF1C41] shrink-0"
+                  />
+                  <p className="text-[14px] font-medium">{error}</p>
+                </div>
+              )}
+
+              <div className="w-full relative">
+                <GoLock className="absolute top-3 left-3 text-2xl" />
+
+                <input
+                  value={password}
+                  type={visiblePassword ? "text" : "password"}
+                  className={`w-full h-12 outline-none rounded-full px-12 ${
+                    theme === "dark"
+                      ? "bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]"
+                      : "border border-gray-100"
+                  }`}
+                  placeholder="Enter your password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  onClick={() => setError(null)}
+                />
+
+                {visiblePassword ? (
+                  <FiEye
+                    size={24}
+                    className={`absolute top-3 right-5 cursor-pointer ${
+                      theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                    }`}
+                    onClick={() => setVisiblePassword(!visiblePassword)}
+                  />
+                ) : (
+                  <FiEyeOff
+                    size={24}
+                    className={`absolute top-3 right-5 cursor-pointer ${
+                      theme === "dark" ? "text-[#7184A3]" : "text-gray-400"
+                    }`}
+                    onClick={() => setVisiblePassword(!visiblePassword)}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-row justify-center items-center gap-3">
             <button
               className={`flex-1 h-13 rounded-full cursor-pointer ${
@@ -142,16 +167,26 @@ const DeleteAccountModal = ({
             >
               Cancel
             </button>
-            <button
-              className={`flex-1 h-13 border text-white bg-gradient-to-b from-[#ED8296] to-[#DF1C41] rounded-full cursor-pointer ${
-                theme === "dark"
-                  ? "border-[#7A1F35] shadow-[0_0_15px_rgba(223,28,65,0.2)]"
-                  : "border-gray-300"
-              }`}
-              onClick={() => deleteAccount(password)}
-            >
-              Yes, Delete My Account
-            </button>
+
+            {isTelegramUser ? (
+              <a
+                href="mailto:Monvirex.support@monvirex.online?subject=Account%20Deletion%20Request"
+                className="flex-1 h-13 flex items-center justify-center rounded-full bg-[#429EFF] text-white font-medium cursor-pointer"
+              >
+                Contact Support
+              </a>
+            ) : (
+              <button
+                className={`flex-1 h-13 border text-white bg-gradient-to-b from-[#ED8296] to-[#DF1C41] rounded-full cursor-pointer ${
+                  theme === "dark"
+                    ? "border-[#7A1F35] shadow-[0_0_15px_rgba(223,28,65,0.2)]"
+                    : "border-gray-300"
+                }`}
+                onClick={() => deleteAccount(password)}
+              >
+                Yes, Delete My Account
+              </button>
+            )}
           </div>
         </div>
       </div>
