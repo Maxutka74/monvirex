@@ -45,6 +45,7 @@ class CheckAuthMe(APIView):
         response = Response({
             'id': current_user.id,
             'email': current_user.email,
+            'telegram_id': current_user.telegram_id,
             'first_name': current_user.first_name,
             'last_name': current_user.last_name,
             'is_staff': current_user.is_staff,
