@@ -1,14 +1,19 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
 
-  server: {
-    host: true,
-    port: 5173,
+  return {
+    plugins: [react(), tailwindcss()],
 
-    allowedHosts: ["9428-185-35-11-92.ngrok-free.app"],
-  },
+    server: {
+      host: true,
+      port: 5173,
+      allowedHosts: env.ALLOWED_HOSTS
+        ? env.ALLOWED_HOSTS.split(",").map(host => host.trim())
+        : [],
+    },
+  };
 });
