@@ -39,6 +39,7 @@ const ProfileCard = () => {
   const DEFAULT_AVATAR = "https://res.cloudinary.com/dfpfrizds/image/upload/v1782311086/user_ev9tiw.png";
   const email = userStore((state) => state?.user?.email);
   const telegram_id = userStore((state) => state?.user?.telegram_id);
+  const isTelegramUser = telegram_id != null;
   const profile = profileStore((state) => state?.profile);
   const setAvatar = profileStore((state) => state?.setAvatar);
   const setUsername = profileStore((state) => state?.setUsername);
@@ -466,6 +467,16 @@ const ProfileCard = () => {
             <div className="w-full flex gap-5">
               <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1 flex flex-col gap-1">
+                  {isTelegramUser && (
+                      <p
+                          className={`text-[13px] mb-2 ${
+                              theme === "dark" ? "text-[#7184A3]" : "text-gray-500"
+                          }`}
+                      >
+                          Your account is linked to Telegram.
+                          Password changes are unavailable.
+                      </p>
+                  )}
                   <span className="font-medium">Current Password</span>
                   {error?.currentPassword && (
                     <div
@@ -487,7 +498,8 @@ const ProfileCard = () => {
                         theme === "dark"
                           ? "bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]"
                           : "border border-gray-100"
-                      }`}
+                      } ${isTelegramUser ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={isTelegramUser}
                       onChange={(e) => setOldPassword(e.target.value)}
                       onClick={() =>
                         setError({ ...error, currentPassword: null })
@@ -536,7 +548,8 @@ const ProfileCard = () => {
                         theme === "dark"
                           ? "bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]"
                           : "border border-gray-100"
-                      }`}
+                      } ${isTelegramUser ? "opacity-50 cursor-not-allowed" : ""} `}
+                      disabled={isTelegramUser}
                       onChange={(e) => setNewPassword(e.target.value)}
                       onClick={() => setError({ ...error, password: null })}
                       type={`${showNewPassword ? "text" : "password"}`}
@@ -579,7 +592,8 @@ const ProfileCard = () => {
                         theme === "dark"
                           ? "bg-[#071329] border border-[#164B86] text-white placeholder:text-[#60718D] focus:border-[#1597FF]"
                           : "border border-gray-100"
-                      }`}
+                      } ${isTelegramUser ? "opacity-50 cursor-not-allowed" : ""} `}
+                      disabled={isTelegramUser}
                       onChange={(e) => setConfirmNewPassword(e.target.value)}
                       onClick={() =>
                         setError({ ...error, confirmPassword: null })
@@ -615,7 +629,12 @@ const ProfileCard = () => {
           </div>
           <div className="flex lg:justify-end">
             <button
-              className="max-w-[200px] w-full h-10 sm:h-12 flex flex-row items-center justify-center gap-3 text-white bg-[#429EFF] rounded-full cursor-pointer"
+              disabled={isTelegramUser}
+              className={`max-w-[200px] w-full h-10 sm:h-12 flex flex-row items-center justify-center gap-3 text-white bg-[#429EFF] rounded-full ${
+                  isTelegramUser
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+              }`}
               onClick={() => changePassword()}
             >
               <GoLock size={20} /> Change Password
