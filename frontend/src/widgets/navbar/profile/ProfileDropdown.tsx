@@ -11,6 +11,7 @@ type ProfileDropdownProps = {
   firstName: string;
   lastName: string;
   email: string;
+  telegram_id: number | null
   logoutFunc: () => void | Promise<void>;
   setIsProfileDropdownOpen: React.Dispatch<SetStateAction<boolean>>;
 };
@@ -19,6 +20,7 @@ const ProfileDropdown = ({
   firstName,
   lastName,
   email,
+  telegram_id,
   logoutFunc,
   setIsProfileDropdownOpen,
 }: ProfileDropdownProps) => {
@@ -50,7 +52,7 @@ const ProfileDropdown = ({
             theme === "dark" ? "text-[#7184A3]" : "text-[#6F6F6F]"
           }`}
         >
-          {email}
+          {email || (telegram_id != null ? `Telegram ID: ${telegram_id}` : "")}
         </p>
       </div>
 

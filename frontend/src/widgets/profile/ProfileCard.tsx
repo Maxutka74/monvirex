@@ -38,6 +38,7 @@ const ProfileCard = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const DEFAULT_AVATAR = "https://res.cloudinary.com/dfpfrizds/image/upload/v1782311086/user_ev9tiw.png";
   const email = userStore((state) => state?.user?.email);
+  const telegram_id = userStore((state) => state?.user?.telegram_id);
   const profile = profileStore((state) => state?.profile);
   const setAvatar = profileStore((state) => state?.setAvatar);
   const setUsername = profileStore((state) => state?.setUsername);
@@ -112,7 +113,7 @@ const ProfileCard = () => {
 
     try {
       await profileApi.deleteAvatar();
-      refreshProfile();
+      await refreshProfile();
 
       setToast({
         show: true,
@@ -234,7 +235,7 @@ const ProfileCard = () => {
     ? avatar.startsWith("http")
       ? avatar
       : `${API_URL}${avatar}`
-    : undefined;
+    : DEFAULT_AVATAR;
 
   return (
     <div
@@ -414,7 +415,7 @@ const ProfileCard = () => {
                 </div>
                 <div className="flex flex-col lg:flex-row lg:items-end gap-4">
                   <div className="flex-1 flex flex-col gap-1">
-                    <span className="font-medium">Email</span>
+                    <span className="font-medium">{email ? "Email" : "Telegram ID"}</span>
                     <div className="relative">
                       <PiEnvelopeSimpleLight className="absolute top-3 left-3 text-2xl" />
                       <p
@@ -424,7 +425,7 @@ const ProfileCard = () => {
                             : "bg-gray-100 border border-gray-100"
                         }`}
                       >
-                        {email}
+                        {email || telegram_id || ""}
                       </p>
                     </div>
                   </div>

@@ -42,8 +42,10 @@ const Navbar = () => {
   const [isNotificationsDropdownOpen, setIsNotificationsDropdownOpen] =
     useState(false);
 
-  const email = useUserStore((state: UserStore | null) => state?.user?.email);
   const userId = useUserStore((state) => state?.user?.id);
+  const email = useUserStore((state: UserStore | null) => state?.user?.email);
+  const telegram_id = useUserStore((state: UserStore | null) => state?.user?.telegram_id)
+
 
   const profile = profileStore((state) => state.profile);
 
@@ -253,6 +255,7 @@ const Navbar = () => {
               firstName={profile?.first_name || ""}
               lastName={profile?.last_name || ""}
               email={email || ""}
+              telegram_id={telegram_id ?? null}
               logoutFunc={logoutFunc}
               setIsProfileDropdownOpen={setIsProfileDropdownOpen}
             />

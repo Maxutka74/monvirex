@@ -7,7 +7,7 @@ type ProfileStore = {
   profile: Profile | null;
   setAvatar: (avatar: string) => void;
   setUsername: (first_name: string, last_name: string) => void;
-  refreshProfile: () => void;
+  refreshProfile: () => Promise<void>;
 };
 
 const profileStore = create<ProfileStore>((set) => ({
