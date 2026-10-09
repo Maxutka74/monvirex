@@ -140,14 +140,14 @@ const UserDetailsModal = ({
                   theme === "dark" ? "text-[#7184A3]" : "text-gray-500"
                 }`}
               >
-                Email
+                Email or Telegram ID
               </span>
               <p
                 className={`min-w-0 flex-1 ${
                   theme === "dark" ? "text-[#A8B8D0]" : "text-gray-600"
                 }`}
               >
-                {userData?.email}
+                {userData?.telegram_id || userData?.email || "—"}
               </p>
             </div>
             <div

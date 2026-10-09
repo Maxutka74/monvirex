@@ -7,12 +7,13 @@ from apps.wallet.models import CryptoTransaction, Transaction
 class AdminUserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'is_active', 'date_joined')
+        fields = ('id', 'email', 'telegram_id', 'first_name', 'last_name', 'is_active', 'date_joined')
 
 
 class AdminUserDetailSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
     email = serializers.EmailField(read_only=True)
+    telegram_id = serializers.IntegerField(read_only=True, allow_null=True)
     first_name = serializers.CharField(read_only=True)
     last_name = serializers.CharField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
