@@ -24,7 +24,7 @@ const TopMoversCard = () => {
 
         setAssets(topMoversAssets.top_movers.slice(0, 5));
       } catch (error) {
-        console.log(error);
+        console.error(error);
       } finally {
         setIsLoading(false);
       }

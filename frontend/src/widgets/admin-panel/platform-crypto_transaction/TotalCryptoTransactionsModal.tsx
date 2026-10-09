@@ -111,7 +111,7 @@ const TotalCryptoTransactionsModal = ({
 
       setTotalCryptoTransactionAll(formatData);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
