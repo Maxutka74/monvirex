@@ -269,11 +269,9 @@ class ProfileView(APIView):
 
         response = Response(
             {
-                request.user.email: {
-                    'first_name': serializer.data['first_name'],
-                    'last_name': serializer.data['last_name'],
-                    'avatar': request.user.avatar_url,
-                }
+                'first_name': serializer.data['first_name'],
+                'last_name': serializer.data['last_name'],
+                'avatar': request.user.avatar_url,
             },
             status=status.HTTP_200_OK,
         )
