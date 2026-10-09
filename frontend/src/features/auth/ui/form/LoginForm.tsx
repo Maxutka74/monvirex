@@ -195,7 +195,7 @@ const LoginForm = () => {
               <span className="text-[14px]">Sign in with Google</span>
             </div>
 
-            <div className="absolute inset-0 opacity-0 overflow-hidden">
+            <div className="absolute inset-0 opacity-0 z-50 overflow-hidden [&_iframe]:!w-full [&_iframe]:!h-full">
               <GoogleLogin
                 onSuccess={async (credentialResponse) => {
                   if (credentialResponse.credential) {
@@ -211,7 +211,7 @@ const LoginForm = () => {
               <FaTelegram size={24} className="text-[#229ED9]" />
               <span className="text-[14px]">Sign in with Telegram</span>
             </div>
-            <div className="absolute inset-0 opacity-0 z-50 overflow-hidden">
+            <div className="absolute inset-0 opacity-0 z-50 overflow-hidden [&_iframe]:!w-full [&_iframe]:!h-full">
               <LoginButton
                 botUsername="MonvirexBot"
                 onAuthCallback={async (data) => {
