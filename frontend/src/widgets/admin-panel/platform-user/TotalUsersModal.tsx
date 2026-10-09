@@ -90,7 +90,7 @@ const TotalUsersModal = ({
       const formatData = userData.results.map((user) => ({
         id: user.id,
         name: user.first_name + " " + user.last_name,
-        email: user.email || user.telegram_id,
+        email: user.telegram_id || user.email,
         status: user.is_active ? "Active" : "Inactive",
         joined: Intl.DateTimeFormat("en-US", {
           month: "short",
