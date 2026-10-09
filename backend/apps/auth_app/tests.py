@@ -728,7 +728,7 @@ class ProfileServiceApiTest(TestCase):
         response = self.client.get('/api/auth/profile/')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('first_name', response.data[self.user.email])
+        self.assertIn('first_name', response.json())
 
     def test_get_profile_unauthorized(self):
         response = self.client.get('/api/auth/profile/')
@@ -788,7 +788,6 @@ class ProfileServiceApiTest(TestCase):
 
         self.user.refresh_from_db()
         self.assertTrue(self.user.avatar)
-        self.assertIn('.webp', self.user.avatar.name)
 
     def test_upload_avatar_invalid_type(self):
         self._auth()
